@@ -116,14 +116,10 @@ def run_vqc(
         eps = 1e-8
         probs = pnp.clip(probs, eps, 1.0 - eps)
         targets = pnp.asarray(y_train, dtype=float)
-        return -pnp.mean(
-            targets * pnp.log(probs) + (1.0 - targets) * pnp.log(1.0 - probs)
-        )
+        return -pnp.mean(targets * pnp.log(probs) + (1.0 - targets) * pnp.log(1.0 - probs))
 
     rng = np.random.default_rng(seed)
-    params = 0.01 * rng.standard_normal(
-        parameter_shape(n_layers=n_layers, n_qubits=n_qubits)
-    )
+    params = 0.01 * rng.standard_normal(parameter_shape(n_layers=n_layers, n_qubits=n_qubits))
     params = pnp.array(params, requires_grad=True)
 
     opt = qml.AdamOptimizer(stepsize=step_size)

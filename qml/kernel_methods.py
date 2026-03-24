@@ -163,10 +163,7 @@ def run_quantum_kernel_classifier(
         "y_test_pred": np.asarray(y_test_pred, dtype=int),
     }
 
-    stem = (
-        f"moons_samples{n_samples}"
-        f"_noise{str(noise).replace('.', 'p')}_seed{seed}"
-    )
+    stem = f"moons_samples{n_samples}" f"_noise{str(noise).replace('.', 'p')}_seed{seed}"
 
     if plot or save:
         plot_dataset_2d(

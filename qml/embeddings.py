@@ -31,9 +31,7 @@ def validate_feature_vector(x, n_features: int | None = None) -> np.ndarray:
     """
     x = np.asarray(x, dtype=float).ravel()
     if n_features is not None and x.shape[0] != n_features:
-        raise ValueError(
-            f"Expected feature vector of length {n_features}, got {x.shape[0]}."
-        )
+        raise ValueError(f"Expected feature vector of length {n_features}, got {x.shape[0]}.")
     return x
 
 

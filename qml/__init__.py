@@ -12,7 +12,6 @@ Provides reusable components for:
 
 from importlib.metadata import version, PackageNotFoundError
 
-
 try:
     __version__ = version("qml-pennylane")
 except PackageNotFoundError:

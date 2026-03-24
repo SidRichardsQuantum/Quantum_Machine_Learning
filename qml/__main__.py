@@ -33,9 +33,7 @@ def _build_parser() -> argparse.ArgumentParser:
     vqc_parser.add_argument("--seed", type=int, default=123, help="Random seed.")
     vqc_parser.add_argument("--layers", type=int, default=2, help="Number of ansatz layers.")
     vqc_parser.add_argument("--steps", type=int, default=50, help="Number of optimizer steps.")
-    vqc_parser.add_argument(
-        "--step-size", type=float, default=0.1, help="Optimizer step size."
-    )
+    vqc_parser.add_argument("--step-size", type=float, default=0.1, help="Optimizer step size.")
     vqc_parser.add_argument("--plot", action="store_true", help="Display plots.")
     vqc_parser.add_argument("--save", action="store_true", help="Save results and figures.")
 

@@ -22,9 +22,7 @@ def validate_parameter_vector(params, n_params: int | None = None):
     """
     params = pnp.ravel(pnp.asarray(params))
     if n_params is not None and params.shape[0] != n_params:
-        raise ValueError(
-            f"Expected parameter vector of length {n_params}, got {params.shape[0]}."
-        )
+        raise ValueError(f"Expected parameter vector of length {n_params}, got {params.shape[0]}.")
     return params
 
 
@@ -61,9 +59,7 @@ def apply_hardware_efficient_ansatz(params, wires: Sequence[int]) -> None:
         )
 
     if shape[1] != len(wires) or shape[2] != 2:
-        raise ValueError(
-            f"Expected params with shape (n_layers, {len(wires)}, 2), got {shape}."
-        )
+        raise ValueError(f"Expected params with shape (n_layers, {len(wires)}, 2), got {shape}.")
 
     n_layers = shape[0]
     n_qubits = len(wires)
