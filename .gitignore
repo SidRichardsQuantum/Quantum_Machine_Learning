@@ -4,28 +4,50 @@
 
 __pycache__/
 *.py[cod]
+*$py.class
 *.so
 
-# distribution / packaging
+# compiled extensions
+*.pyd
+*.dll
+
+# ========================
+# Packaging / distribution
+# ========================
+
 build/
 dist/
 *.egg-info/
 .eggs/
 pip-wheel-metadata/
 
-# virtual environments
+# setuptools editable installs
+*.egg
+
+# ========================
+# Virtual environments
+# ========================
+
 .venv/
 venv/
 env/
 ENV/
 
+# pyenv
+.python-version
+
 # ========================
-# Testing
+# Testing / coverage
 # ========================
 
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
+.cache/
+
+# hypothesis
+.hypothesis/
 
 # ========================
 # Jupyter
@@ -33,12 +55,19 @@ htmlcov/
 
 .ipynb_checkpoints/
 
+# nbconvert temp outputs
+*.nbconvert.ipynb
+
 # ========================
 # Experiment outputs
 # ========================
 
 results/
 images/
+
+# notebook-local outputs (older runs)
+notebooks/results/
+notebooks/images/
 
 # allow directory structure without committing outputs
 !results/.gitkeep
@@ -60,6 +89,9 @@ images/
 # macOS
 .DS_Store
 
+# Windows
+Thumbs.db
+
 # ========================
 # Temporary files
 # ========================
@@ -68,16 +100,31 @@ images/
 *.temp
 *.bak
 *.swp
+*~
 
 # ========================
-# Ruff / Black cache
+# Formatter / linter caches
 # ========================
 
 .ruff_cache/
 
 # ========================
-# Jupytext paired notebook artifacts
-# (keeps .py percent files tracked)
+# Build backends
 # ========================
 
-*.nbconvert.ipynb
+# PEP 517
+*.whl
+
+# ========================
+# Misc
+# ========================
+
+# environment files
+.env
+.env.*
+
+# local config
+*.local
+
+# profiling
+*.prof
