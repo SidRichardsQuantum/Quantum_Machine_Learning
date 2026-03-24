@@ -12,7 +12,7 @@ Install the package in editable mode:
 
 ```bash
 pip install -e .
-````
+```
 
 Install development tools:
 
@@ -98,9 +98,9 @@ Typical fields:
 
 If `plot=True`, the following figures are displayed:
 
-* dataset
-* training loss
-* decision boundary
+- dataset
+- training loss
+- decision boundary
 
 If `save=True`, figures are saved to:
 
@@ -118,18 +118,14 @@ results/vqc/
 
 # Quantum kernel classifier
 
-Train a support vector machine using a quantum kernel:
+Run a minimal quantum kernel classifier:
 
 ```python
 from qml.kernel_methods import run_quantum_kernel_classifier
 
 result = run_quantum_kernel_classifier(
     n_samples=200,
-    noise=0.1,
-    test_size=0.25,
-    seed=123,
-    plot=False,
-    save=False,
+    plot=True,
 )
 ```
 
@@ -137,35 +133,110 @@ result = run_quantum_kernel_classifier(
 
 ## Parameters
 
-| parameter   | description                   | default |
-| ----------- | ----------------------------- | ------- |
-| `n_samples` | dataset size                  | 200     |
-| `noise`     | dataset noise level           | 0.1     |
-| `test_size` | test fraction                 | 0.25    |
-| `seed`      | random seed                   | 123     |
-| `plot`      | show plots (future extension) | False   |
-| `save`      | save results JSON             | False   |
+| parameter     | description                      | default            |
+| ------------- | -------------------------------- | ------------------ |
+| `n_samples`   | dataset size                     | 200                |
+| `noise`       | dataset noise level              | 0.1                |
+| `test_size`   | test fraction                    | 0.25               |
+| `seed`        | random seed                      | 123                |
+| `plot`        | show dataset and kernel plots    | False              |
+| `save`        | save JSON and figures            | False              |
+| `results_dir` | directory for saved JSON outputs | `"results/kernel"` |
+| `images_dir`  | directory for saved plots        | `"images/kernel"`  |
 
 ---
 
 ## Returned dictionary
 
 ```python
+result.keys()
+```
+
+Typical fields:
+
+```python
 {
     "model",
     "dataset",
     "seed",
+    "n_samples",
+    "noise",
+    "test_size",
     "n_qubits",
+
     "train_accuracy",
     "test_accuracy",
+
     "kernel_matrix_train",
     "kernel_matrix_test",
+
+    "x_train",
+    "x_test",
+
     "y_train",
     "y_test",
+
     "y_train_pred",
     "y_test_pred",
 }
 ```
+
+---
+
+## Generated plots
+
+If `plot=True`, the following figures are displayed:
+
+- training dataset
+- training kernel matrix
+- test-vs-train kernel matrix
+
+If `save=True`, figures are written to:
+
+```
+images/kernel/
+```
+
+and results are written to:
+
+```
+results/kernel/
+```
+
+Example filenames:
+
+```
+images/kernel/
+    moons_samples200_noise0p1_seed123_dataset.png
+    moons_samples200_noise0p1_seed123_kernel_train.png
+    moons_samples200_noise0p1_seed123_kernel_test.png
+```
+
+```
+results/kernel/
+    moons_samples200_noise0p1_seed123.json
+```
+
+---
+
+## Notes
+
+The workflow separates:
+
+- quantum feature map construction
+- kernel matrix evaluation
+- classical SVM optimisation
+
+The quantum circuit is used only to compute kernel values:
+
+$$
+K(x_i, x_j)
+=
+
+|\langle \phi(x_i) | \phi(x_j) \rangle|^2
+$$
+
+Classification is performed using a classical support vector machine with a precomputed kernel.
 
 ---
 
@@ -196,10 +267,10 @@ rather than defining circuits inline.
 
 This ensures:
 
-* consistent behaviour
-* reproducible outputs
-* shared infrastructure
-* minimal duplication
+- consistent behaviour
+- reproducible outputs
+- shared infrastructure
+- minimal duplication
 
 ---
 
@@ -236,9 +307,9 @@ ruff check .
 
 Future versions may add:
 
-* regression models
-* additional embeddings
-* additional ansätze
-* kernel visualisations
-* noise-aware training
-* CLI entrypoints
+- regression models
+- additional embeddings
+- additional ansätze
+- kernel visualisations
+- noise-aware training
+- CLI entrypoints

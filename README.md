@@ -31,11 +31,11 @@ pip install -e ".[dev]"
 
 Requirements:
 
-* Python ≥ 3.10
-* PennyLane
-* NumPy
-* scikit-learn
-* matplotlib
+- Python ≥ 3.10
+- PennyLane
+- NumPy
+- scikit-learn
+- matplotlib
 
 ---
 
@@ -66,10 +66,30 @@ result = run_quantum_kernel_classifier(
 
 Both functions return dictionaries containing:
 
-* training metrics
-* predictions
-* model parameters
-* experiment configuration
+- training metrics
+- predictions
+- model parameters
+- experiment configuration
+
+---
+
+# Documentation
+
+Core documentation:
+
+- **[THEORY.md](THEORY.md)** — mathematical background
+- **[USAGE.md](USAGE.md)** — package API usage
+
+Algorithm notes:
+
+- **[Variational quantum classifier](docs/qml/variational_classifier.md)**
+- **[Quantum kernel methods](docs/qml/quantum_kernels.md)**
+
+Example notebooks:
+
+- `notebooks/quantum_variational_classifier.ipynb`
+- `notebooks/quantum_kernel_classifier.ipynb`
+- `notebooks/classical_vs_quantum_classifier.ipynb`
 
 ---
 
@@ -111,6 +131,7 @@ qml/
 notebooks/
     quantum_variational_classifier.ipynb
     quantum_kernel_classifier.ipynb
+    classical_vs_quantum_classifier.ipynb
 
 
 tests/
@@ -149,9 +170,9 @@ Notebooks call public APIs rather than implementing circuits inline.
 
 Experiments return structured dictionaries and can optionally:
 
-* save JSON outputs
-* save figures
-* use fixed seeds
+- save JSON outputs
+- save figures
+- use fixed seeds
 
 ---
 
@@ -159,10 +180,10 @@ Experiments return structured dictionaries and can optionally:
 
 Shared infrastructure is intentionally lightweight:
 
-* small set of embeddings
-* small set of ansätze
-* simple training loops
-* consistent plotting
+- small set of embeddings
+- small set of ansätze
+- simple training loops
+- consistent plotting
 
 ---
 
@@ -170,14 +191,15 @@ Shared infrastructure is intentionally lightweight:
 
 Variational classifier:
 
-* dataset visualization
-* loss curve
-* decision boundary
+- dataset visualization
+- loss curve
+- decision boundary
 
 Quantum kernel classifier:
 
-* kernel matrix
-* classification accuracy
+- dataset visualization
+- kernel matrix heatmaps
+- classification accuracy
 
 Outputs can be saved to:
 
@@ -194,9 +216,9 @@ images/
 
 Binary classification using:
 
-* angle embedding
-* hardware-efficient ansatz
-* Adam optimisation
+- angle embedding
+- hardware-efficient ansatz
+- Adam optimisation
 
 ---
 
@@ -238,12 +260,12 @@ ruff check .
 
 Planned extensions:
 
-* variational quantum regression
-* additional feature maps
-* data re-uploading architectures
-* noise studies
-* kernel visualisation utilities
-* additional datasets
+- variational quantum regression
+- additional feature maps
+- data re-uploading architectures
+- noise studies
+- kernel visualisation utilities
+- additional datasets
 
 ---
 
