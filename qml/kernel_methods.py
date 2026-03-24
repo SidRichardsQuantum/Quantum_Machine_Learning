@@ -17,11 +17,19 @@ from sklearn.svm import SVC
 from qml.data import make_moons_dataset
 from qml.io_utils import save_json
 from qml.metrics import accuracy_score
+from qml.visualize import plot_dataset_2d, plot_kernel_matrix
 
 
 def _angle_feature_map(x, wires) -> None:
     """
-    Simple 2-feature quantum feature map.
+    Simple angle-based quantum feature map.
+
+    Parameters
+    ----------
+    x
+        Input feature vector.
+    wires
+        Circuit wires.
     """
     x = np.asarray(x, dtype=float).ravel()
     if x.shape[0] != len(wires):
@@ -37,7 +45,21 @@ def _angle_feature_map(x, wires) -> None:
 
 def _compute_kernel_matrix(x_a, x_b, kernel_fn) -> np.ndarray:
     """
-    Compute the kernel matrix K_ij = k(x_a[i], x_b[j]).
+    Compute the kernel matrix $K_{ij} = k(x_a^{(i)}, x_b^{(j)})$.
+
+    Parameters
+    ----------
+    x_a
+        First input array of shape ``(n_a, n_features)``.
+    x_b
+        Second input array of shape ``(n_b, n_features)``.
+    kernel_fn
+        Callable returning a scalar kernel value.
+
+    Returns
+    -------
+    np.ndarray
+        Kernel matrix of shape ``(n_a, n_b)``.
     """
     x_a = np.asarray(x_a, dtype=float)
     x_b = np.asarray(x_b, dtype=float)
@@ -61,6 +83,30 @@ def run_quantum_kernel_classifier(
 ) -> dict[str, Any]:
     """
     Run a minimal quantum kernel classifier on the two-moons dataset.
+
+    Parameters
+    ----------
+    n_samples
+        Number of dataset samples.
+    noise
+        Noise level used by ``make_moons``.
+    test_size
+        Fraction reserved for test data.
+    seed
+        Random seed.
+    plot
+        Whether to display plots.
+    save
+        Whether to save results JSON and figures.
+    results_dir
+        Directory for JSON results.
+    images_dir
+        Directory for plot outputs.
+
+    Returns
+    -------
+    dict[str, Any]
+        Run summary including kernel matrices, predictions, and accuracies.
     """
     dataset = make_moons_dataset(
         n_samples=n_samples,
@@ -109,6 +155,8 @@ def run_quantum_kernel_classifier(
         "test_accuracy": accuracy_score(y_test, y_test_pred),
         "kernel_matrix_train": kernel_matrix_train,
         "kernel_matrix_test": kernel_matrix_test,
+        "x_train": np.asarray(x_train, dtype=float),
+        "x_test": np.asarray(x_test, dtype=float),
         "y_train": np.asarray(y_train, dtype=int),
         "y_test": np.asarray(y_test, dtype=int),
         "y_train_pred": np.asarray(y_train_pred, dtype=int),
@@ -119,6 +167,29 @@ def run_quantum_kernel_classifier(
         f"moons_samples{n_samples}"
         f"_noise{str(noise).replace('.', 'p')}_seed{seed}"
     )
+
+    if plot or save:
+        plot_dataset_2d(
+            x_train,
+            y_train,
+            title="Quantum kernel training dataset",
+            show=plot,
+            save_path=Path(images_dir) / f"{stem}_dataset.png" if save else None,
+        )
+
+        plot_kernel_matrix(
+            kernel_matrix_train,
+            title="Quantum kernel matrix (train)",
+            show=plot,
+            save_path=Path(images_dir) / f"{stem}_kernel_train.png" if save else None,
+        )
+
+        plot_kernel_matrix(
+            kernel_matrix_test,
+            title="Quantum kernel matrix (test vs train)",
+            show=plot,
+            save_path=Path(images_dir) / f"{stem}_kernel_test.png" if save else None,
+        )
 
     if save:
         save_json(result, Path(results_dir) / f"{stem}.json")
