@@ -1,5 +1,9 @@
 # Quantum Machine Learning
 
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Tests](https://github.com/SidRichardsQuantum/Quantum_Machine_Learning/actions/workflows/tests.yml/badge.svg)
+
 Modular **PennyLane-based quantum machine learning suite** providing reusable implementations of:
 
 - Variational quantum classifiers (VQC)
@@ -70,6 +74,13 @@ Both functions return dictionaries containing:
 - predictions
 - model parameters
 - experiment configuration
+
+Run from command line:
+
+```bash
+python -m qml vqc --steps 50 --plot
+python -m qml kernel --plot
+```
 
 ---
 
