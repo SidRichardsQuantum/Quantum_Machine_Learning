@@ -13,32 +13,31 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def save_current_figure(path: str | Path, dpi: int = 200) -> None:
-    """Save the current Matplotlib figure."""
+def _prepare_path(path: str | Path | None):
+    if path is None:
+        return None
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(path, dpi=dpi, bbox_inches="tight")
+    return path
 
 
 def plot_loss_curve(
-    loss_history: list[float] | np.ndarray,
-    title: str = "Training loss",
+    loss_history,
+    *,
     show: bool = True,
     save_path: str | Path | None = None,
-) -> None:
-    """
-    Plot training loss versus optimization step.
-    """
+):
     loss_history = np.asarray(loss_history, dtype=float)
 
     plt.figure()
-    plt.plot(np.arange(1, len(loss_history) + 1), loss_history)
+    plt.plot(loss_history)
     plt.xlabel("Step")
     plt.ylabel("Loss")
-    plt.title(title)
+    plt.title("Training loss")
 
-    if save_path is not None:
-        save_current_figure(save_path)
+    save_path = _prepare_path(save_path)
+    if save_path:
+        plt.savefig(save_path, dpi=200, bbox_inches="tight")
 
     if show:
         plt.show()
@@ -46,31 +45,94 @@ def plot_loss_curve(
         plt.close()
 
 
-def plot_2d_classification_data(
-    x: np.ndarray,
-    y: np.ndarray,
-    title: str = "Dataset",
+def plot_dataset_2d(
+    x,
+    y,
+    *,
     show: bool = True,
     save_path: str | Path | None = None,
-) -> None:
-    """
-    Plot a 2D binary classification dataset.
-    """
+):
     x = np.asarray(x, dtype=float)
     y = np.asarray(y)
 
     plt.figure()
+
     for cls in np.unique(y):
         mask = y == cls
-        plt.scatter(x[mask, 0], x[mask, 1], label=f"class {cls}")
+        plt.scatter(
+            x[mask, 0],
+            x[mask, 1],
+            label=f"class {cls}",
+        )
 
     plt.xlabel("x1")
     plt.ylabel("x2")
-    plt.title(title)
+    plt.title("Dataset")
     plt.legend()
 
-    if save_path is not None:
-        save_current_figure(save_path)
+    save_path = _prepare_path(save_path)
+    if save_path:
+        plt.savefig(save_path, dpi=200, bbox_inches="tight")
+
+    if show:
+        plt.show()
+    else:
+        plt.close()
+
+
+def plot_decision_boundary(
+    predict_proba_fn,
+    x,
+    y,
+    *,
+    grid_points: int = 80,
+    show: bool = True,
+    save_path: str | Path | None = None,
+):
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y)
+
+    x_min, x_max = x[:, 0].min(), x[:, 0].max()
+    y_min, y_max = x[:, 1].min(), x[:, 1].max()
+
+    pad = 0.5
+
+    xx, yy = np.meshgrid(
+        np.linspace(x_min - pad, x_max + pad, grid_points),
+        np.linspace(y_min - pad, y_max + pad, grid_points),
+    )
+
+    grid = np.c_[xx.ravel(), yy.ravel()]
+
+    probs = predict_proba_fn(grid)
+    probs = np.asarray(probs).reshape(xx.shape)
+
+    plt.figure()
+
+    plt.contourf(
+        xx,
+        yy,
+        probs,
+        levels=20,
+        alpha=0.5,
+    )
+
+    for cls in np.unique(y):
+        mask = y == cls
+        plt.scatter(
+            x[mask, 0],
+            x[mask, 1],
+            label=f"class {cls}",
+        )
+
+    plt.xlabel("x1")
+    plt.ylabel("x2")
+    plt.title("Decision boundary")
+    plt.legend()
+
+    save_path = _prepare_path(save_path)
+    if save_path:
+        plt.savefig(save_path, dpi=200, bbox_inches="tight")
 
     if show:
         plt.show()

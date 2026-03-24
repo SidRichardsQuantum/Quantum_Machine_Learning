@@ -1,0 +1,83 @@
+# ========================
+# Python
+# ========================
+
+__pycache__/
+*.py[cod]
+*.so
+
+# distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# ========================
+# Testing
+# ========================
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ========================
+# Jupyter
+# ========================
+
+.ipynb_checkpoints/
+
+# ========================
+# Experiment outputs
+# ========================
+
+results/
+images/
+
+# allow directory structure without committing outputs
+!results/.gitkeep
+!images/.gitkeep
+
+# ========================
+# Logs
+# ========================
+
+*.log
+
+# ========================
+# Editors / IDEs
+# ========================
+
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# ========================
+# Temporary files
+# ========================
+
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# ========================
+# Ruff / Black cache
+# ========================
+
+.ruff_cache/
+
+# ========================
+# Jupytext paired notebook artifacts
+# (keeps .py percent files tracked)
+# ========================
+
+*.nbconvert.ipynb

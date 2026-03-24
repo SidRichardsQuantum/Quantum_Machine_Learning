@@ -19,7 +19,11 @@ from qml.data import make_moons_dataset
 from qml.embeddings import apply_angle_embedding
 from qml.io_utils import save_json
 from qml.metrics import accuracy_score
-from qml.visualize import plot_loss_curve
+from qml.visualize import (
+    plot_loss_curve,
+    plot_dataset_2d,
+    plot_decision_boundary,
+)
 
 
 def _binary_cross_entropy(y_true, y_prob) -> float:
@@ -164,13 +168,33 @@ def run_vqc(
         f"_noise{str(noise).replace('.', 'p')}_seed{seed}"
     )
 
+    def predict_proba_grid(x_grid):
+        return np.asarray(
+            [predict_proba_single(xi, params) for xi in x_grid],
+            dtype=float,
+        )
+
     if plot or save:
-        image_path = Path(images_dir) / f"{stem}_loss.png" if save else None
-        plot_loss_curve(
-            result["loss_history"],
-            title="VQC training loss",
+
+        plot_dataset_2d(
+            x_train,
+            y_train,
             show=plot,
-            save_path=image_path,
+            save_path=Path(images_dir) / f"{stem}_dataset.png" if save else None,
+        )
+
+        plot_loss_curve(
+            loss_history,
+            show=plot,
+            save_path=Path(images_dir) / f"{stem}_loss.png" if save else None,
+        )
+
+        plot_decision_boundary(
+            predict_proba_grid,
+            x_train,
+            y_train,
+            show=plot,
+            save_path=Path(images_dir) / f"{stem}_decision_boundary.png" if save else None,
         )
 
     if save:
