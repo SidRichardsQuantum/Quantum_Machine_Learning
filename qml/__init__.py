@@ -28,6 +28,7 @@ __all__ = [
     "metrics",
     "classifiers",
     "kernel_methods",
+    "regression",
     "visualize",
     "io_utils",
 ]

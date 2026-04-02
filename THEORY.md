@@ -169,6 +169,79 @@ $$
 
 ---
 
+# Variational quantum regression
+
+A variational quantum regressor uses the same basic hybrid structure as a variational classifier, but predicts a continuous target rather than a class probability.
+
+For an input $x$, define:
+
+$$
+\hat{y}(x,\theta)
+=
+\langle \psi(x,\theta) | M | \psi(x,\theta) \rangle
+$$
+
+where:
+
+- $\hat{y}(x,\theta) \in \mathbb{R}$ is the predicted target
+- $\theta$ are trainable circuit parameters
+- $M$ is a measured observable, such as Pauli $Z$
+
+In the current implementation, the observable is:
+
+$$
+M = Z_1
+$$
+
+so the prediction is:
+
+$$
+\hat{y}(x,\theta)
+=
+\langle Z_1 \rangle
+$$
+
+Since Pauli-$Z$ expectation values lie in $[-1,1]$, the current workflow standardises the target values before training.
+
+## Regression loss
+
+Training uses mean squared error:
+
+$$
+\mathcal{L}(\theta)
+=
+\frac{1}{N}
+\sum_{i=1}^{N}
+(\hat{y}_i - y_i)^2
+$$
+
+where:
+
+- $N$ is the number of training samples
+- $y_i$ is the true target for sample $i$
+- $\hat{y}_i$ is the predicted target for sample $i$
+
+Evaluation also reports mean absolute error:
+
+$$
+\mathrm{MAE}
+=
+\frac{1}{N}
+\sum_{i=1}^{N}
+|\hat{y}_i - y_i|
+$$
+
+So the variational regressor shares the same quantum building blocks as the classifier:
+
+- data encoding
+- parameterised ansatz
+- expectation-value measurement
+- classical optimisation
+
+but differs in how the measured scalar is interpreted and how the loss is defined.
+
+---
+
 # Loss functions
 
 Binary classification uses cross-entropy:

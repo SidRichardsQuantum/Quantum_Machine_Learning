@@ -8,6 +8,7 @@ import argparse
 
 from qml.classifiers import run_vqc
 from qml.kernel_methods import run_quantum_kernel_classifier
+from qml.regression import run_vqr
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -50,6 +51,26 @@ def _build_parser() -> argparse.ArgumentParser:
     kernel_parser.add_argument("--plot", action="store_true", help="Display plots.")
     kernel_parser.add_argument("--save", action="store_true", help="Save results and figures.")
 
+    regression_parser = subparsers.add_parser(
+        "regression",
+        help="Run a variational quantum regressor.",
+    )
+    regression_parser.add_argument("--samples", type=int, default=200, help="Number of samples.")
+    regression_parser.add_argument("--noise", type=float, default=0.1, help="Dataset noise level.")
+    regression_parser.add_argument(
+        "--test-size", type=float, default=0.25, help="Fraction reserved for test data."
+    )
+    regression_parser.add_argument("--seed", type=int, default=123, help="Random seed.")
+    regression_parser.add_argument("--layers", type=int, default=2, help="Number of ansatz layers.")
+    regression_parser.add_argument(
+        "--steps", type=int, default=50, help="Number of optimizer steps."
+    )
+    regression_parser.add_argument(
+        "--step-size", type=float, default=0.1, help="Optimizer step size."
+    )
+    regression_parser.add_argument("--plot", action="store_true", help="Display plots.")
+    regression_parser.add_argument("--save", action="store_true", help="Save results and figures.")
+
     return parser
 
 
@@ -73,6 +94,32 @@ def _run_vqc_command(args: argparse.Namespace) -> int:
     print(f"Dataset: {result['dataset']}")
     print(f"Train accuracy: {result['train_accuracy']:.6f}")
     print(f"Test accuracy: {result['test_accuracy']:.6f}")
+    print(f"Final loss: {result['final_loss']:.6f}")
+    return 0
+
+
+def _run_regression_command(args: argparse.Namespace) -> int:
+    """
+    Run the variational regression workflow from parsed CLI arguments.
+    """
+    result = run_vqr(
+        n_samples=args.samples,
+        noise=args.noise,
+        test_size=args.test_size,
+        seed=args.seed,
+        n_layers=args.layers,
+        steps=args.steps,
+        step_size=args.step_size,
+        plot=args.plot,
+        save=args.save,
+    )
+
+    print(f"Model: {result['model']}")
+    print(f"Dataset: {result['dataset']}")
+    print(f"Train MSE: {result['train_mse']:.6f}")
+    print(f"Test MSE: {result['test_mse']:.6f}")
+    print(f"Train MAE: {result['train_mae']:.6f}")
+    print(f"Test MAE: {result['test_mae']:.6f}")
     print(f"Final loss: {result['final_loss']:.6f}")
     return 0
 
@@ -109,6 +156,9 @@ def main() -> int:
 
     if args.command == "kernel":
         return _run_kernel_command(args)
+
+    if args.command == "regression":
+        return _run_regression_command(args)
 
     parser.print_help()
     return 1

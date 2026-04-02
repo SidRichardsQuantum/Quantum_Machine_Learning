@@ -117,18 +117,35 @@ def plot_dataset_2d(
 
     plt.figure()
 
-    for cls in np.unique(y):
-        mask = y == cls
-        plt.scatter(
-            x[mask, 0],
-            x[mask, 1],
-            label=f"class {cls}",
+    unique_values = np.unique(y)
+
+    # classification-style labels (small number of discrete classes)
+    if unique_values.size <= 10 and np.allclose(unique_values, unique_values.astype(int)):
+
+        for cls in unique_values:
+            mask = y == cls
+            plt.scatter(
+                x[mask, 0],
+                x[mask, 1],
+                label=f"class {cls}",
+            )
+
+        plt.legend()
+
+    # regression-style continuous targets
+    else:
+
+        scatter = plt.scatter(
+            x[:, 0],
+            x[:, 1],
+            c=y,
         )
+
+        plt.colorbar(scatter, label="target")
 
     plt.xlabel("x1")
     plt.ylabel("x2")
     plt.title(title)
-    plt.legend()
 
     _finalize_figure(show=show, save_path=save_path)
 
@@ -235,5 +252,48 @@ def plot_kernel_matrix(
     plt.ylabel("Row index")
     plt.title(title)
     plt.colorbar(label="Kernel value")
+
+    _finalize_figure(show=show, save_path=save_path)
+
+
+def plot_regression_predictions(
+    y_true,
+    y_pred,
+    *,
+    title: str = "Regression predictions",
+    show: bool = True,
+    save_path: str | Path | None = None,
+) -> None:
+    """
+    Plot predicted targets against true targets.
+
+    Parameters
+    ----------
+    y_true
+        Ground-truth targets.
+    y_pred
+        Predicted targets.
+    title
+        Plot title.
+    show
+        Whether to display the figure.
+    save_path
+        Optional figure output path.
+    """
+    y_true = np.asarray(y_true, dtype=float)
+    y_pred = np.asarray(y_pred, dtype=float)
+
+    if y_true.shape != y_pred.shape:
+        raise ValueError("y_true and y_pred must have the same shape.")
+
+    lower = min(float(y_true.min()), float(y_pred.min()))
+    upper = max(float(y_true.max()), float(y_pred.max()))
+
+    plt.figure()
+    plt.scatter(y_true, y_pred)
+    plt.plot([lower, upper], [lower, upper])
+    plt.xlabel("True target")
+    plt.ylabel("Predicted target")
+    plt.title(title)
 
     _finalize_figure(show=show, save_path=save_path)
