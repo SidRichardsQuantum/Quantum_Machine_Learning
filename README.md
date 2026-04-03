@@ -7,15 +7,16 @@
 Modular **PennyLane-based quantum machine learning suite** providing reusable implementations of:
 
 - Variational quantum classifiers (VQC)
+- Variational quantum regression (VQR)
 - Quantum kernel methods
-- Hybrid quantum–classical training workflows
+- Hybrid quantum–classical optimisation workflows
 
 The repository follows a **package-first design**:
 
-- core algorithms live in `qml/`
-- notebooks act as **pure package clients**
+- algorithms implemented in `qml/`
+- notebooks act as **thin clients**
 - experiments produce **reproducible outputs**
-- plots and results are generated consistently
+- plots and results follow a **consistent structure**
 
 ---
 
@@ -36,16 +37,16 @@ pip install -e ".[dev]"
 Requirements:
 
 - Python ≥ 3.10
-- PennyLane
-- NumPy
-- scikit-learn
-- matplotlib
+- PennyLane ≥ 0.34
+- NumPy ≥ 1.24
+- scikit-learn ≥ 1.3
+- matplotlib ≥ 3.7
 
 ---
 
 # Quick start
 
-Run a minimal variational quantum classifier:
+### Variational quantum classifier
 
 ```python
 from qml.classifiers import run_vqc
@@ -58,29 +59,61 @@ result = run_vqc(
 )
 ```
 
-Run a minimal quantum kernel classifier:
+---
+
+### Variational quantum regression
+
+```python
+from qml.regression import run_vqr
+
+result = run_vqr(
+    n_samples=200,
+    n_layers=2,
+    steps=50,
+    plot=True,
+)
+```
+
+---
+
+### Quantum kernel classifier
 
 ```python
 from qml.kernel_methods import run_quantum_kernel_classifier
 
 result = run_quantum_kernel_classifier(
     n_samples=200,
+    plot=True,
 )
 ```
 
-Both functions return dictionaries containing:
+---
+
+All functions return structured dictionaries containing:
 
 - training metrics
 - predictions
 - model parameters
 - experiment configuration
 
-Run from command line:
+---
+
+# Command line interface
+
+Run workflows directly:
 
 ```bash
 python -m qml vqc --steps 50 --plot
+python -m qml regression --steps 50 --plot
 python -m qml kernel --plot
 ```
+
+CLI outputs include metrics such as:
+
+- training accuracy / MSE
+- test accuracy / MSE
+- final loss
+- saved plots (optional)
 
 ---
 
@@ -89,16 +122,18 @@ python -m qml kernel --plot
 Core documentation:
 
 - **[THEORY.md](THEORY.md)** — mathematical background
-- **[USAGE.md](USAGE.md)** — package API usage
+- **[USAGE.md](USAGE.md)** — API examples and configuration
 
 Algorithm notes:
 
-- **[Variational quantum classifier](docs/qml/variational_classifier.md)**
+- **[Variational quantum classifier](docs/qml/variational_quantum_classifier.md)**
+- **[Variational quantum regression](docs/qml/variational_regression.md)**
 - **[Quantum kernel methods](docs/qml/quantum_kernels.md)**
 
 Example notebooks:
 
 - `notebooks/quantum_variational_classifier.ipynb`
+- `notebooks/quantum_regressor.ipynb`
 - `notebooks/quantum_kernel_classifier.ipynb`
 - `notebooks/classical_vs_quantum_classifier.ipynb`
 
@@ -127,7 +162,10 @@ qml/
         evaluation metrics
 
     classifiers.py
-        variational quantum models
+        variational quantum classification workflows
+
+    regression.py
+        variational quantum regression workflows
 
     kernel_methods.py
         quantum kernel workflows
@@ -141,12 +179,13 @@ qml/
 
 notebooks/
     quantum_variational_classifier.ipynb
+    quantum_regressor.ipynb
     quantum_kernel_classifier.ipynb
     classical_vs_quantum_classifier.ipynb
 
 
 tests/
-    smoke tests ensuring stable imports and execution
+    smoke tests for CLI and core workflows
 
 
 docs/
@@ -167,23 +206,24 @@ images/
 
 ### Package-first
 
-Algorithms are implemented in the package:
+Algorithms live in:
 
 ```
 qml.*
 ```
 
-Notebooks call public APIs rather than implementing circuits inline.
+Notebooks call stable public APIs rather than implementing circuits inline.
 
 ---
 
 ### Reproducibility
 
-Experiments return structured dictionaries and can optionally:
+Experiments return structured dictionaries and optionally:
 
 - save JSON outputs
 - save figures
-- use fixed seeds
+- use fixed random seeds
+- produce consistent file naming
 
 ---
 
@@ -192,25 +232,37 @@ Experiments return structured dictionaries and can optionally:
 Shared infrastructure is intentionally lightweight:
 
 - small set of embeddings
-- small set of ansätze
+- hardware-efficient ansätze
 - simple training loops
-- consistent plotting
+- consistent plotting utilities
 
 ---
 
 # Example outputs
 
-Variational classifier:
+### Variational classifier
 
-- dataset visualization
-- loss curve
+- dataset visualisation
+- training loss curve
 - decision boundary
 
-Quantum kernel classifier:
+---
 
-- dataset visualization
-- kernel matrix heatmaps
+### Variational regression
+
+- dataset visualisation
+- prediction curve
+- training loss curve
+
+---
+
+### Quantum kernel classifier
+
+- dataset visualisation
+- kernel matrix heatmap
 - classification accuracy
+
+---
 
 Outputs can be saved to:
 
@@ -223,24 +275,38 @@ images/
 
 # Current algorithms
 
-### Variational Quantum Classifier
+## Variational Quantum Classifier
 
 Binary classification using:
 
 - angle embedding
 - hardware-efficient ansatz
 - Adam optimisation
+- cross-entropy loss
 
 ---
 
-### Quantum Kernel Classifier
+## Variational Quantum Regression
+
+Function approximation using:
+
+- angle embedding
+- hardware-efficient ansatz
+- mean squared error loss
+
+---
+
+## Quantum Kernel Classifier
 
 Support vector machine using a quantum feature map:
 
-[
-K(x_i, x_j) =
-|\langle \phi(x_i) | \phi(x_j) \rangle|^2
-]
+$$
+K(x_i, x_j)
+=
+\left|
+\langle \phi(x_i) \mid \phi(x_j) \rangle
+\right|^2
+$$
 
 ---
 
@@ -252,7 +318,7 @@ Run tests:
 pytest
 ```
 
-Run module directly:
+Run module:
 
 ```bash
 python -m qml
@@ -269,17 +335,30 @@ ruff check .
 
 # Roadmap
 
-Planned extensions:
+Potential extensions:
 
-- variational quantum regression
-- additional feature maps
-- data re-uploading architectures
+- additional embeddings
+- data re-uploading circuits
+- kernel alignment methods
 - noise studies
-- kernel visualisation utilities
-- additional datasets
+- trainable feature maps
+- additional benchmark datasets
+- comparison with classical baselines
 
 ---
 
-# License
+## Author
 
-MIT License
+**Sid Richards**
+
+LinkedIn:
+[https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
+
+GitHub:
+[https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE)

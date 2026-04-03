@@ -303,13 +303,18 @@ ruff check .
 
 ---
 
-# Next extensions
+## Author
 
-Future versions may add:
+**Sid Richards**
 
-- regression models
-- additional embeddings
-- additional ansätze
-- kernel visualisations
-- noise-aware training
-- CLI entrypoints
+LinkedIn:
+[https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
+
+GitHub:
+[https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE)

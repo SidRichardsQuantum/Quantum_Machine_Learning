@@ -398,3 +398,21 @@ Classification with quantum neural networks.
 
 Mitarai et al. (2018)  
 Quantum circuit learning.
+
+---
+
+## Author
+
+**Sid Richards**
+
+LinkedIn:
+[https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
+
+GitHub:
+[https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE)

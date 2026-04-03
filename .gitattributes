@@ -1,0 +1,57 @@
+# ========================
+# Text files
+# ========================
+
+* text=auto eol=lf
+
+# Python / config / docs
+*.py text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.gitignore text eol=lf
+*.gitattributes text eol=lf
+
+# ========================
+# Jupyter notebooks
+# ========================
+
+*.ipynb binary
+
+# ========================
+# Images
+# ========================
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.svg text eol=lf
+
+# ========================
+# Data / model artefacts
+# ========================
+
+*.npy binary
+*.npz binary
+*.h5 binary
+*.hdf5 binary
+*.pkl binary
+*.joblib binary
+
+# ========================
+# Archives
+# ========================
+
+*.zip binary
+*.tar binary
+*.gz binary
+
+# ========================
+# PDFs
+# ========================
+
+*.pdf binary
