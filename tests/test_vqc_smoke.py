@@ -25,7 +25,10 @@ def test_run_vqc_smoke():
     assert 0.0 <= result["test_accuracy"] <= 1.0
 
     assert isinstance(result["params"], np.ndarray)
-    assert result["params"].ndim == 3
+    assert result["params"].ndim == 1
+
+    assert isinstance(result["ansatz_params"], np.ndarray)
+    assert result["ansatz_params"].ndim == 3
 
     assert result["y_test"].shape == result["y_test_pred"].shape
     assert result["test_probabilities"].shape == result["y_test"].shape
