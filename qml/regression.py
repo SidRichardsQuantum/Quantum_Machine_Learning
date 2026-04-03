@@ -7,6 +7,7 @@ Regression workflows for supervised quantum machine learning.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -35,6 +36,8 @@ def run_vqr(
     step_size: float = 0.1,
     plot: bool = False,
     save: bool = False,
+    results_dir: str | Path | None = None,
+    images_dir: str | Path | None = None,
 ) -> dict[str, Any]:
     """
     Train a minimal variational quantum regressor on a synthetic regression dataset.
@@ -143,20 +146,34 @@ def run_vqr(
         f"_noise{str(noise).replace('.', 'p')}_seed{seed}"
     )
 
+    def _results_file(filename: str) -> Path:
+        if results_dir is not None:
+            path = Path(results_dir) / filename
+            path.parent.mkdir(parents=True, exist_ok=True)
+            return path
+        return results_path("regression", filename)
+
+    def _images_file(filename: str) -> Path:
+        if images_dir is not None:
+            path = Path(images_dir) / filename
+            path.parent.mkdir(parents=True, exist_ok=True)
+            return path
+        return images_path("regression", filename)
+
     if plot or save:
         plot_dataset_2d(
             x_train,
             y_train,
             title="Regression training dataset",
             show=plot,
-            save_path=images_path("regression", f"{stem}_dataset.png") if save else None,
+            save_path=_images_file(f"{stem}_dataset.png") if save else None,
         )
 
         plot_loss_curve(
             loss_history,
             title="VQR training loss",
             show=plot,
-            save_path=images_path("regression", f"{stem}_loss.png") if save else None,
+            save_path=_images_file(f"{stem}_loss.png") if save else None,
         )
 
         plot_regression_predictions(
@@ -164,10 +181,10 @@ def run_vqr(
             y_test_pred,
             title="VQR test predictions",
             show=plot,
-            save_path=images_path("regression", f"{stem}_predictions.png") if save else None,
+            save_path=_images_file(f"{stem}_predictions.png") if save else None,
         )
 
     if save:
-        save_json(result, results_path("regression", f"{stem}.json"))
+        save_json(result, _results_file(f"{stem}.json"))
 
     return result

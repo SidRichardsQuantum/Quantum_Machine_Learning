@@ -7,6 +7,7 @@ Quantum kernel workflows and utilities.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -77,6 +78,8 @@ def run_quantum_kernel_classifier(
     seed: int = 123,
     plot: bool = False,
     save: bool = False,
+    results_dir: str | Path | None = None,
+    images_dir: str | Path | None = None,
 ) -> dict[str, Any]:
     """
     Run a minimal quantum kernel classifier on the two-moons dataset.
@@ -158,30 +161,44 @@ def run_quantum_kernel_classifier(
 
     stem = f"moons_samples{n_samples}_noise{str(noise).replace('.', 'p')}_seed{seed}"
 
+    def _results_file(filename: str) -> Path:
+        if results_dir is not None:
+            path = Path(results_dir) / filename
+            path.parent.mkdir(parents=True, exist_ok=True)
+            return path
+        return results_path("kernel", filename)
+
+    def _images_file(filename: str) -> Path:
+        if images_dir is not None:
+            path = Path(images_dir) / filename
+            path.parent.mkdir(parents=True, exist_ok=True)
+            return path
+        return images_path("kernel", filename)
+
     if plot or save:
         plot_dataset_2d(
             x_train,
             y_train,
             title="Quantum kernel training dataset",
             show=plot,
-            save_path=images_path("kernel", f"{stem}_dataset.png") if save else None,
+            save_path=_images_file(f"{stem}_dataset.png") if save else None,
         )
 
         plot_kernel_matrix(
             kernel_matrix_train,
             title="Quantum kernel matrix (train)",
             show=plot,
-            save_path=images_path("kernel", f"{stem}_kernel_train.png") if save else None,
+            save_path=_images_file(f"{stem}_kernel_train.png") if save else None,
         )
 
         plot_kernel_matrix(
             kernel_matrix_test,
             title="Quantum kernel matrix (test vs train)",
             show=plot,
-            save_path=images_path("kernel", f"{stem}_kernel_test.png") if save else None,
+            save_path=_images_file(f"{stem}_kernel_test.png") if save else None,
         )
 
     if save:
-        save_json(result, results_path("kernel", f"{stem}.json"))
+        save_json(result, _results_file(f"{stem}.json"))
 
     return result

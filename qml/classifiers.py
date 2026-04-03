@@ -7,6 +7,7 @@ Classifier workflows for supervised quantum machine learning.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -25,15 +26,24 @@ from qml.visualize import (
 )
 
 
-def _binary_cross_entropy(y_true, y_prob) -> float:
+def _binary_cross_entropy_tensor(y_true, y_prob):
     """
     Compute binary cross-entropy for probabilities in [0, 1].
+
+    Returns a PennyLane/autograd-compatible scalar.
     """
     eps = 1e-8
     y_true = pnp.asarray(y_true, dtype=float)
     y_prob = pnp.clip(pnp.asarray(y_prob, dtype=float), eps, 1.0 - eps)
     loss = -(y_true * pnp.log(y_prob) + (1.0 - y_true) * pnp.log(1.0 - y_prob))
-    return float(pnp.mean(loss))
+    return pnp.mean(loss)
+
+
+def _binary_cross_entropy(y_true, y_prob) -> float:
+    """
+    Compute binary cross-entropy and return a Python float.
+    """
+    return float(_binary_cross_entropy_tensor(y_true, y_prob))
 
 
 def run_vqc(
@@ -46,6 +56,8 @@ def run_vqc(
     step_size: float = 0.1,
     plot: bool = False,
     save: bool = False,
+    results_dir: str | Path | None = None,
+    images_dir: str | Path | None = None,
 ) -> dict[str, Any]:
     """
     Train a minimal variational quantum classifier on a two-moons dataset.
@@ -106,7 +118,7 @@ def run_vqc(
 
     def cost(params):
         probs = predict_proba_batch(x_train, params)
-        return _binary_cross_entropy(y_train, probs)
+        return _binary_cross_entropy_tensor(y_train, probs)
 
     rng = np.random.default_rng(seed)
     init_params = 0.01 * rng.standard_normal(parameter_shape(n_layers=n_layers, n_qubits=n_qubits))
@@ -157,18 +169,32 @@ def run_vqc(
     def predict_proba_grid(x_grid):
         return np.asarray([predict_proba_single(xi, params) for xi in x_grid], dtype=float)
 
+    def _results_file(filename: str) -> Path:
+        if results_dir is not None:
+            path = Path(results_dir) / filename
+            path.parent.mkdir(parents=True, exist_ok=True)
+            return path
+        return results_path("vqc", filename)
+
+    def _images_file(filename: str) -> Path:
+        if images_dir is not None:
+            path = Path(images_dir) / filename
+            path.parent.mkdir(parents=True, exist_ok=True)
+            return path
+        return images_path("vqc", filename)
+
     if plot or save:
         plot_dataset_2d(
             x_train,
             y_train,
             show=plot,
-            save_path=images_path("vqc", f"{stem}_dataset.png") if save else None,
+            save_path=_images_file(f"{stem}_dataset.png") if save else None,
         )
 
         plot_loss_curve(
             loss_history,
             show=plot,
-            save_path=images_path("vqc", f"{stem}_loss.png") if save else None,
+            save_path=_images_file(f"{stem}_dataset.png") if save else None,
         )
 
         plot_decision_boundary(
@@ -176,10 +202,10 @@ def run_vqc(
             x_train,
             y_train,
             show=plot,
-            save_path=images_path("vqc", f"{stem}_decision_boundary.png") if save else None,
+            save_path=_images_file(f"{stem}_dataset.png") if save else None,
         )
 
     if save:
-        save_json(result, results_path("vqc", f"{stem}.json"))
+        save_json(result, _results_file(f"{stem}.json"))
 
     return result

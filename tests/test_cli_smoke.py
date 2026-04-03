@@ -60,3 +60,43 @@ def test_cli_regression_runs():
     assert "Train MSE" in result.stdout
     assert "Test MSE" in result.stdout
     assert "Final loss" in result.stdout
+
+
+def test_cli_logistic_runs():
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "qml",
+            "logistic",
+            "--samples",
+            "40",
+        ],
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+    assert "Train accuracy" in result.stdout
+    assert "Test accuracy" in result.stdout
+
+
+def test_cli_ridge_runs():
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "qml",
+            "ridge",
+            "--samples",
+            "40",
+        ],
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+    assert "Train MSE" in result.stdout
+    assert "Test MSE" in result.stdout
+    assert "Train MAE" in result.stdout
+    assert "Test MAE" in result.stdout
