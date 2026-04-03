@@ -7,7 +7,6 @@ Classifier workflows for supervised quantum machine learning.
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -17,12 +16,12 @@ from pennylane import numpy as pnp
 from qml.ansatz import apply_hardware_efficient_ansatz, parameter_shape
 from qml.data import make_moons_dataset
 from qml.embeddings import apply_angle_embedding
-from qml.io_utils import save_json
+from qml.io_utils import images_path, results_path, save_json
 from qml.metrics import accuracy_score
 from qml.visualize import (
-    plot_loss_curve,
     plot_dataset_2d,
     plot_decision_boundary,
+    plot_loss_curve,
 )
 
 
@@ -47,8 +46,6 @@ def run_vqc(
     step_size: float = 0.1,
     plot: bool = False,
     save: bool = False,
-    results_dir: str | Path = "results/vqc",
-    images_dir: str | Path = "images/vqc",
 ) -> dict[str, Any]:
     """
     Train a minimal variational quantum classifier on a two-moons dataset.
@@ -70,13 +67,9 @@ def run_vqc(
     step_size
         Optimizer step size.
     plot
-        Whether to plot the training loss curve.
+        Whether to show generated plots.
     save
-        Whether to save results JSON and loss plot.
-    results_dir
-        Directory for JSON results.
-    images_dir
-        Directory for plot outputs.
+        Whether to save JSON results and plot outputs.
 
     Returns
     -------
@@ -113,14 +106,11 @@ def run_vqc(
 
     def cost(params):
         probs = predict_proba_batch(x_train, params)
-        eps = 1e-8
-        probs = pnp.clip(probs, eps, 1.0 - eps)
-        targets = pnp.asarray(y_train, dtype=float)
-        return -pnp.mean(targets * pnp.log(probs) + (1.0 - targets) * pnp.log(1.0 - probs))
+        return _binary_cross_entropy(y_train, probs)
 
     rng = np.random.default_rng(seed)
-    params = 0.01 * rng.standard_normal(parameter_shape(n_layers=n_layers, n_qubits=n_qubits))
-    params = pnp.array(params, requires_grad=True)
+    init_params = 0.01 * rng.standard_normal(parameter_shape(n_layers=n_layers, n_qubits=n_qubits))
+    params = pnp.array(init_params, requires_grad=True)
 
     opt = qml.AdamOptimizer(stepsize=step_size)
     loss_history: list[float] = []
@@ -165,24 +155,20 @@ def run_vqc(
     )
 
     def predict_proba_grid(x_grid):
-        return np.asarray(
-            [predict_proba_single(xi, params) for xi in x_grid],
-            dtype=float,
-        )
+        return np.asarray([predict_proba_single(xi, params) for xi in x_grid], dtype=float)
 
     if plot or save:
-
         plot_dataset_2d(
             x_train,
             y_train,
             show=plot,
-            save_path=Path(images_dir) / f"{stem}_dataset.png" if save else None,
+            save_path=images_path("vqc", f"{stem}_dataset.png") if save else None,
         )
 
         plot_loss_curve(
             loss_history,
             show=plot,
-            save_path=Path(images_dir) / f"{stem}_loss.png" if save else None,
+            save_path=images_path("vqc", f"{stem}_loss.png") if save else None,
         )
 
         plot_decision_boundary(
@@ -190,10 +176,10 @@ def run_vqc(
             x_train,
             y_train,
             show=plot,
-            save_path=Path(images_dir) / f"{stem}_decision_boundary.png" if save else None,
+            save_path=images_path("vqc", f"{stem}_decision_boundary.png") if save else None,
         )
 
     if save:
-        save_json(result, Path(results_dir) / f"{stem}.json")
+        save_json(result, results_path("vqc", f"{stem}.json"))
 
     return result

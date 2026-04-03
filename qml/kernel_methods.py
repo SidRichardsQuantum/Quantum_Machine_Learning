@@ -7,7 +7,6 @@ Quantum kernel workflows and utilities.
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -15,7 +14,7 @@ import pennylane as qml
 from sklearn.svm import SVC
 
 from qml.data import make_moons_dataset
-from qml.io_utils import save_json
+from qml.io_utils import images_path, results_path, save_json
 from qml.metrics import accuracy_score
 from qml.visualize import plot_dataset_2d, plot_kernel_matrix
 
@@ -45,7 +44,7 @@ def _angle_feature_map(x, wires) -> None:
 
 def _compute_kernel_matrix(x_a, x_b, kernel_fn) -> np.ndarray:
     """
-    Compute the kernel matrix $K_{ij} = k(x_a^{(i)}, x_b^{(j)})$.
+    Compute the kernel matrix K_ij = k(x_a^(i), x_b^(j)).
 
     Parameters
     ----------
@@ -78,8 +77,6 @@ def run_quantum_kernel_classifier(
     seed: int = 123,
     plot: bool = False,
     save: bool = False,
-    results_dir: str | Path = "results/kernel",
-    images_dir: str | Path = "images/kernel",
 ) -> dict[str, Any]:
     """
     Run a minimal quantum kernel classifier on the two-moons dataset.
@@ -98,10 +95,6 @@ def run_quantum_kernel_classifier(
         Whether to display plots.
     save
         Whether to save results JSON and figures.
-    results_dir
-        Directory for JSON results.
-    images_dir
-        Directory for plot outputs.
 
     Returns
     -------
@@ -132,7 +125,7 @@ def run_quantum_kernel_classifier(
 
     def kernel_fn(x1, x2) -> float:
         probs = kernel_circuit(x1, x2)
-        return probs[0]
+        return float(probs[0])
 
     kernel_matrix_train = _compute_kernel_matrix(x_train, x_train, kernel_fn)
     kernel_matrix_test = _compute_kernel_matrix(x_test, x_train, kernel_fn)
@@ -163,7 +156,7 @@ def run_quantum_kernel_classifier(
         "y_test_pred": np.asarray(y_test_pred, dtype=int),
     }
 
-    stem = f"moons_samples{n_samples}" f"_noise{str(noise).replace('.', 'p')}_seed{seed}"
+    stem = f"moons_samples{n_samples}_noise{str(noise).replace('.', 'p')}_seed{seed}"
 
     if plot or save:
         plot_dataset_2d(
@@ -171,24 +164,24 @@ def run_quantum_kernel_classifier(
             y_train,
             title="Quantum kernel training dataset",
             show=plot,
-            save_path=Path(images_dir) / f"{stem}_dataset.png" if save else None,
+            save_path=images_path("kernel", f"{stem}_dataset.png") if save else None,
         )
 
         plot_kernel_matrix(
             kernel_matrix_train,
             title="Quantum kernel matrix (train)",
             show=plot,
-            save_path=Path(images_dir) / f"{stem}_kernel_train.png" if save else None,
+            save_path=images_path("kernel", f"{stem}_kernel_train.png") if save else None,
         )
 
         plot_kernel_matrix(
             kernel_matrix_test,
             title="Quantum kernel matrix (test vs train)",
             show=plot,
-            save_path=Path(images_dir) / f"{stem}_kernel_test.png" if save else None,
+            save_path=images_path("kernel", f"{stem}_kernel_test.png") if save else None,
         )
 
     if save:
-        save_json(result, Path(results_dir) / f"{stem}.json")
+        save_json(result, results_path("kernel", f"{stem}.json"))
 
     return result

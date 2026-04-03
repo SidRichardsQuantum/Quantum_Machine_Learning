@@ -75,14 +75,6 @@ pytestdebug.log
 results/
 images/
 
-# historical notebook-local outputs
-notebooks/results/
-notebooks/images/
-
-# allow directory structure without committing outputs
-!results/.gitkeep
-!images/.gitkeep
-
 # ========================
 # Logs / profiling
 # ========================

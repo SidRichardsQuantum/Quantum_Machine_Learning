@@ -7,7 +7,6 @@ Regression workflows for supervised quantum machine learning.
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -17,7 +16,7 @@ from pennylane import numpy as pnp
 from qml.ansatz import apply_hardware_efficient_ansatz, parameter_shape
 from qml.data import make_regression_dataset
 from qml.embeddings import apply_angle_embedding
-from qml.io_utils import save_json
+from qml.io_utils import images_path, results_path, save_json
 from qml.metrics import mean_absolute_error, mean_squared_error
 from qml.visualize import (
     plot_dataset_2d,
@@ -36,8 +35,6 @@ def run_vqr(
     step_size: float = 0.1,
     plot: bool = False,
     save: bool = False,
-    results_dir: str | Path = "results/regression",
-    images_dir: str | Path = "images/regression",
 ) -> dict[str, Any]:
     """
     Train a minimal variational quantum regressor on a synthetic regression dataset.
@@ -62,10 +59,6 @@ def run_vqr(
         Whether to display plots.
     save
         Whether to save results JSON and figures.
-    results_dir
-        Directory for JSON results.
-    images_dir
-        Directory for plot outputs.
 
     Returns
     -------
@@ -106,8 +99,8 @@ def run_vqr(
         return pnp.mean((preds - targets) ** 2)
 
     rng = np.random.default_rng(seed)
-    params = 0.01 * rng.standard_normal(parameter_shape(n_layers=n_layers, n_qubits=n_qubits))
-    params = pnp.array(params, requires_grad=True)
+    init_params = 0.01 * rng.standard_normal(parameter_shape(n_layers=n_layers, n_qubits=n_qubits))
+    params = pnp.array(init_params, requires_grad=True)
 
     opt = qml.AdamOptimizer(stepsize=step_size)
     loss_history: list[float] = []
@@ -156,14 +149,14 @@ def run_vqr(
             y_train,
             title="Regression training dataset",
             show=plot,
-            save_path=Path(images_dir) / f"{stem}_dataset.png" if save else None,
+            save_path=images_path("regression", f"{stem}_dataset.png") if save else None,
         )
 
         plot_loss_curve(
             loss_history,
             title="VQR training loss",
             show=plot,
-            save_path=Path(images_dir) / f"{stem}_loss.png" if save else None,
+            save_path=images_path("regression", f"{stem}_loss.png") if save else None,
         )
 
         plot_regression_predictions(
@@ -171,10 +164,10 @@ def run_vqr(
             y_test_pred,
             title="VQR test predictions",
             show=plot,
-            save_path=Path(images_dir) / f"{stem}_predictions.png" if save else None,
+            save_path=images_path("regression", f"{stem}_predictions.png") if save else None,
         )
 
     if save:
-        save_json(result, Path(results_dir) / f"{stem}.json")
+        save_json(result, results_path("regression", f"{stem}.json"))
 
     return result
