@@ -1,7 +1,6 @@
 # Quantum Machine Learning
 
 [![PyPI version](https://img.shields.io/pypi/v/qml-pennylane.svg)](https://pypi.org/project/qml-pennylane/)
-![Version](https://img.shields.io/badge/version-0.1.5-blue)
 [![Python](https://img.shields.io/pypi/pyversions/qml-pennylane.svg)](https://pypi.org/project/qml-pennylane/)
 [![Tests](https://img.shields.io/github/actions/workflow/status/SidRichardsQuantum/Quantum_Machine_Learning/tests.yml?branch=main&label=tests)](https://github.com/SidRichardsQuantum/Quantum_Machine_Learning/actions)
 [![License](https://img.shields.io/github/license/SidRichardsQuantum/Quantum_Machine_Learning)](LICENSE)
@@ -33,7 +32,7 @@ Clone and install in editable mode:
 
 ```bash
 pip install -e .
-````
+```
 
 Install development tools:
 

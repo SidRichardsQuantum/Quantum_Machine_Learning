@@ -17,7 +17,7 @@ python -m qml metric-learning --samples 200 --layers 2 --steps 50 --plot
 - Notebook:
 
 ```
-notebooks/09_quantum_metric_learning.ipynb
+notebooks/quantum_metric_learning.ipynb
 ```
 
 - Documentation:
@@ -83,7 +83,7 @@ Metric learning provides a flexible representation-learning approach compatible 
 
 ---
 
-## [0.2.0] - 06-04-2026
+## [0.1.7] - 06-04-2026
 
 ### Added
 - unified training loop via `qml.training.run_training_loop`
