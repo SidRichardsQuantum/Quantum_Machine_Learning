@@ -10,6 +10,7 @@ Workflows include:
 • variational quantum regressors  
 • quantum kernel methods  
 • trainable quantum kernels  
+• quantum metric learning  
 
 All models rely on parameterised quantum circuits evaluated within classical optimisation loops.
 
@@ -491,6 +492,198 @@ Alignment encourages kernel similarity to reflect class structure.
 
 ---
 
+# Quantum metric learning
+
+Quantum metric learning aims to learn an embedding geometry in which distances between samples reflect label similarity.
+
+Instead of directly predicting labels, the model learns a parameterised quantum embedding:
+
+$$
+|\phi(x,\theta)\rangle
+=
+U(x,\theta)|0\rangle
+$$
+
+The quantum circuit defines a feature map:
+
+$$
+z(x,\theta)
+=
+\langle Z_i \rangle
+$$
+
+where expectation values of Pauli observables form an embedding vector:
+
+$$
+z(x,\theta)
+\in \mathbb{R}^k
+$$
+
+for a $k$-qubit circuit.
+
+---
+
+## Distance-based supervision
+
+Given two samples:
+
+$$
+x_i, x_j
+$$
+
+define embedding distance:
+
+$$
+d_{ij}
+=
+\|z(x_i,\theta) - z(x_j,\theta)\|_2
+$$
+
+Training encourages:
+
+• small distances for same-class pairs  
+• large distances for different-class pairs  
+
+---
+
+## Contrastive loss
+
+Define label similarity indicator:
+
+$$
+y_{ij}
+=
+\begin{cases}
+1 & y_i = y_j \\
+0 & y_i \ne y_j
+\end{cases}
+$$
+
+Contrastive objective:
+
+$$
+\mathcal{L}(\theta)
+=
+y_{ij} d_{ij}^2
++
+(1 - y_{ij})
+\max(0, m - d_{ij})^2
+$$
+
+where:
+
+• $m$ is a margin hyperparameter  
+• $d_{ij}$ is Euclidean distance in embedding space  
+
+The margin encourages separation between classes.
+
+---
+
+## Data re-uploading embeddings
+
+Expressive embeddings may be constructed using repeated feature encoding layers:
+
+$$
+U(x,\theta)
+=
+\prod_{\ell=1}^L
+U_{ent}
+U_{enc}(x,\theta_\ell)
+$$
+
+where:
+
+$$
+U_{enc}(x,\theta)
+=
+\prod_i
+R_X(x_i + \theta_{i1})
+R_Y(x_i + \theta_{i2})
+R_Z(\theta_{i3})
+$$
+
+Repeated encoding increases expressivity without increasing qubit count.
+
+---
+
+## Classification in embedding space
+
+After optimisation, predictions may be performed using classical methods.
+
+One simple approach uses nearest centroid classification.
+
+Compute class centroids:
+
+$$
+c_k
+=
+\frac{1}{N_k}
+\sum_{i : y_i = k}
+z(x_i,\theta)
+$$
+
+Prediction:
+
+$$
+\hat{y}
+=
+\arg\min_k
+\|z(x,\theta) - c_k\|_2
+$$
+
+Metric learning therefore separates:
+
+• representation learning (quantum)
+• classification rule (classical)
+
+---
+
+## Relationship to kernel methods
+
+Metric learning and kernel methods both rely on quantum feature maps.
+
+Kernel methods compute similarity:
+
+$$
+K(x_i,x_j)
+=
+|\langle \phi(x_i)|\phi(x_j)\rangle|^2
+$$
+
+Metric learning instead optimises parameters such that Euclidean distances in embedding space reflect label similarity.
+
+Both approaches use quantum circuits to construct feature representations.
+
+---
+
+## Relationship to variational models
+
+Variational classifiers directly optimise prediction error.
+
+Metric learning optimises geometry of the feature space.
+
+Advantages:
+
+• decouples representation learning from classifier choice  
+• allows classical classifiers to operate on quantum features  
+• supports few-shot learning scenarios  
+• provides interpretable embedding structure  
+
+---
+
+## Model capacity considerations
+
+Embedding expressivity depends on:
+
+• number of qubits  
+• circuit depth  
+• entanglement structure  
+• number of re-uploading layers  
+
+As circuit depth increases, the embedding may represent more complex similarity structure.
+
+---
+
 # Relationship between models
 
 Variational models:
@@ -551,20 +744,6 @@ Noise-aware evaluation allows study of:
 • sensitivity of optimisation  
 
 Finite-shot execution approximates behaviour of real quantum hardware.
-
----
-
-# Future directions
-
-Potential extensions:
-
-• data re-uploading circuits  
-• quantum metric learning  
-• kernel expressivity analysis  
-• circuit architecture search  
-• noise-aware optimisation strategies  
-• classical–quantum hybrid kernels  
-• generalisation bounds for QML models  
 
 ---
 

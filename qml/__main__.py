@@ -21,6 +21,7 @@ from qml.classical_baselines import (
 )
 from qml.classifiers import run_vqc
 from qml.kernel_methods import run_quantum_kernel_classifier
+from qml.metric_learning import run_quantum_metric_learner
 from qml.regression import run_vqr
 from qml.trainable_kernels import run_trainable_quantum_kernel_classifier
 
@@ -218,6 +219,60 @@ def _build_parser() -> argparse.ArgumentParser:
         type=int,
         default=None,
         help="Shots used when evaluating final kernel matrices.",
+    )
+
+    metric_learning_parser = subparsers.add_parser(
+        "metric-learning",
+        help="Run a quantum metric learning workflow.",
+    )
+    _add_common_dataset_args(metric_learning_parser)
+    metric_learning_parser.add_argument(
+        "--dataset",
+        type=str,
+        default="moons",
+        choices=["moons", "circles", "blobs"],
+        help="Classification dataset.",
+    )
+    metric_learning_parser.add_argument(
+        "--layers",
+        type=int,
+        default=2,
+        help="Number of trainable embedding layers.",
+    )
+    metric_learning_parser.add_argument(
+        "--steps",
+        type=int,
+        default=100,
+        help="Number of optimizer steps.",
+    )
+    metric_learning_parser.add_argument(
+        "--step-size",
+        type=float,
+        default=0.05,
+        help="Optimizer step size.",
+    )
+    metric_learning_parser.add_argument(
+        "--margin",
+        type=float,
+        default=0.5,
+        help="Contrastive loss margin for negative pairs.",
+    )
+    metric_learning_parser.add_argument(
+        "--pairs-per-step",
+        type=int,
+        default=32,
+        help="Number of sampled training pairs per optimization step.",
+    )
+    metric_learning_parser.add_argument(
+        "--log-every",
+        type=int,
+        default=10,
+        help="Print training progress every N steps.",
+    )
+    metric_learning_parser.add_argument(
+        "--no-scale-data",
+        action="store_true",
+        help="Disable feature standardization before angle encoding.",
     )
 
     regression_parser = subparsers.add_parser(
@@ -501,6 +556,33 @@ def _run_trainable_kernel_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_metric_learning_command(args: argparse.Namespace) -> int:
+    """
+    Run the quantum metric learning workflow from parsed CLI arguments.
+    """
+    result = run_quantum_metric_learner(
+        dataset=args.dataset,
+        samples=args.samples,
+        test_size=args.test_size,
+        seed=args.seed,
+        layers=args.layers,
+        steps=args.steps,
+        stepsize=args.step_size,
+        margin=args.margin,
+        pairs_per_step=args.pairs_per_step,
+        log_every=args.log_every,
+        scale_data=not args.no_scale_data,
+        plot=args.plot,
+    )
+
+    print("Model: quantum_metric_learning")
+    print(f"Dataset: {args.dataset}")
+    print(f"Train accuracy: {result.train_accuracy:.6f}")
+    print(f"Test accuracy: {result.test_accuracy:.6f}")
+    print(f"Final loss: {result.loss_history[-1]:.6f}")
+    return 0
+
+
 def _run_kernel_command(args: argparse.Namespace) -> int:
     """
     Run the quantum kernel workflow from parsed CLI arguments.
@@ -656,6 +738,9 @@ def main() -> int:
 
     if args.command == "trainable-kernel":
         return _run_trainable_kernel_command(args)
+
+    if args.command == "metric-learning":
+        return _run_metric_learning_command(args)
 
     if args.command == "regression":
         return _run_regression_command(args)

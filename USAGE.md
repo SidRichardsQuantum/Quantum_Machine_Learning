@@ -249,6 +249,101 @@ result = run_trainable_quantum_kernel_classifier(
 
 ---
 
+# Quantum metric learning
+
+Train a supervised quantum embedding model using contrastive loss.
+
+```python
+from qml.metric_learning import run_quantum_metric_learner
+
+result = run_quantum_metric_learner(
+    samples=200,
+    test_size=0.25,
+    seed=123,
+    layers=2,
+    steps=50,
+    stepsize=0.05,
+    margin=0.5,
+    pairs_per_step=32,
+    plot=True,
+)
+```
+
+The model learns an embedding geometry such that:
+
+• samples from the same class are mapped closer together  
+• samples from different classes are separated by a margin  
+
+Classification is performed using nearest-centroid prediction in the learned embedding space.
+
+---
+
+## Parameters
+
+| parameter | description | default |
+|----------|-------------|--------|
+| dataset | dataset name ("moons", "circles", "blobs") | "moons" |
+| samples | dataset size | 120 |
+| test_size | test fraction | 0.25 |
+| seed | random seed | 42 |
+| layers | number of trainable embedding layers | 2 |
+| steps | optimisation steps | 100 |
+| stepsize | Adam learning rate | 0.05 |
+| margin | contrastive separation margin | 0.5 |
+| pairs_per_step | number of sampled training pairs per step | 32 |
+| log_every | logging frequency | 10 |
+| scale_data | standardise features before encoding | True |
+| plot | display training loss | False |
+
+---
+
+## Returned object
+
+Returns a dataclass:
+
+```python
+QuantumMetricLearningResult
+```
+
+Key attributes:
+
+```python
+result.train_accuracy
+result.test_accuracy
+
+result.loss_history
+
+result.params
+
+result.train_embeddings
+result.test_embeddings
+
+result.train_centroids
+```
+
+---
+
+## CLI usage
+
+```bash
+python -m qml metric-learning \
+    --samples 200 \
+    --layers 2 \
+    --steps 50 \
+    --plot
+```
+
+Optional arguments:
+
+```bash
+--margin 0.5
+--pairs-per-step 32
+--log-every 10
+--no-scale-data
+```
+
+---
+
 # Noise-aware execution
 
 Finite-shot simulation is supported across all quantum workflows.
@@ -399,6 +494,8 @@ python -m qml regression --steps 50 --plot
 python -m qml kernel --plot
 
 python -m qml trainable-kernel --steps 50 --plot
+
+python -m qml metric-learning --steps 50 --plot
 ```
 
 ---

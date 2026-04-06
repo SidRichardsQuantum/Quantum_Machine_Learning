@@ -20,6 +20,7 @@ from .kernel_methods import run_quantum_kernel_classifier
 from .optimizers import get_optimizer, list_supported_optimizers
 from .regression import run_vqr
 from .trainable_kernels import run_trainable_quantum_kernel_classifier
+from .metric_learning import run_quantum_metric_learner
 
 try:
     __version__ = version("qml-pennylane")
@@ -32,6 +33,8 @@ __all__ = [
     "embeddings",
     "ansatz",
     "training",
+    "metric_learning",
+    "run_quantum_metric_learner",
     "losses",
     "metrics",
     "classifiers",

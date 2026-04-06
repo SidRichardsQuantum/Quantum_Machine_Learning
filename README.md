@@ -13,6 +13,7 @@ Modular **PennyLane-based quantum machine learning library** implementing reusab
 • Variational quantum regression (VQR)  
 • Quantum kernel methods  
 • Trainable quantum kernels (kernel-target alignment)  
+• Quantum metric learning (trainable embedding geometry)  
 • Classical baseline models  
 • Deterministic benchmark utilities  
 
@@ -106,6 +107,28 @@ result = run_trainable_quantum_kernel_classifier(
     plot=True,
 )
 ```
+
+---
+
+## Quantum metric learning
+
+```python
+from qml.metric_learning import run_quantum_metric_learner
+
+result = run_quantum_metric_learner(
+    samples=200,
+    layers=2,
+    steps=50,
+    plot=True,
+)
+```
+
+Learns a trainable embedding circuit using contrastive supervision:
+
+• same-class samples mapped closer together  
+• different-class samples separated in feature space  
+
+Classification is performed via nearest-centroid prediction in the learned embedding.
 
 ---
 
@@ -227,6 +250,7 @@ python -m qml vqc --steps 50 --plot
 python -m qml regression --steps 50 --plot
 python -m qml kernel --plot
 python -m qml trainable-kernel --steps 50 --plot
+python -m qml metric-learning --steps 50 --plot
 ```
 
 Run benchmarks:
@@ -296,6 +320,9 @@ qml/
 
     trainable_kernels.py
         kernel-target alignment optimisation
+
+    metric_learning.py
+        contrastive quantum embedding optimisation
 
     classical_baselines.py
         logistic, ridge, svm, mlp
@@ -443,6 +470,33 @@ where:
 
 ---
 
+## Quantum metric learning
+
+Supervised embedding optimisation using contrastive loss:
+
+$$
+L =
+y d^2 +
+(1 - y)\max(0, m - d)^2
+$$
+
+where:
+
+• $d$ is distance between learned embeddings  
+• $y \in \{0,1\}$ indicates whether samples share a class  
+• $m$ is a separation margin  
+
+The learned embedding is used for classification via nearest-centroid prediction in feature space.
+
+Supports:
+
+• trainable data re-uploading embeddings  
+• stochastic pair sampling  
+• deterministic optimisation via fixed seeds  
+• consistent evaluation pipeline with other models
+
+---
+
 # Development workflow
 
 Run tests:
@@ -463,19 +517,6 @@ Run module:
 ```bash
 python -m qml
 ```
-
----
-
-# Roadmap
-
-Potential extensions:
-
-• additional feature maps
-• data re-uploading circuits
-• quantum metric learning
-• noise robustness studies
-• additional benchmark datasets
-• circuit architecture comparisons
 
 ---
 
