@@ -2,7 +2,14 @@
 
 This document describes how to use the public API provided by the `qml` package.
 
-All notebooks in this repository act as **pure package clients** of these APIs.
+All notebooks in this repository act as **thin clients** of these APIs.
+
+The design goal is:
+
+• reusable workflows  
+• deterministic experiments  
+• consistent outputs  
+• minimal configuration  
 
 ---
 
@@ -12,7 +19,7 @@ Install the package in editable mode:
 
 ```bash
 pip install -e .
-```
+````
 
 Install development tools:
 
@@ -22,9 +29,9 @@ pip install -e ".[dev]"
 
 ---
 
-# Variational quantum classifier
+# Variational quantum classifier (VQC)
 
-Train a variational quantum classifier on a synthetic dataset:
+Train a minimal variational quantum classifier on a synthetic dataset:
 
 ```python
 from qml.classifiers import run_vqc
@@ -46,27 +53,22 @@ result = run_vqc(
 
 ## Parameters
 
-| parameter   | description             | default |
-| ----------- | ----------------------- | ------- |
-| `n_samples` | dataset size            | 200     |
-| `noise`     | dataset noise level     | 0.1     |
-| `test_size` | test fraction           | 0.25    |
-| `seed`      | random seed             | 123     |
-| `n_layers`  | number of ansatz layers | 2       |
-| `steps`     | optimisation steps      | 50      |
-| `step_size` | Adam learning rate      | 0.1     |
-| `plot`      | show plots              | False   |
-| `save`      | save JSON and figures   | False   |
+| parameter | description          | default |
+| --------- | -------------------- | ------- |
+| n_samples | dataset size         | 200     |
+| noise     | dataset noise level  | 0.1     |
+| test_size | test fraction        | 0.25    |
+| seed      | random seed          | 123     |
+| n_layers  | ansatz depth         | 2       |
+| steps     | optimisation steps   | 50      |
+| step_size | Adam learning rate   | 0.1     |
+| shots     | finite-shot sampling | None    |
+| plot      | show plots           | False   |
+| save      | save JSON + plots    | False   |
 
 ---
 
 ## Returned dictionary
-
-The result contains:
-
-```python
-result.keys()
-```
 
 Typical fields:
 
@@ -74,19 +76,28 @@ Typical fields:
 {
     "model",
     "dataset",
+
     "seed",
+
     "n_qubits",
     "n_layers",
+
     "steps",
     "step_size",
+
     "loss_history",
+
     "train_accuracy",
     "test_accuracy",
+
     "params",
+
     "y_train",
     "y_test",
+
     "y_train_pred",
     "y_test_pred",
+
     "train_probabilities",
     "test_probabilities",
 }
@@ -94,37 +105,18 @@ Typical fields:
 
 ---
 
-## Generated plots
+# Variational quantum regression (VQR)
 
-If `plot=True`, the following figures are displayed:
-
-- dataset
-- training loss
-- decision boundary
-
-If `save=True`, figures are saved to:
-
-```
-images/vqc/
-```
-
-and results are saved to:
-
-```
-results/vqc/
-```
-
----
-
-# Quantum kernel classifier
-
-Run a minimal quantum kernel classifier:
+Train a variational quantum regressor:
 
 ```python
-from qml.kernel_methods import run_quantum_kernel_classifier
+from qml.regression import run_vqr
 
-result = run_quantum_kernel_classifier(
+result = run_vqr(
     n_samples=200,
+    seed=123,
+    n_layers=2,
+    steps=50,
     plot=True,
 )
 ```
@@ -133,48 +125,76 @@ result = run_quantum_kernel_classifier(
 
 ## Parameters
 
-| parameter     | description                      | default            |
-| ------------- | -------------------------------- | ------------------ |
-| `n_samples`   | dataset size                     | 200                |
-| `noise`       | dataset noise level              | 0.1                |
-| `test_size`   | test fraction                    | 0.25               |
-| `seed`        | random seed                      | 123                |
-| `plot`        | show dataset and kernel plots    | False              |
-| `save`        | save JSON and figures            | False              |
-| `results_dir` | directory for saved JSON outputs | `"results/kernel"` |
-| `images_dir`  | directory for saved plots        | `"images/kernel"`  |
+| parameter | description          | default |
+| --------- | -------------------- | ------- |
+| n_samples | dataset size         | 200     |
+| noise     | dataset noise        | 0.1     |
+| test_size | test fraction        | 0.25    |
+| seed      | random seed          | 123     |
+| n_layers  | ansatz depth         | 2       |
+| steps     | optimisation steps   | 50      |
+| step_size | Adam learning rate   | 0.1     |
+| shots     | finite-shot sampling | None    |
+| plot      | show plots           | False   |
+| save      | save outputs         | False   |
+
+---
+
+## Returned metrics
+
+```python
+{
+    "train_mse",
+    "test_mse",
+
+    "train_mae",
+    "test_mae",
+
+    "loss_history",
+}
+```
+
+---
+
+# Quantum kernel classifier
+
+Compute a quantum kernel matrix and train an SVM:
+
+```python
+from qml.kernel_methods import run_quantum_kernel_classifier
+
+result = run_quantum_kernel_classifier(
+    n_samples=200,
+    seed=123,
+    plot=True,
+)
+```
+
+---
+
+## Parameters
+
+| parameter | description                   | default |
+| --------- | ----------------------------- | ------- |
+| n_samples | dataset size                  | 200     |
+| noise     | dataset noise                 | 0.1     |
+| test_size | test fraction                 | 0.25    |
+| seed      | random seed                   | 123     |
+| shots     | finite-shot kernel estimation | None    |
+| plot      | show kernel plots             | False   |
+| save      | save outputs                  | False   |
 
 ---
 
 ## Returned dictionary
 
 ```python
-result.keys()
-```
-
-Typical fields:
-
-```python
 {
-    "model",
-    "dataset",
-    "seed",
-    "n_samples",
-    "noise",
-    "test_size",
-    "n_qubits",
-
     "train_accuracy",
     "test_accuracy",
 
     "kernel_matrix_train",
     "kernel_matrix_test",
-
-    "x_train",
-    "x_test",
-
-    "y_train",
-    "y_test",
 
     "y_train_pred",
     "y_test_pred",
@@ -183,83 +203,240 @@ Typical fields:
 
 ---
 
-## Generated plots
+# Trainable quantum kernel classifier
 
-If `plot=True`, the following figures are displayed:
+Optimise feature-map parameters using kernel-target alignment.
 
-- training dataset
-- training kernel matrix
-- test-vs-train kernel matrix
+```python
+from qml.trainable_kernels import run_trainable_quantum_kernel_classifier
 
-If `save=True`, figures are written to:
-
-```
-images/kernel/
-```
-
-and results are written to:
-
-```
-results/kernel/
-```
-
-Example filenames:
-
-```
-images/kernel/
-    moons_samples200_noise0p1_seed123_dataset.png
-    moons_samples200_noise0p1_seed123_kernel_train.png
-    moons_samples200_noise0p1_seed123_kernel_test.png
-```
-
-```
-results/kernel/
-    moons_samples200_noise0p1_seed123.json
+result = run_trainable_quantum_kernel_classifier(
+    n_samples=200,
+    steps=50,
+    plot=True,
+)
 ```
 
 ---
 
-## Notes
+## Parameters
 
-The workflow separates:
+| parameter    | description                      | default |
+| ------------ | -------------------------------- | ------- |
+| embedding    | feature map type                 | "angle" |
+| n_layers     | circuit depth                    | 2       |
+| steps        | optimisation steps               | 50      |
+| step_size    | learning rate                    | 0.1     |
+| shots_train  | shots used during optimisation   | None    |
+| shots_kernel | shots used for kernel evaluation | None    |
 
-- quantum feature map construction
-- kernel matrix evaluation
-- classical SVM optimisation
+---
 
-The quantum circuit is used only to compute kernel values:
+## Returned metrics
 
-$$
-K(x_i, x_j)
-=
+```python
+{
+    "train_accuracy",
+    "test_accuracy",
 
-|\langle \phi(x_i) | \phi(x_j) \rangle|^2
-$$
+    "final_alignment",
 
-Classification is performed using a classical support vector machine with a precomputed kernel.
+    "loss_history",
+
+    "kernel_matrix_train",
+}
+```
+
+---
+
+# Noise-aware execution
+
+Finite-shot simulation is supported across all quantum workflows.
+
+Internally implemented via:
+
+```python
+qml.set_shots(qnode, shots)
+```
+
+Example:
+
+```python
+run_vqc(shots=128)
+
+run_quantum_kernel_classifier(shots=256)
+
+run_trainable_quantum_kernel_classifier(
+    shots_train=64,
+    shots_kernel=256,
+)
+```
+
+When a seed is provided, runs remain deterministic.
+
+---
+
+# Classical baselines
+
+Classical reference models:
+
+```python
+from qml.classical_baselines import (
+    run_logistic_classifier,
+    run_svm_classifier,
+    run_mlp_classifier,
+    run_ridge_regression,
+    run_mlp_regressor,
+)
+```
+
+Example:
+
+```python
+result = run_logistic_classifier(
+    n_samples=200,
+    seed=123,
+)
+```
 
 ---
 
 # Benchmarking
 
-Classification benchmark:
+Compare models across multiple seeds.
 
+---
+
+## Classification benchmark
+
+```python
+from qml.benchmarks import compare_classification_models
+
+result = compare_classification_models(
+    models=[
+        "vqc",
+        "quantum_kernel",
+        "trainable_quantum_kernel",
+        "logistic_regression",
+        "svm_classifier",
+        "mlp_classifier",
+    ],
+
+    seeds=[123, 456, 789],
+
+    n_samples=200,
+)
+```
+
+---
+
+## Regression benchmark
+
+```python
+from qml.benchmarks import compare_regression_models
+
+result = compare_regression_models(
+    models=[
+        "vqr",
+        "ridge_regression",
+        "mlp_regressor",
+    ],
+
+    seeds=[123, 456],
+)
+```
+
+---
+
+## Model-specific kwargs
+
+Per-model configuration can be passed via:
+
+```python
+result = compare_classification_models(
+
+    models=[
+        "vqc",
+        "quantum_kernel",
+        "trainable_quantum_kernel",
+    ],
+
+    model_kwargs={
+
+        "vqc": {
+            "shots": 128,
+            "n_layers": 2,
+        },
+
+        "quantum_kernel": {
+            "shots": 256,
+        },
+
+        "trainable_quantum_kernel": {
+
+            "shots_train": 64,
+            "shots_kernel": 256,
+
+            "steps": 25,
+        },
+    },
+)
+```
+
+Benchmark results remain consistent in structure across models.
+
+---
+
+# Command line interface
+
+Run workflows directly:
+
+```bash
+python -m qml vqc --steps 50 --plot
+
+python -m qml regression --steps 50 --plot
+
+python -m qml kernel --plot
+
+python -m qml trainable-kernel --steps 50 --plot
+```
+
+---
+
+## CLI benchmarks
+
+Classification:
+
+```bash
 python -m qml benchmark classification \
-    --models vqc quantum_kernel svm_classifier logistic_regression \
-    --seeds 123 456 789
+    --models vqc quantum_kernel logistic_regression svm_classifier \
+    --seeds 123 456
+```
 
+Regression:
 
-Regression benchmark:
-
+```bash
 python -m qml benchmark regression \
     --models vqr ridge_regression mlp_regressor \
     --seeds 123 456
+```
 
 ---
 
 # Reproducibility
 
-All workflows support deterministic runs using the `seed` parameter.
+All workflows support deterministic execution via:
+
+```
+seed
+```
+
+Reproducibility applies to:
+
+• dataset generation
+• parameter initialisation
+• optimisation trajectories
+• finite-shot sampling
 
 Outputs can optionally be saved:
 
@@ -268,7 +445,7 @@ results/
 images/
 ```
 
-Both directories are gitignored.
+These directories are gitignored.
 
 ---
 
@@ -284,10 +461,10 @@ rather than defining circuits inline.
 
 This ensures:
 
-- consistent behaviour
-- reproducible outputs
-- shared infrastructure
-- minimal duplication
+• consistent behaviour
+• reproducible outputs
+• shared infrastructure
+• minimal duplication
 
 ---
 
@@ -301,14 +478,6 @@ pytest
 
 ---
 
-# Running module
-
-```bash
-python -m qml
-```
-
----
-
 # Development workflow
 
 Format code:
@@ -318,20 +487,14 @@ black .
 ruff check .
 ```
 
----
+Run module:
 
-## Author
-
-**Sid Richards**
-
-LinkedIn:
-[https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
-
-GitHub:
-[https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
+```bash
+python -m qml
+```
 
 ---
 
 ## License
 
-MIT License — see [LICENSE](LICENSE)
+MIT License — see LICENSE

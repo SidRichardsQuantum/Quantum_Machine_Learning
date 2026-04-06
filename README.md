@@ -4,30 +4,32 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Tests](https://github.com/SidRichardsQuantum/Quantum_Machine_Learning/actions/workflows/tests.yml/badge.svg)
 
-Modular **PennyLane-based quantum machine learning suite** providing reusable implementations of:
+Modular **PennyLane-based quantum machine learning library** implementing reusable workflows for:
 
-- Variational quantum classifiers (VQC)
-- Variational quantum regression (VQR)
-- Quantum kernel methods
-- Hybrid quantum–classical optimisation workflows
-- Benchmark utilities for comparing quantum and classical models across random seeds
+• Variational quantum classification (VQC)  
+• Variational quantum regression (VQR)  
+• Quantum kernel methods  
+• Trainable quantum kernels (kernel-target alignment)  
+• Classical baseline models  
+• Deterministic benchmark utilities  
 
 The repository follows a **package-first design**:
 
-- algorithms implemented in `qml/`
-- notebooks act as **thin clients**
-- experiments produce **reproducible outputs**
-- plots and results follow a **consistent structure**
+• algorithms implemented in `qml/`  
+• notebooks act as thin clients  
+• experiments produce reproducible outputs  
+• consistent plotting and result structures  
+• deterministic execution via explicit seeds  
 
 ---
 
 # Installation
 
-Clone the repository and install in editable mode:
+Clone and install in editable mode:
 
 ```bash
 pip install -e .
-```
+````
 
 Install development tools:
 
@@ -37,17 +39,17 @@ pip install -e ".[dev]"
 
 Requirements:
 
-- Python ≥ 3.10
-- PennyLane ≥ 0.34
-- NumPy ≥ 1.24
-- scikit-learn ≥ 1.3
-- matplotlib ≥ 3.7
+• Python ≥ 3.10
+• PennyLane ≥ 0.34
+• NumPy ≥ 1.24
+• scikit-learn ≥ 1.3
+• matplotlib ≥ 3.7
 
 ---
 
 # Quick start
 
-### Variational quantum classifier
+## Variational quantum classifier
 
 ```python
 from qml.classifiers import run_vqc
@@ -62,7 +64,7 @@ result = run_vqc(
 
 ---
 
-### Variational quantum regression
+## Variational quantum regression
 
 ```python
 from qml.regression import run_vqr
@@ -77,7 +79,7 @@ result = run_vqr(
 
 ---
 
-### Quantum kernel classifier
+## Quantum kernel classifier
 
 ```python
 from qml.kernel_methods import run_quantum_kernel_classifier
@@ -90,12 +92,126 @@ result = run_quantum_kernel_classifier(
 
 ---
 
-All functions return structured dictionaries containing:
+## Trainable quantum kernel (kernel-target alignment)
 
-- training metrics
-- predictions
-- model parameters
-- experiment configuration
+```python
+from qml.trainable_kernels import run_trainable_quantum_kernel_classifier
+
+result = run_trainable_quantum_kernel_classifier(
+    n_samples=200,
+    steps=50,
+    plot=True,
+)
+```
+
+---
+
+All workflows return structured dictionaries containing:
+
+• training metrics
+• predictions
+• learned parameters
+• configuration metadata
+
+---
+
+# Noise-aware execution (finite shots)
+
+Quantum circuits can be evaluated either analytically or with finite sampling.
+
+Finite-shot execution uses:
+
+```python
+qml.set_shots(qnode, shots)
+```
+
+Example:
+
+```python
+result = run_vqc(
+    n_samples=200,
+    n_layers=2,
+    steps=50,
+    shots=128,
+)
+```
+
+Trainable kernel workflows support separate shot settings:
+
+```python
+result = run_trainable_quantum_kernel_classifier(
+    n_samples=200,
+    shots_train=64,
+    shots_kernel=256,
+)
+```
+
+All workflows remain deterministic when a fixed seed is provided.
+
+---
+
+# Benchmark framework
+
+Benchmark utilities compare quantum and classical models across multiple seeds.
+
+Example:
+
+```python
+from qml.benchmarks import compare_classification_models
+
+result = compare_classification_models(
+    models=[
+        "vqc",
+        "quantum_kernel",
+        "trainable_quantum_kernel",
+        "logistic_regression",
+        "svm_classifier",
+    ],
+    seeds=[123, 456],
+)
+```
+
+---
+
+## Model-specific configuration
+
+Benchmarks accept per-model kwargs:
+
+```python
+result = compare_classification_models(
+    models=[
+        "vqc",
+        "quantum_kernel",
+        "trainable_quantum_kernel",
+    ],
+    seeds=[123],
+    model_kwargs={
+        "vqc": {"shots": 128},
+
+        "quantum_kernel": {"shots": 256},
+
+        "trainable_quantum_kernel": {
+            "shots_train": 64,
+            "shots_kernel": 256,
+        },
+    },
+)
+```
+
+Result structure remains consistent across models.
+
+---
+
+# Classical baselines
+
+Included reference models:
+
+• logistic regression
+• ridge regression
+• support vector machine
+• multilayer perceptron
+
+These provide performance context for quantum models.
 
 ---
 
@@ -107,15 +223,29 @@ Run workflows directly:
 python -m qml vqc --steps 50 --plot
 python -m qml regression --steps 50 --plot
 python -m qml kernel --plot
-python -m qml benchmark classification --models vqc quantum_kernel svm_classifier logistic_regression
+python -m qml trainable-kernel --steps 50 --plot
 ```
 
-CLI outputs include metrics such as:
+Run benchmarks:
 
-- training accuracy / MSE
-- test accuracy / MSE
-- final loss
-- saved plots (optional)
+```bash
+python -m qml benchmark classification \
+    --models vqc quantum_kernel svm_classifier logistic_regression \
+    --seeds 123 456
+```
+
+```bash
+python -m qml benchmark regression \
+    --models vqr ridge_regression mlp_regressor \
+    --seeds 123 456
+```
+
+CLI outputs include:
+
+• training metrics
+• test metrics
+• final loss
+• saved plots (optional)
 
 ---
 
@@ -123,21 +253,21 @@ CLI outputs include metrics such as:
 
 Core documentation:
 
-- **[THEORY.md](THEORY.md)** — mathematical background
-- **[USAGE.md](USAGE.md)** — API examples and configuration
+• **THEORY.md** — mathematical background
+• **USAGE.md** — API examples
 
 Algorithm notes:
 
-- **[Variational quantum classifier](docs/qml/variational_quantum_classifier.md)**
-- **[Variational quantum regression](docs/qml/variational_regression.md)**
-- **[Quantum kernel methods](docs/qml/quantum_kernels.md)**
+• docs/qml/variational_quantum_classifier.md
+• docs/qml/variational_regression.md
+• docs/qml/quantum_kernels.md
 
 Example notebooks:
 
-- `notebooks/quantum_variational_classifier.ipynb`
-- `notebooks/quantum_regressor.ipynb`
-- `notebooks/quantum_kernel_classifier.ipynb`
-- `notebooks/classical_vs_quantum_classifier.ipynb`
+• quantum_variational_classifier.ipynb
+• quantum_regressor.ipynb
+• quantum_kernel_classifier.ipynb
+• classical_vs_quantum_classifier.ipynb
 
 ---
 
@@ -145,23 +275,12 @@ Example notebooks:
 
 ```
 qml/
-    data.py
-        dataset generation and preprocessing
-
-    embeddings.py
-        feature encoding circuits
 
     ansatz.py
         parameterised circuit templates
 
-    training.py
-        hybrid optimisation loops
-
-    losses.py
-        objective functions
-
-    metrics.py
-        evaluation metrics
+    embeddings.py
+        feature encoding circuits
 
     classifiers.py
         variational quantum classification workflows
@@ -172,33 +291,57 @@ qml/
     kernel_methods.py
         quantum kernel workflows
 
+    trainable_kernels.py
+        kernel-target alignment optimisation
+
+    classical_baselines.py
+        logistic, ridge, svm, mlp
+
+    benchmarks.py
+        multi-seed benchmark utilities
+
+    training.py
+        hybrid optimisation loops
+
+    metrics.py
+        evaluation metrics
+
+    losses.py
+        objective functions
+
+    data.py
+        dataset generation utilities
+
     visualize.py
         plotting utilities
 
     io_utils.py
-        reproducible saving/loading
+        reproducible saving utilities
 
 
 notebooks/
-    quantum_variational_classifier.ipynb
-    quantum_regressor.ipynb
-    quantum_kernel_classifier.ipynb
-    classical_vs_quantum_classifier.ipynb
+
+    examples implemented as thin package clients
 
 
 tests/
-    smoke tests for CLI and core workflows
+
+    smoke tests
+    deterministic benchmarks
 
 
 docs/
+
     theory notes and algorithm descriptions
 
 
 results/
+
     saved experiment outputs (gitignored)
 
 
 images/
+
     generated plots (gitignored)
 ```
 
@@ -206,109 +349,94 @@ images/
 
 # Design principles
 
-### Package-first
+## Package-first architecture
 
-Algorithms live in:
+Core implementations live in:
 
 ```
 qml.*
 ```
 
-Notebooks call stable public APIs rather than implementing circuits inline.
+Notebooks import public APIs rather than defining circuits inline.
 
 ---
 
-### Reproducibility
+## Deterministic workflows
 
-Experiments return structured dictionaries and optionally:
+Reproducibility is prioritised:
 
-- save JSON outputs
-- save figures
-- use fixed random seeds
-- produce consistent file naming
-
----
-
-### Minimal abstractions
-
-Shared infrastructure is intentionally lightweight:
-
-- small set of embeddings
-- hardware-efficient ansätze
-- simple training loops
-- consistent plotting utilities
+• explicit random seeds
+• deterministic dataset generation
+• reproducible optimisation
+• consistent JSON outputs
+• deterministic finite-shot execution
 
 ---
 
-# Example outputs
+## Minimal abstractions
 
-### Variational classifier
+Shared infrastructure intentionally remains lightweight:
 
-- dataset visualisation
-- training loss curve
-- decision boundary
-
----
-
-### Variational regression
-
-- dataset visualisation
-- prediction curve
-- training loss curve
-
----
-
-### Quantum kernel classifier
-
-- dataset visualisation
-- kernel matrix heatmap
-- classification accuracy
-
----
-
-Outputs can be saved to:
-
-```
-results/
-images/
-```
+• small set of embeddings
+• hardware-efficient ansatz
+• simple optimisation loops
+• consistent plotting utilities
 
 ---
 
 # Current algorithms
 
-## Variational Quantum Classifier
+## Variational quantum classifier
 
 Binary classification using:
 
-- angle embedding
-- hardware-efficient ansatz
-- Adam optimisation
-- cross-entropy loss
+• angle embedding
+• hardware-efficient ansatz
+• cross-entropy loss
 
 ---
 
-## Variational Quantum Regression
+## Variational quantum regression
 
-Function approximation using:
+Continuous prediction using:
 
-- angle embedding
-- hardware-efficient ansatz
-- mean squared error loss
+• angle embedding
+• expectation-value outputs
+• mean squared error
 
 ---
 
-## Quantum Kernel Classifier
+## Quantum kernel classifier
 
-Support vector machine using a quantum feature map:
+Support vector machine using quantum feature maps:
 
 $$
 K(x_i, x_j)
-=
-\left|
-\langle \phi(x_i) \mid \phi(x_j) \rangle
-\right|^2
+===========
+
+|\langle \phi(x_i) | \phi(x_j) \rangle|^2
 $$
+
+---
+
+## Trainable quantum kernel
+
+Kernel alignment objective:
+
+$$
+\max_\theta
+;
+\frac{
+\langle K_\theta, Y \rangle_F
+}{
+|K_\theta|_F |Y|_F
+}
+$$
+
+where:
+
+• $K_\theta$ is the quantum kernel matrix
+• $Y$ is the label similarity matrix
 
 ---
 
@@ -320,17 +448,17 @@ Run tests:
 pytest
 ```
 
-Run module:
-
-```bash
-python -m qml
-```
-
 Format code:
 
 ```bash
 black .
 ruff check .
+```
+
+Run module:
+
+```bash
+python -m qml
 ```
 
 ---
@@ -339,19 +467,18 @@ ruff check .
 
 Potential extensions:
 
-- additional embeddings
-- data re-uploading circuits
-- kernel alignment methods
-- noise studies
-- trainable feature maps
-- additional benchmark datasets
-- comparison with classical baselines
+• additional feature maps
+• data re-uploading circuits
+• quantum metric learning
+• noise robustness studies
+• additional benchmark datasets
+• circuit architecture comparisons
 
 ---
 
 ## Author
 
-**Sid Richards**
+Sid Richards
 
 LinkedIn:
 [https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
@@ -363,4 +490,4 @@ GitHub:
 
 ## License
 
-MIT License — see [LICENSE](LICENSE)
+MIT License — see LICENSE

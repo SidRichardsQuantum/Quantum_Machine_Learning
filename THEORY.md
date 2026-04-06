@@ -2,7 +2,16 @@
 
 This repository implements core methods in **quantum machine learning (QML)** using parameterised quantum circuits and quantum feature maps.
 
-The focus is on **supervised learning** tasks, where a hybrid quantum–classical model learns from labelled data.
+The focus is on **supervised learning** using hybrid quantum–classical models.
+
+Workflows include:
+
+• variational quantum classifiers  
+• variational quantum regressors  
+• quantum kernel methods  
+• trainable quantum kernels  
+
+All models rely on parameterised quantum circuits evaluated within classical optimisation loops.
 
 ---
 
@@ -16,17 +25,21 @@ $$
 
 where:
 
-- $x$ is a classical input vector
-- $\theta$ are trainable circuit parameters
-- $f_\theta$ is computed using a quantum circuit
+• $x \in \mathbb{R}^d$ is a classical input vector  
+• $\theta$ are trainable circuit parameters  
+• $f_\theta$ is computed using a quantum circuit  
 
-A typical workflow:
+Typical workflow:
 
 1. encode classical data into a quantum state
 2. apply a parameterised circuit
 3. measure an observable
 4. compute a classical loss
 5. update parameters using classical optimisation
+
+Optimisation is performed using gradient-based methods such as Adam.
+
+Gradients are computed using automatic differentiation and the parameter-shift rule.
 
 ---
 
@@ -40,44 +53,58 @@ $$
 x \in \mathbb{R}^d
 $$
 
-we construct a quantum state:
+we prepare a quantum state:
 
 $$
 |\phi(x)\rangle
-$$
-
-using a parameterised unitary:
-
-$$
-|\phi(x)\rangle = U(x)|0\rangle
-$$
-
-## Angle embedding
-
-One simple encoding is angle embedding:
-
-$$
-U(x) =
-\prod_i R_Y(x_i)
+=
+U(x)|0\rangle
 $$
 
 where:
 
 $$
-R_Y(\alpha) =
+U(x)
+$$
+
+is a parameterised unitary.
+
+---
+
+## Angle embedding
+
+A simple encoding uses single-qubit rotations:
+
+$$
+U(x)
+=
+\prod_{i=1}^d
+R_Y(x_i)
+$$
+
+where:
+
+$$
+R_Y(\alpha)
+=
 \begin{pmatrix}
-\cos(\alpha/2) & -\sin(\alpha/2) \\
-\sin(\alpha/2) & \cos(\alpha/2)
+\cos(\alpha/2)
+&
+-\sin(\alpha/2)
+\\
+\sin(\alpha/2)
+&
+\cos(\alpha/2)
 \end{pmatrix}
 $$
 
-Angle embedding maps features directly to rotation angles.
+Angle embedding maps classical features directly to rotation angles.
 
 ---
 
 # Variational quantum circuits
 
-Variational models use a parameterised unitary:
+Variational models use parameterised circuits:
 
 $$
 U(\theta)
@@ -88,7 +115,8 @@ composed of single-qubit rotations and entangling gates.
 The model output is an expectation value:
 
 $$
-f_\theta(x) =
+f_\theta(x)
+=
 \langle 0 |
 U^\dagger(x)
 U^\dagger(\theta)
@@ -100,67 +128,143 @@ $$
 
 where:
 
-- $M$ is an observable (e.g. Pauli $Z$)
-- $U(x)$ encodes data
-- $U(\theta)$ contains trainable parameters
+• $M$ is an observable  
+• $U(x)$ encodes data  
+• $U(\theta)$ contains trainable parameters  
 
 ---
 
 # Hardware-efficient ansatz
 
-A simple ansatz uses layers of single-qubit rotations followed by entanglement:
+A common ansatz uses repeated layers:
 
 $$
-U(\theta) =
+U(\theta)
+=
 \prod_{\ell=1}^{L}
 \left(
 \prod_{i=1}^{n}
 R_Y(\theta_{\ell,i,1})
 R_Z(\theta_{\ell,i,2})
 \right)
-\cdot
-U_{\text{ent}}
+U_{ent}
+$$
+
+with entanglement:
+
+$$
+U_{ent}
+=
+\prod_{i=1}^{n-1}
+\text{CNOT}_{i,i+1}
+$$
+
+Properties:
+
+• shallow circuit depth  
+• hardware compatible  
+• expressive but trainable  
+• widely used baseline  
+
+---
+
+# Expectation values
+
+Variational models produce scalar outputs via expectation values:
+
+$$
+f_\theta(x)
+=
+\langle \psi(x,\theta) | M | \psi(x,\theta) \rangle
+$$
+
+with:
+
+$$
+|\psi(x,\theta)\rangle
+=
+U(\theta)U(x)|0\rangle
+$$
+
+Typical observable:
+
+$$
+M = Z_i
+$$
+
+giving outputs in:
+
+$$
+[-1,1]
+$$
+
+---
+
+# Finite-shot estimation (noise-aware execution)
+
+Expectation values may be computed either analytically or via sampling.
+
+Given $S$ measurement shots:
+
+$$
+\hat{f}_\theta(x)
+=
+\frac{1}{S}
+\sum_{s=1}^{S}
+m_s
 $$
 
 where:
 
 $$
-U_{\text{ent}}
-=
-\prod_i \text{CNOT}_{i,i+1}
+m_s \in \{-1,1\}
 $$
 
-Properties:
+Finite-shot evaluation introduces sampling variance:
 
-- shallow circuits
-- hardware compatible
-- expressive but trainable
-- commonly used baseline architecture
+$$
+\mathrm{Var}[\hat{f}_\theta(x)]
+=
+\frac{\sigma^2}{S}
+$$
+
+As:
+
+$$
+S \rightarrow \infty
+$$
+
+the estimate converges to the analytic expectation value.
+
+Finite-shot sampling simulates noise effects present on real hardware.
 
 ---
 
 # Variational quantum classifier (VQC)
 
-The classifier predicts probabilities using expectation values.
+Binary classification uses expectation values mapped to probabilities.
 
-For a single observable:
+Define:
 
 $$
-z(x,\theta) =
+z(x,\theta)
+=
 \langle Z_0 \rangle
 $$
 
-we map:
+Probability of class 1:
 
 $$
-p(y=1|x,\theta) =
+p(y=1|x,\theta)
+=
 \frac{1 - z(x,\theta)}{2}
 $$
 
-Binary prediction:
+Prediction rule:
 
 $$
-\hat{y} =
+\hat{y}
+=
 \begin{cases}
 1 & p \ge 0.5 \\
 0 & p < 0.5
@@ -169,31 +273,31 @@ $$
 
 ---
 
-# Variational quantum regression
+## Classification loss
 
-A variational quantum regressor uses the same basic hybrid structure as a variational classifier, but predicts a continuous target rather than a class probability.
-
-For an input $x$, define:
+Binary cross-entropy:
 
 $$
-\hat{y}(x,\theta)
+\mathcal{L}(\theta)
 =
-\langle \psi(x,\theta) | M | \psi(x,\theta) \rangle
+-\frac{1}{N}
+\sum_{i=1}^N
+\left[
+y_i \log p_i
++
+(1-y_i)\log(1-p_i)
+\right]
 $$
 
-where:
+Optimisation adjusts parameters $\theta$ to minimise classification error.
 
-- $\hat{y}(x,\theta) \in \mathbb{R}$ is the predicted target
-- $\theta$ are trainable circuit parameters
-- $M$ is a measured observable, such as Pauli $Z$
+---
 
-In the current implementation, the observable is:
+# Variational quantum regression (VQR)
 
-$$
-M = Z_1
-$$
+Regression uses expectation values as continuous predictions.
 
-so the prediction is:
+Prediction:
 
 $$
 \hat{y}(x,\theta)
@@ -201,11 +305,19 @@ $$
 \langle Z_1 \rangle
 $$
 
-Since Pauli-$Z$ expectation values lie in $[-1,1]$, the current workflow standardises the target values before training.
+Targets are typically standardised:
+
+$$
+y \rightarrow \tilde{y}
+$$
+
+to match the observable output range.
+
+---
 
 ## Regression loss
 
-Training uses mean squared error:
+Mean squared error:
 
 $$
 \mathcal{L}(\theta)
@@ -215,58 +327,27 @@ $$
 (\hat{y}_i - y_i)^2
 $$
 
-where:
+Evaluation metrics include:
 
-- $N$ is the number of training samples
-- $y_i$ is the true target for sample $i$
-- $\hat{y}_i$ is the predicted target for sample $i$
-
-Evaluation also reports mean absolute error:
+Mean absolute error:
 
 $$
 \mathrm{MAE}
 =
 \frac{1}{N}
-\sum_{i=1}^{N}
+\sum_i
 |\hat{y}_i - y_i|
 $$
 
-So the variational regressor shares the same quantum building blocks as the classifier:
-
-- data encoding
-- parameterised ansatz
-- expectation-value measurement
-- classical optimisation
-
-but differs in how the measured scalar is interpreted and how the loss is defined.
-
----
-
-# Loss functions
-
-Binary classification uses cross-entropy:
-
-$$
-\mathcal{L}(\theta) =
--\frac{1}{N}
-\sum_i
-\left[
-y_i \log p_i +
-(1-y_i)\log(1-p_i)
-\right]
-$$
-
-Optimisation is performed using gradient-based methods such as Adam.
-
-Gradients are computed using automatic differentiation and the parameter-shift rule.
+Regression uses the same quantum architecture as classification but a different loss.
 
 ---
 
 # Quantum kernel methods
 
-Kernel methods avoid explicit parameter training.
+Kernel methods avoid explicit parameter optimisation.
 
-Instead, we compute a similarity measure:
+Instead, similarity between inputs is computed:
 
 $$
 K(x_i,x_j)
@@ -277,22 +358,16 @@ $$
 where:
 
 $$
-|\phi(x)\rangle = U(x)|0\rangle
+|\phi(x)\rangle
+=
+U(x)|0\rangle
 $$
-
-This defines a kernel matrix:
-
-$$
-K_{ij} = K(x_i,x_j)
-$$
-
-which is used by classical algorithms such as support vector machines.
 
 ---
 
 # Kernel evaluation using quantum circuits
 
-The overlap can be computed using:
+Kernel values are computed using:
 
 $$
 K(x_i,x_j)
@@ -303,17 +378,25 @@ U(x_i)
 |0\rangle|^2
 $$
 
-In practice:
+Procedure:
 
 1. apply feature map $U(x_i)$
 2. apply inverse feature map $U^\dagger(x_j)$
 3. measure probability of the zero state
 
+Construct kernel matrix:
+
+$$
+K_{ij}
+=
+K(x_i,x_j)
+$$
+
 ---
 
 # Support vector machines with quantum kernels
 
-Given a kernel matrix:
+Given kernel matrix:
 
 $$
 K_{ij}
@@ -333,12 +416,94 @@ $$
 
 where:
 
-- $\alpha_i$ are learned weights
-- $b$ is a bias term
+• $\alpha_i$ are learned coefficients  
+• $b$ is a bias term  
 
 Training solves a convex optimisation problem.
 
-The quantum computer provides the kernel evaluations.
+The quantum computer supplies kernel values.
+
+---
+
+# Trainable quantum kernels
+
+Instead of fixing the feature map, parameters $\theta$ can be introduced:
+
+$$
+|\phi(x,\theta)\rangle
+=
+U(x,\theta)|0\rangle
+$$
+
+giving kernel:
+
+$$
+K_\theta(x_i,x_j)
+=
+|\langle \phi(x_i,\theta) | \phi(x_j,\theta) \rangle|^2
+$$
+
+---
+
+## Kernel-target alignment
+
+Trainable kernels optimise similarity between:
+
+• kernel matrix $K_\theta$  
+• label similarity matrix $Y$
+
+Label similarity:
+
+$$
+Y_{ij}
+=
+y_i y_j
+$$
+
+Alignment objective:
+
+$$
+A(\theta)
+=
+\frac{
+\langle K_\theta, Y \rangle_F
+}{
+\|K_\theta\|_F
+\|Y\|_F
+}
+$$
+
+where Frobenius inner product:
+
+$$
+\langle A,B \rangle_F
+=
+\sum_{ij} A_{ij}B_{ij}
+$$
+
+Optimisation objective:
+
+$$
+\max_\theta A(\theta)
+$$
+
+Alignment encourages kernel similarity to reflect class structure.
+
+---
+
+# Relationship between models
+
+Variational models:
+
+learn parameters inside quantum circuits.
+
+Kernel models:
+
+use quantum circuits to compute similarity measures.
+
+Trainable kernels:
+
+learn parameters inside the feature map rather than classifier weights.
 
 ---
 
@@ -346,42 +511,60 @@ The quantum computer provides the kernel evaluations.
 
 Expressivity depends on:
 
-- embedding choice
-- circuit depth
-- entanglement structure
-- number of qubits
+• embedding structure  
+• circuit depth  
+• entanglement pattern  
+• number of qubits  
 
 Tradeoffs:
 
-- deeper circuits increase expressivity
-- deeper circuits increase noise sensitivity
-- more qubits increase dimensional capacity
+• deeper circuits increase expressivity  
+• deeper circuits increase noise sensitivity  
+• more qubits increase dimensional capacity  
 
 ---
 
 # General workflow
 
-For both VQC and kernel methods:
+Common structure across models:
 
 1. prepare dataset
-2. encode data
-3. evaluate quantum model
+2. encode data into quantum state
+3. evaluate circuit
 4. compute classical objective
-5. update classical parameters or classifier
+5. update parameters or classifier
 
 ---
 
-# Future extensions
+# Noise considerations
 
-Possible extensions include:
+Finite-shot sampling introduces:
 
-- data re-uploading models
-- quantum convolutional feature maps
-- variational regression
-- noise-aware training
-- trainability analysis
-- expressivity studies
-- classical baselines for comparison
+• variance in expectation values  
+• stochastic gradients  
+• sensitivity to circuit depth  
+
+Noise-aware evaluation allows study of:
+
+• robustness of variational models  
+• stability of kernel matrices  
+• sensitivity of optimisation  
+
+Finite-shot execution approximates behaviour of real quantum hardware.
+
+---
+
+# Future directions
+
+Potential extensions:
+
+• data re-uploading circuits  
+• quantum metric learning  
+• kernel expressivity analysis  
+• circuit architecture search  
+• noise-aware optimisation strategies  
+• classical–quantum hybrid kernels  
+• generalisation bounds for QML models  
 
 ---
 
@@ -399,20 +582,11 @@ Classification with quantum neural networks.
 Mitarai et al. (2018)  
 Quantum circuit learning.
 
----
-
-## Author
-
-**Sid Richards**
-
-LinkedIn:
-[https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
-
-GitHub:
-[https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
+Cristianini et al. (2002)  
+On kernel-target alignment.
 
 ---
 
 ## License
 
-MIT License — see [LICENSE](LICENSE)
+MIT License — see LICENSE
