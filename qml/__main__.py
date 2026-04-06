@@ -16,6 +16,68 @@ from qml.classical_baselines import (
 from qml.classifiers import run_vqc
 from qml.kernel_methods import run_quantum_kernel_classifier
 from qml.regression import run_vqr
+from qml.benchmarks import (
+    compare_classification_models,
+    compare_regression_models,
+)
+
+
+def _run_classification_benchmark_command(args: argparse.Namespace) -> int:
+
+    result = compare_classification_models(
+        models=args.models,
+        seeds=args.seeds,
+        n_samples=args.samples,
+        noise=args.noise,
+        test_size=args.test_size,
+        save=args.save,
+    )
+
+    print("Benchmark type:", result["benchmark_type"])
+    print("Models:", ", ".join(result["models"]))
+
+    for model, metrics in result["summary"].items():
+
+        train = metrics["train_accuracy"]
+        test = metrics["test_accuracy"]
+
+        print()
+        print(model)
+        print(f"  train mean: {train['mean']:.6f}")
+        print(f"  train std : {train['std']:.6f}")
+        print(f"  test mean : {test['mean']:.6f}")
+        print(f"  test std  : {test['std']:.6f}")
+
+    return 0
+
+
+def _run_regression_benchmark_command(args: argparse.Namespace) -> int:
+
+    result = compare_regression_models(
+        models=args.models,
+        seeds=args.seeds,
+        n_samples=args.samples,
+        noise=args.noise,
+        test_size=args.test_size,
+        save=args.save,
+    )
+
+    print("Benchmark type:", result["benchmark_type"])
+    print("Models:", ", ".join(result["models"]))
+
+    for model, metrics in result["summary"].items():
+
+        train_mse = metrics["train_mse"]
+        test_mse = metrics["test_mse"]
+
+        print()
+        print(model)
+        print(f"  train MSE mean: {train_mse['mean']:.6f}")
+        print(f"  train MSE std : {train_mse['std']:.6f}")
+        print(f"  test MSE mean : {test_mse['mean']:.6f}")
+        print(f"  test MSE std  : {test_mse['std']:.6f}")
+
+    return 0
 
 
 def _add_common_dataset_args(parser: argparse.ArgumentParser) -> None:
@@ -168,6 +230,57 @@ def _build_parser() -> argparse.ArgumentParser:
         default=500,
         help="Maximum number of training iterations.",
     )
+
+    benchmark_parser = subparsers.add_parser(
+        "benchmark",
+        help="Run multi-seed benchmarks across models.",
+    )
+
+    benchmark_subparsers = benchmark_parser.add_subparsers(dest="benchmark_type")
+
+    classification_benchmark_parser = benchmark_subparsers.add_parser(
+        "classification",
+        help="Benchmark classification models.",
+    )
+
+    classification_benchmark_parser.add_argument(
+        "--models",
+        nargs="+",
+        default=None,
+        help="Model names to include.",
+    )
+
+    classification_benchmark_parser.add_argument(
+        "--seeds",
+        type=int,
+        nargs="+",
+        default=[123],
+        help="Random seeds.",
+    )
+
+    _add_common_dataset_args(classification_benchmark_parser)
+
+    regression_benchmark_parser = benchmark_subparsers.add_parser(
+        "regression",
+        help="Benchmark regression models.",
+    )
+
+    regression_benchmark_parser.add_argument(
+        "--models",
+        nargs="+",
+        default=None,
+        help="Model names to include.",
+    )
+
+    regression_benchmark_parser.add_argument(
+        "--seeds",
+        type=int,
+        nargs="+",
+        default=[123],
+        help="Random seeds.",
+    )
+
+    _add_common_dataset_args(regression_benchmark_parser)
 
     return parser
 
@@ -390,6 +503,17 @@ def main() -> int:
 
     if args.command == "mlp-regressor":
         return _run_mlp_regressor_command(args)
+
+    if args.command == "benchmark":
+
+        if args.benchmark_type == "classification":
+            return _run_classification_benchmark_command(args)
+
+        if args.benchmark_type == "regression":
+            return _run_regression_benchmark_command(args)
+
+        print("Please specify 'classification' or 'regression'")
+        return 1
 
     parser.print_help()
     return 1

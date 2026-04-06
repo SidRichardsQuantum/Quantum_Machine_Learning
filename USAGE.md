@@ -240,6 +240,23 @@ Classification is performed using a classical support vector machine with a prec
 
 ---
 
+# Benchmarking
+
+Classification benchmark:
+
+python -m qml benchmark classification \
+    --models vqc quantum_kernel svm_classifier logistic_regression \
+    --seeds 123 456 789
+
+
+Regression benchmark:
+
+python -m qml benchmark regression \
+    --models vqr ridge_regression mlp_regressor \
+    --seeds 123 456
+
+---
+
 # Reproducibility
 
 All workflows support deterministic runs using the `seed` parameter.

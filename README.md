@@ -10,6 +10,7 @@ Modular **PennyLane-based quantum machine learning suite** providing reusable im
 - Variational quantum regression (VQR)
 - Quantum kernel methods
 - Hybrid quantum–classical optimisation workflows
+- Benchmark utilities for comparing quantum and classical models across random seeds
 
 The repository follows a **package-first design**:
 
@@ -106,6 +107,7 @@ Run workflows directly:
 python -m qml vqc --steps 50 --plot
 python -m qml regression --steps 50 --plot
 python -m qml kernel --plot
+python -m qml benchmark classification --models vqc quantum_kernel svm_classifier logistic_regression
 ```
 
 CLI outputs include metrics such as:
