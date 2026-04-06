@@ -19,7 +19,7 @@ Install the package in editable mode:
 
 ```bash
 pip install -e .
-````
+```
 
 Install development tools:
 
