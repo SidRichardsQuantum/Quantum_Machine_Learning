@@ -26,13 +26,13 @@ from qml.trainable_kernels import run_trainable_quantum_kernel_classifier
 
 
 def _run_classification_benchmark_command(args: argparse.Namespace) -> int:
-
     result = compare_classification_models(
         models=args.models,
         seeds=args.seeds,
         n_samples=args.samples,
         noise=args.noise,
         test_size=args.test_size,
+        dataset=args.dataset,
         save=args.save,
     )
 
@@ -40,7 +40,6 @@ def _run_classification_benchmark_command(args: argparse.Namespace) -> int:
     print("Models:", ", ".join(result["models"]))
 
     for model, metrics in result["summary"].items():
-
         train = metrics["train_accuracy"]
         test = metrics["test_accuracy"]
 
@@ -55,13 +54,13 @@ def _run_classification_benchmark_command(args: argparse.Namespace) -> int:
 
 
 def _run_regression_benchmark_command(args: argparse.Namespace) -> int:
-
     result = compare_regression_models(
         models=args.models,
         seeds=args.seeds,
         n_samples=args.samples,
         noise=args.noise,
         test_size=args.test_size,
+        dataset=args.dataset,
         save=args.save,
     )
 
@@ -69,7 +68,6 @@ def _run_regression_benchmark_command(args: argparse.Namespace) -> int:
     print("Models:", ", ".join(result["models"]))
 
     for model, metrics in result["summary"].items():
-
         train_mse = metrics["train_mse"]
         test_mse = metrics["test_mse"]
 
@@ -95,6 +93,18 @@ def _add_common_dataset_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--seed", type=int, default=123, help="Random seed.")
     parser.add_argument("--plot", action="store_true", help="Display plots.")
     parser.add_argument("--save", action="store_true", help="Save results and figures.")
+
+
+def _add_common_benchmark_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--samples", type=int, default=200, help="Number of samples.")
+    parser.add_argument("--noise", type=float, default=0.1, help="Dataset noise level.")
+    parser.add_argument(
+        "--test-size",
+        type=float,
+        default=0.25,
+        help="Fraction reserved for test data.",
+    )
+    parser.add_argument("--save", action="store_true", help="Save benchmark results.")
 
 
 def _add_shots_arg(parser: argparse.ArgumentParser) -> None:
@@ -126,6 +136,13 @@ def _build_parser() -> argparse.ArgumentParser:
     vqc_parser.add_argument("--steps", type=int, default=50, help="Number of optimizer steps.")
     vqc_parser.add_argument("--step-size", type=float, default=0.1, help="Optimizer step size.")
     _add_shots_arg(vqc_parser)
+    vqc_parser.add_argument(
+        "--dataset",
+        type=str,
+        default="moons",
+        choices=["moons", "circles", "blobs", "xor"],
+        help="Classification dataset.",
+    )
 
     kernel_parser = subparsers.add_parser(
         "kernel",
@@ -133,12 +150,26 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_common_dataset_args(kernel_parser)
     _add_shots_arg(kernel_parser)
+    kernel_parser.add_argument(
+        "--dataset",
+        type=str,
+        default="moons",
+        choices=["moons", "circles", "blobs", "xor"],
+        help="Classification dataset.",
+    )
 
     trainable_kernel_parser = subparsers.add_parser(
         "trainable-kernel",
         help="Run a trainable quantum kernel classifier.",
     )
     _add_common_dataset_args(trainable_kernel_parser)
+    trainable_kernel_parser.add_argument(
+        "--dataset",
+        type=str,
+        default="moons",
+        choices=["moons", "circles", "blobs", "xor"],
+        help="Classification dataset.",
+    )
     trainable_kernel_parser.add_argument(
         "--embedding",
         type=str,
@@ -182,7 +213,6 @@ def _build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Shots used during kernel training (alignment optimisation).",
     )
-
     trainable_kernel_parser.add_argument(
         "--shots-kernel",
         type=int,
@@ -195,6 +225,13 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Run a variational quantum regressor.",
     )
     _add_common_dataset_args(regression_parser)
+    regression_parser.add_argument(
+        "--dataset",
+        type=str,
+        default="linear",
+        choices=["linear", "sine", "polynomial"],
+        help="Regression dataset.",
+    )
     regression_parser.add_argument(
         "--layers",
         type=int,
@@ -313,14 +350,19 @@ def _build_parser() -> argparse.ArgumentParser:
         "classification",
         help="Benchmark classification models.",
     )
-
     classification_benchmark_parser.add_argument(
         "--models",
         nargs="+",
         default=None,
         help="Model names to include.",
     )
-
+    classification_benchmark_parser.add_argument(
+        "--dataset",
+        type=str,
+        default="moons",
+        choices=["moons", "circles", "blobs", "xor"],
+        help="Classification dataset.",
+    )
     classification_benchmark_parser.add_argument(
         "--seeds",
         type=int,
@@ -328,21 +370,25 @@ def _build_parser() -> argparse.ArgumentParser:
         default=[123],
         help="Random seeds.",
     )
-
-    _add_common_dataset_args(classification_benchmark_parser)
+    _add_common_benchmark_args(classification_benchmark_parser)
 
     regression_benchmark_parser = benchmark_subparsers.add_parser(
         "regression",
         help="Benchmark regression models.",
     )
-
     regression_benchmark_parser.add_argument(
         "--models",
         nargs="+",
         default=None,
         help="Model names to include.",
     )
-
+    regression_benchmark_parser.add_argument(
+        "--dataset",
+        type=str,
+        default="linear",
+        choices=["linear", "sine", "polynomial"],
+        help="Regression dataset.",
+    )
     regression_benchmark_parser.add_argument(
         "--seeds",
         type=int,
@@ -350,8 +396,7 @@ def _build_parser() -> argparse.ArgumentParser:
         default=[123],
         help="Random seeds.",
     )
-
-    _add_common_dataset_args(regression_benchmark_parser)
+    _add_common_benchmark_args(regression_benchmark_parser)
 
     return parser
 
@@ -364,6 +409,7 @@ def _run_vqc_command(args: argparse.Namespace) -> int:
         n_samples=args.samples,
         noise=args.noise,
         test_size=args.test_size,
+        dataset=args.dataset,
         seed=args.seed,
         n_layers=args.layers,
         steps=args.steps,
@@ -389,6 +435,7 @@ def _run_regression_command(args: argparse.Namespace) -> int:
         n_samples=args.samples,
         noise=args.noise,
         test_size=args.test_size,
+        dataset=args.dataset,
         seed=args.seed,
         n_layers=args.layers,
         steps=args.steps,
@@ -416,6 +463,7 @@ def _run_trainable_kernel_command(args: argparse.Namespace) -> int:
         n_samples=args.samples,
         noise=args.noise,
         test_size=args.test_size,
+        dataset=args.dataset,
         seed=args.seed,
         embedding=args.embedding,
         embedding_layers=args.embedding_layers,
@@ -448,6 +496,7 @@ def _run_kernel_command(args: argparse.Namespace) -> int:
         n_samples=args.samples,
         noise=args.noise,
         test_size=args.test_size,
+        dataset=args.dataset,
         seed=args.seed,
         plot=args.plot,
         shots=args.shots,
@@ -614,7 +663,6 @@ def main() -> int:
         return _run_mlp_regressor_command(args)
 
     if args.command == "benchmark":
-
         if args.benchmark_type == "classification":
             return _run_classification_benchmark_command(args)
 

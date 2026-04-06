@@ -169,6 +169,12 @@ def _run_classification_model(
         common_kwargs=common_kwargs,
         model_kwargs=model_kwargs,
     )
+    if model_name in {
+        "logistic_regression",
+        "svm_classifier",
+        "mlp_classifier",
+    }:
+        kwargs.pop("dataset", None)
     return runner(**kwargs)
 
 
@@ -186,6 +192,11 @@ def _run_regression_model(
         common_kwargs=common_kwargs,
         model_kwargs=model_kwargs,
     )
+    if model_name in {
+        "ridge_regression",
+        "mlp_regressor",
+    }:
+        kwargs.pop("dataset", None)
     return runner(**kwargs)
 
 
@@ -198,6 +209,7 @@ def compare_classification_models(
     model_kwargs: dict[str, dict[str, Any]] | None = None,
     save: bool = False,
     filename: str = "classification_benchmark.json",
+    dataset: str = "moons",
 ) -> dict[str, Any]:
     """
     Compare classification models across multiple seeds.
@@ -235,6 +247,7 @@ def compare_classification_models(
     model_kwargs = _normalize_model_kwargs(model_kwargs, _CLASSIFICATION_MODELS)
 
     common_kwargs = {
+        "dataset": dataset,
         "n_samples": n_samples,
         "noise": noise,
         "test_size": test_size,
@@ -319,6 +332,7 @@ def compare_regression_models(
     model_kwargs: dict[str, dict[str, Any]] | None = None,
     save: bool = False,
     filename: str = "regression_benchmark.json",
+    dataset: str = "linear",
 ) -> dict[str, Any]:
     """
     Compare regression models across multiple seeds.
@@ -356,6 +370,7 @@ def compare_regression_models(
     model_kwargs = _normalize_model_kwargs(model_kwargs, _REGRESSION_MODELS)
 
     common_kwargs = {
+        "dataset": dataset,
         "n_samples": n_samples,
         "noise": noise,
         "test_size": test_size,

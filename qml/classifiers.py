@@ -15,7 +15,7 @@ import pennylane as qml
 from pennylane import numpy as pnp
 
 from qml.ansatz import apply_hardware_efficient_ansatz, parameter_shape
-from qml.data import make_moons_dataset
+from qml.data import make_classification_dataset
 from qml.embeddings import (
     embedding_parameter_shape,
     get_embedding,
@@ -64,6 +64,7 @@ def run_vqc(
     save: bool = False,
     results_dir: str | Path | None = None,
     images_dir: str | Path | None = None,
+    dataset: str = "moons",
 ) -> dict[str, Any]:
     """
     Train a variational quantum classifier on a two-moons dataset.
@@ -106,16 +107,17 @@ def run_vqc(
     dict[str, Any]
         Run summary including fitted parameters, loss history, and accuracies.
     """
-    dataset = make_moons_dataset(
+    data = make_classification_dataset(
+        dataset=dataset,
         n_samples=n_samples,
         noise=noise,
         test_size=test_size,
         seed=seed,
     )
-    x_train = dataset["x_train"]
-    x_test = dataset["x_test"]
-    y_train = dataset["y_train"]
-    y_test = dataset["y_test"]
+    x_train = data["x_train"]
+    x_test = data["x_test"]
+    y_train = data["y_train"]
+    y_test = data["y_test"]
 
     n_qubits = x_train.shape[1]
     wires = list(range(n_qubits))
@@ -190,7 +192,7 @@ def run_vqc(
 
     result = {
         "model": "vqc",
-        "dataset": "moons",
+        "dataset": dataset,
         "seed": seed,
         "n_samples": n_samples,
         "noise": noise,
@@ -221,7 +223,7 @@ def run_vqc(
 
     shots_tag = "analytic" if shots is None else f"shots{shots}"
     stem = (
-        f"moons_embed{embedding_name}_layers{n_layers}_steps{steps}_samples{n_samples}"
+        f"{dataset}_embed{embedding_name}_layers{n_layers}_steps{steps}_samples{n_samples}"
         f"_noise{str(noise).replace('.', 'p')}_seed{seed}_{shots_tag}"
     )
 

@@ -15,7 +15,7 @@ import pennylane as qml
 from pennylane import numpy as pnp
 from sklearn.svm import SVC
 
-from qml.data import make_moons_dataset
+from qml.data import make_classification_dataset
 from qml.embeddings import embedding_parameter_shape, get_embedding
 from qml.io_utils import images_path, results_path, save_json
 from qml.metrics import accuracy_score
@@ -120,6 +120,7 @@ def run_trainable_quantum_kernel_classifier(
     save: bool = False,
     results_dir: str | Path | None = None,
     images_dir: str | Path | None = None,
+    dataset: str = "moons",
 ) -> dict[str, Any]:
     """
     Run a trainable quantum kernel classifier on the two-moons dataset.
@@ -163,16 +164,17 @@ def run_trainable_quantum_kernel_classifier(
         Run summary including learned parameters, kernel matrices,
         alignment trace, predictions, and accuracies.
     """
-    dataset = make_moons_dataset(
+    data = make_classification_dataset(
+        dataset=dataset,
         n_samples=n_samples,
         noise=noise,
         test_size=test_size,
         seed=seed,
     )
-    x_train = np.asarray(dataset["x_train"], dtype=float)
-    x_test = np.asarray(dataset["x_test"], dtype=float)
-    y_train = np.asarray(dataset["y_train"], dtype=int)
-    y_test = np.asarray(dataset["y_test"], dtype=int)
+    x_train = np.asarray(data["x_train"], dtype=float)
+    x_test = np.asarray(data["x_test"], dtype=float)
+    y_train = np.asarray(data["y_train"], dtype=int)
+    y_test = np.asarray(data["y_test"], dtype=int)
 
     n_qubits = x_train.shape[1]
     wires = list(range(n_qubits))
@@ -305,7 +307,7 @@ def run_trainable_quantum_kernel_classifier(
 
     result = {
         "model": "trainable_quantum_kernel_classifier",
-        "dataset": "moons",
+        "dataset": dataset,
         "seed": seed,
         "n_samples": n_samples,
         "noise": noise,
@@ -340,7 +342,7 @@ def run_trainable_quantum_kernel_classifier(
     kernel_tag = "analytic" if shots_kernel is None else f"kernel{shots_kernel}"
 
     stem = (
-        f"moons_trainable_kernel_"
+        f"{dataset}_trainable_kernel_"
         f"emb{embedding}_"
         f"layers{embedding_layers}_"
         f"samples{n_samples}_"

@@ -14,7 +14,7 @@ import numpy as np
 import pennylane as qml
 from sklearn.svm import SVC
 
-from qml.data import make_moons_dataset
+from qml.data import make_classification_dataset
 from qml.io_utils import images_path, results_path, save_json
 from qml.metrics import accuracy_score
 from qml.visualize import plot_dataset_2d, plot_kernel_matrix
@@ -67,6 +67,7 @@ def run_quantum_kernel_classifier(
     save: bool = False,
     results_dir: str | Path | None = None,
     images_dir: str | Path | None = None,
+    dataset: str = "moons",
 ) -> dict[str, Any]:
     """
     Run a minimal quantum kernel classifier on the two-moons dataset.
@@ -88,17 +89,18 @@ def run_quantum_kernel_classifier(
     save
         Whether to save results JSON and figures.
     """
-    dataset = make_moons_dataset(
+    data = make_classification_dataset(
+        dataset=dataset,
         n_samples=n_samples,
         noise=noise,
         test_size=test_size,
         seed=seed,
     )
 
-    x_train = dataset["x_train"]
-    x_test = dataset["x_test"]
-    y_train = dataset["y_train"]
-    y_test = dataset["y_test"]
+    x_train = data["x_train"]
+    x_test = data["x_test"]
+    y_train = data["y_train"]
+    y_test = data["y_test"]
 
     n_qubits = x_train.shape[1]
     wires = list(range(n_qubits))
@@ -139,7 +141,7 @@ def run_quantum_kernel_classifier(
 
     result = {
         "model": "quantum_kernel_classifier",
-        "dataset": "moons",
+        "dataset": dataset,
         "seed": seed,
         "n_samples": n_samples,
         "noise": noise,
@@ -161,7 +163,7 @@ def run_quantum_kernel_classifier(
     shots_tag = "analytic" if shots is None else f"shots{shots}"
 
     stem = (
-        f"moons_samples{n_samples}"
+        f"{dataset}_samples{n_samples}"
         f"_noise{str(noise).replace('.', 'p')}"
         f"_seed{seed}"
         f"_{shots_tag}"

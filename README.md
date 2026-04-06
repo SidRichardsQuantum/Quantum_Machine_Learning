@@ -1,8 +1,11 @@
 # Quantum Machine Learning
 
-![Python](https://img.shields.io/badge/python-3.10%2B-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Tests](https://github.com/SidRichardsQuantum/Quantum_Machine_Learning/actions/workflows/tests.yml/badge.svg)
+[![PyPI version](https://img.shields.io/pypi/v/qml-pennylane.svg)](https://pypi.org/project/qml-pennylane/)
+![Version](https://img.shields.io/badge/version-0.1.5-blue)
+[![Python](https://img.shields.io/pypi/pyversions/qml-pennylane.svg)](https://pypi.org/project/qml-pennylane/)
+[![Tests](https://img.shields.io/github/actions/workflow/status/SidRichardsQuantum/Quantum_Machine_Learning/tests.yml?branch=main&label=tests)](https://github.com/SidRichardsQuantum/Quantum_Machine_Learning/actions)
+[![License](https://img.shields.io/github/license/SidRichardsQuantum/Quantum_Machine_Learning)](LICENSE)
+![datasets](https://img.shields.io/badge/datasets-moons%20|%20circles%20|%20xor%20|%20sine-informational)
 
 Modular **PennyLane-based quantum machine learning library** implementing reusable workflows for:
 

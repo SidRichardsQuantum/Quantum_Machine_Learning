@@ -39,6 +39,7 @@ def run_vqr(
     save: bool = False,
     results_dir: str | Path | None = None,
     images_dir: str | Path | None = None,
+    dataset: str = "linear",
 ) -> dict[str, Any]:
     """
     Train a minimal variational quantum regressor on a synthetic regression dataset.
@@ -71,16 +72,17 @@ def run_vqr(
     dict[str, Any]
         Run summary including fitted parameters, predictions, and regression metrics.
     """
-    dataset = make_regression_dataset(
+    data = make_regression_dataset(
+        dataset=dataset,
         n_samples=n_samples,
         noise=noise,
         test_size=test_size,
         seed=seed,
     )
-    x_train = dataset["x_train"]
-    x_test = dataset["x_test"]
-    y_train = dataset["y_train"]
-    y_test = dataset["y_test"]
+    x_train = data["x_train"]
+    x_test = data["x_test"]
+    y_train = data["y_train"]
+    y_test = data["y_test"]
 
     n_qubits = x_train.shape[1]
     wires = list(range(n_qubits))
@@ -122,7 +124,7 @@ def run_vqr(
 
     result = {
         "model": "vqr",
-        "dataset": "regression",
+        "dataset": dataset,
         "seed": seed,
         "n_samples": n_samples,
         "noise": noise,
@@ -149,7 +151,7 @@ def run_vqr(
 
     shots_tag = "analytic" if shots is None else f"shots{shots}"
     stem = (
-        f"regression_layers{n_layers}_steps{steps}_samples{n_samples}"
+        f"{dataset}_layers{n_layers}_steps{steps}_samples{n_samples}"
         f"_noise{str(noise).replace('.', 'p')}_seed{seed}_{shots_tag}"
     )
 
@@ -158,20 +160,20 @@ def run_vqr(
             path = Path(results_dir) / filename
             path.parent.mkdir(parents=True, exist_ok=True)
             return path
-        return results_path("regression", filename)
+        return results_path(f"{dataset}", filename)
 
     def _images_file(filename: str) -> Path:
         if images_dir is not None:
             path = Path(images_dir) / filename
             path.parent.mkdir(parents=True, exist_ok=True)
             return path
-        return images_path("regression", filename)
+        return images_path(f"{dataset}", filename)
 
     if plot or save:
         plot_dataset_2d(
             x_train,
             y_train,
-            title="Regression training dataset",
+            title=f"{dataset} training dataset",
             show=plot,
             save_path=_images_file(f"{stem}_dataset.png") if save else None,
         )

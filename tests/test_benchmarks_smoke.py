@@ -44,3 +44,33 @@ def test_invalid_model_raises():
             models=["not_a_model"],
             seeds=[0],
         )
+
+
+def test_classification_benchmark_blobs_smoke():
+    result = compare_classification_models(
+        models=["vqc", "quantum_kernel"],
+        seeds=[0],
+        dataset="blobs",
+        n_samples=24,
+        save=False,
+    )
+
+    assert result["benchmark_type"] == "classification"
+    assert result["models"] == ["vqc", "quantum_kernel"]
+    assert result["summary"]["vqc"]["n_runs"] == 1
+    assert result["summary"]["quantum_kernel"]["n_runs"] == 1
+
+
+def test_regression_benchmark_polynomial_smoke():
+    result = compare_regression_models(
+        models=["vqr", "ridge_regression"],
+        seeds=[0],
+        dataset="polynomial",
+        n_samples=24,
+        save=False,
+    )
+
+    assert result["benchmark_type"] == "regression"
+    assert result["models"] == ["vqr", "ridge_regression"]
+    assert result["summary"]["vqr"]["n_runs"] == 1
+    assert result["summary"]["ridge_regression"]["n_runs"] == 1
