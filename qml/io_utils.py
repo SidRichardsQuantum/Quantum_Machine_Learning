@@ -38,7 +38,7 @@ def results_path(module: str, filename: str) -> Path:
     -> results/vqc/run.json
     """
     path = RESULTS_DIR / module / filename
-    path.parent.mkdir(parents=True, exist_ok=True)
+    ensure_dir(path.parent)
     return path
 
 
@@ -52,7 +52,7 @@ def images_path(module: str, filename: str) -> Path:
     -> images/kernel/matrix.png
     """
     path = IMAGES_DIR / module / filename
-    path.parent.mkdir(parents=True, exist_ok=True)
+    ensure_dir(path.parent)
     return path
 
 
@@ -87,7 +87,7 @@ def save_json(data: dict[str, Any], path: str | Path) -> None:
     Creates parent directories if required.
     """
     path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
+    ensure_dir(path.parent)
 
     with path.open("w", encoding="utf-8") as f:
         json.dump(
@@ -106,3 +106,25 @@ def load_json(path: str | Path) -> dict[str, Any]:
 
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def make_result_dict(
+    model: str,
+    dataset: str,
+    metrics: dict,
+    config: dict,
+):
+    return {
+        "model": model,
+        "dataset": dataset,
+        "metrics": metrics,
+        "config": config,
+    }
+
+
+def ensure_dir(path: str | Path | None) -> Path | None:
+    if path is None:
+        return None
+    p = Path(path)
+    p.mkdir(parents=True, exist_ok=True)
+    return p

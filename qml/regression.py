@@ -18,12 +18,14 @@ from qml.ansatz import apply_hardware_efficient_ansatz, parameter_shape
 from qml.data import make_regression_dataset
 from qml.embeddings import apply_angle_embedding
 from qml.io_utils import images_path, results_path, save_json
+from qml.io_utils import ensure_dir
 from qml.metrics import mean_absolute_error, mean_squared_error
 from qml.visualize import (
     plot_dataset_2d,
     plot_loss_curve,
     plot_regression_predictions,
 )
+from qml.training import run_training_loop
 
 
 def run_vqr(
@@ -111,13 +113,12 @@ def run_vqr(
     rng = np.random.default_rng(seed)
     init_params = 0.01 * rng.standard_normal(parameter_shape(n_layers=n_layers, n_qubits=n_qubits))
     params = pnp.array(init_params, requires_grad=True)
-
     opt = qml.AdamOptimizer(stepsize=step_size)
-    loss_history: list[float] = []
 
-    for _ in range(steps):
-        params, current_loss = opt.step_and_cost(cost, params)
-        loss_history.append(float(current_loss))
+    def step_fn(params):
+        return opt.step_and_cost(cost, params)
+
+    params, loss_history = run_training_loop(step_fn, params, steps)
 
     y_train_pred = np.asarray(predict_batch(x_train, params), dtype=float)
     y_test_pred = np.asarray(predict_batch(x_test, params), dtype=float)
@@ -158,14 +159,14 @@ def run_vqr(
     def _results_file(filename: str) -> Path:
         if results_dir is not None:
             path = Path(results_dir) / filename
-            path.parent.mkdir(parents=True, exist_ok=True)
+            ensure_dir(path.parent)
             return path
         return results_path(f"{dataset}", filename)
 
     def _images_file(filename: str) -> Path:
         if images_dir is not None:
             path = Path(images_dir) / filename
-            path.parent.mkdir(parents=True, exist_ok=True)
+            ensure_dir(path.parent)
             return path
         return images_path(f"{dataset}", filename)
 

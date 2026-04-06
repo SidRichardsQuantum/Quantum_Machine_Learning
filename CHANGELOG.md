@@ -1,6 +1,26 @@
 # CHANGELOG.md
 
-## [0.1.5]
+---
+
+## [0.2.0] - 06-04-2026
+
+### Added
+- unified training loop via `qml.training.run_training_loop`
+- shared utilities in `qml.utils`
+- centralised path handling via `qml.io_utils.ensure_dir`
+
+### Refactored
+- removed duplicated optimisation loops across VQC, VQR, and kernel workflows
+- improved package modularity and internal consistency
+- simplified experiment output handling
+
+### Removed
+- deprecated `qml.datasets`
+- redundant local helper functions
+
+---
+
+## [0.1.5] - 06-04-2026
 
 ### Added
 
@@ -51,7 +71,7 @@
 
 ---
 
-## 0.1.4
+## 0.1.4 - 06-04-2026
 
 ### Added
 - Noise-aware benchmark support via per-model `model_kwargs`

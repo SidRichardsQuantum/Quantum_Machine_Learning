@@ -21,12 +21,14 @@ from qml.embeddings import (
     get_embedding,
 )
 from qml.io_utils import images_path, results_path, save_json
+from qml.io_utils import ensure_dir
 from qml.metrics import accuracy_score
 from qml.visualize import (
     plot_dataset_2d,
     plot_decision_boundary,
     plot_loss_curve,
 )
+from qml.training import run_training_loop
 
 
 def _binary_cross_entropy_tensor(y_true, y_prob):
@@ -176,11 +178,11 @@ def run_vqc(
     params = pnp.array(init_params, requires_grad=True)
 
     opt = qml.AdamOptimizer(stepsize=step_size)
-    loss_history: list[float] = []
 
-    for _ in range(steps):
-        params, current_loss = opt.step_and_cost(cost, params)
-        loss_history.append(float(current_loss))
+    def step_fn(params):
+        return opt.step_and_cost(cost, params)
+
+    params, loss_history = run_training_loop(step_fn, params, steps)
 
     train_probs = np.asarray(predict_proba_batch(x_train, params), dtype=float)
     test_probs = np.asarray(predict_proba_batch(x_test, params), dtype=float)
@@ -233,14 +235,14 @@ def run_vqc(
     def _results_file(filename: str) -> Path:
         if results_dir is not None:
             path = Path(results_dir) / filename
-            path.parent.mkdir(parents=True, exist_ok=True)
+            ensure_dir(path.parent)
             return path
         return results_path("vqc", filename)
 
     def _images_file(filename: str) -> Path:
         if images_dir is not None:
             path = Path(images_dir) / filename
-            path.parent.mkdir(parents=True, exist_ok=True)
+            ensure_dir(path.parent)
             return path
         return images_path("vqc", filename)
 

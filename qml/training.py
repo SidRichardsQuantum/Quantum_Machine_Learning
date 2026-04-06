@@ -1,37 +1,41 @@
-"""
-qml.training
-============
-
-Shared training-loop utilities for hybrid quantum-classical models.
-"""
-
 from __future__ import annotations
 
 from typing import Any, Callable
 
 
 def run_training_loop(
-    step_fn: Callable[..., Any],
+    step_fn: Callable[[Any], tuple[Any, Any]],
+    params: Any,
     n_steps: int,
-    *args,
-    **kwargs,
-) -> Any:
+    log_every: int | None = None,
+) -> tuple[Any, list[float]]:
     """
     Run a minimal generic training loop.
 
     Parameters
     ----------
     step_fn
-        Callable representing one optimization step.
+        Callable representing one optimisation step. Must accept the current
+        parameters and return ``(new_params, loss)``.
+    params
+        Initial parameter tensor/array.
     n_steps
-        Number of steps to execute.
+        Number of optimisation steps.
+    log_every
+        Optional logging interval.
 
     Returns
     -------
-    Any
-        Final output returned by the last step.
+    tuple[Any, list[float]]
+        Final parameters and loss history.
     """
-    result = None
-    for _ in range(n_steps):
-        result = step_fn(*args, **kwargs)
-    return result
+    losses: list[float] = []
+
+    for step in range(n_steps):
+        params, loss = step_fn(params)
+        losses.append(float(loss))
+
+        if log_every is not None and step % log_every == 0:
+            print(f"step {step}: loss={float(loss):.6f}")
+
+    return params, losses

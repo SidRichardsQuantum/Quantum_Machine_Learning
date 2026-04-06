@@ -18,6 +18,7 @@ from sklearn.svm import SVC
 from qml.data import make_classification_dataset
 from qml.embeddings import embedding_parameter_shape, get_embedding
 from qml.io_utils import images_path, results_path, save_json
+from qml.io_utils import ensure_dir
 from qml.metrics import accuracy_score
 from qml.visualize import (
     plot_alignment_curve,
@@ -354,14 +355,14 @@ def run_trainable_quantum_kernel_classifier(
     def _results_file(filename: str) -> Path:
         if results_dir is not None:
             path = Path(results_dir) / filename
-            path.parent.mkdir(parents=True, exist_ok=True)
+            ensure_dir(path.parent)
             return path
         return results_path("trainable_kernel", filename)
 
     def _images_file(filename: str) -> Path:
         if images_dir is not None:
             path = Path(images_dir) / filename
-            path.parent.mkdir(parents=True, exist_ok=True)
+            ensure_dir(path.parent)
             return path
         return images_path("trainable_kernel", filename)
 

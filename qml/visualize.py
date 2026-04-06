@@ -11,6 +11,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
+from qml.io_utils import ensure_dir
 
 
 def _prepare_path(path: str | Path | None) -> Path | None:
@@ -30,7 +31,7 @@ def _prepare_path(path: str | Path | None) -> Path | None:
     if path is None:
         return None
     path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
+    ensure_dir(path.parent)
     return path
 
 
