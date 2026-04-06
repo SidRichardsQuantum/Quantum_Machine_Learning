@@ -100,3 +100,30 @@ def test_cli_ridge_runs():
     assert "Test MSE" in result.stdout
     assert "Train MAE" in result.stdout
     assert "Test MAE" in result.stdout
+
+
+def test_cli_trainable_kernel_runs():
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "qml",
+            "trainable-kernel",
+            "--samples",
+            "40",
+            "--steps",
+            "3",
+            "--embedding",
+            "data_reupload",
+            "--embedding-layers",
+            "2",
+        ],
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+    assert "Train accuracy" in result.stdout
+    assert "Test accuracy" in result.stdout
+    assert "Final alignment" in result.stdout
+    assert "Final loss" in result.stdout

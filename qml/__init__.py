@@ -8,15 +8,17 @@ Provides reusable components for:
 - Variational quantum classifiers (VQC)
 - Variational quantum regression (VQR)
 - Quantum kernel methods
+- Trainable quantum kernel learning
 - Classical baseline models
-- Hybrid quantum–classical training workflows
+- Hybrid quantum-classical training workflows
 """
 
 from importlib.metadata import PackageNotFoundError, version
 
 from .classifiers import run_vqc
-from .regression import run_vqr
 from .kernel_methods import run_quantum_kernel_classifier
+from .regression import run_vqr
+from .trainable_kernels import run_trainable_quantum_kernel_classifier
 
 try:
     __version__ = version("qml-pennylane")
@@ -36,10 +38,12 @@ __all__ = [
     "classifiers",
     "regression",
     "kernel_methods",
+    "trainable_kernels",
     "classical_baselines",
     "visualize",
     "io_utils",
     "run_vqc",
     "run_vqr",
     "run_quantum_kernel_classifier",
+    "run_trainable_quantum_kernel_classifier",
 ]

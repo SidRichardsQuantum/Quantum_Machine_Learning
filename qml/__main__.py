@@ -6,6 +6,10 @@ from __future__ import annotations
 
 import argparse
 
+from qml.benchmarks import (
+    compare_classification_models,
+    compare_regression_models,
+)
 from qml.classical_baselines import (
     run_logistic_classifier,
     run_mlp_classifier,
@@ -16,10 +20,7 @@ from qml.classical_baselines import (
 from qml.classifiers import run_vqc
 from qml.kernel_methods import run_quantum_kernel_classifier
 from qml.regression import run_vqr
-from qml.benchmarks import (
-    compare_classification_models,
-    compare_regression_models,
-)
+from qml.trainable_kernels import run_trainable_quantum_kernel_classifier
 
 
 def _run_classification_benchmark_command(args: argparse.Namespace) -> int:
@@ -119,6 +120,49 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Run a quantum kernel classifier.",
     )
     _add_common_dataset_args(kernel_parser)
+
+    trainable_kernel_parser = subparsers.add_parser(
+        "trainable-kernel",
+        help="Run a trainable quantum kernel classifier.",
+    )
+    _add_common_dataset_args(trainable_kernel_parser)
+    trainable_kernel_parser.add_argument(
+        "--embedding",
+        type=str,
+        default="data_reupload",
+        choices=["angle", "data_reupload"],
+        help="Embedding used inside the trainable kernel feature map.",
+    )
+    trainable_kernel_parser.add_argument(
+        "--embedding-layers",
+        type=int,
+        default=2,
+        help="Number of trainable embedding layers.",
+    )
+    trainable_kernel_parser.add_argument(
+        "--steps",
+        type=int,
+        default=50,
+        help="Number of optimizer steps.",
+    )
+    trainable_kernel_parser.add_argument(
+        "--step-size",
+        type=float,
+        default=0.1,
+        help="Optimizer step size.",
+    )
+    trainable_kernel_parser.add_argument(
+        "--reg-strength",
+        type=float,
+        default=1e-4,
+        help="L2 regularisation strength for trainable kernel parameters.",
+    )
+    trainable_kernel_parser.add_argument(
+        "--svc-c",
+        type=float,
+        default=1.0,
+        help="SVM regularisation parameter for the learned precomputed kernel.",
+    )
 
     regression_parser = subparsers.add_parser(
         "regression",
@@ -335,6 +379,36 @@ def _run_regression_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_trainable_kernel_command(args: argparse.Namespace) -> int:
+    """
+    Run the trainable quantum kernel workflow from parsed CLI arguments.
+    """
+    result = run_trainable_quantum_kernel_classifier(
+        n_samples=args.samples,
+        noise=args.noise,
+        test_size=args.test_size,
+        seed=args.seed,
+        embedding=args.embedding,
+        embedding_layers=args.embedding_layers,
+        steps=args.steps,
+        step_size=args.step_size,
+        reg_strength=args.reg_strength,
+        svc_c=args.svc_c,
+        plot=args.plot,
+        save=args.save,
+    )
+
+    print(f"Model: {result['model']}")
+    print(f"Dataset: {result['dataset']}")
+    print(f"Embedding: {result['embedding']}")
+    print(f"Embedding layers: {result['embedding_layers']}")
+    print(f"Train accuracy: {result['train_accuracy']:.6f}")
+    print(f"Test accuracy: {result['test_accuracy']:.6f}")
+    print(f"Final alignment: {result['final_alignment']:.6f}")
+    print(f"Final loss: {result['final_loss']:.6f}")
+    return 0
+
+
 def _run_kernel_command(args: argparse.Namespace) -> int:
     """
     Run the quantum kernel workflow from parsed CLI arguments.
@@ -485,6 +559,9 @@ def main() -> int:
 
     if args.command == "kernel":
         return _run_kernel_command(args)
+
+    if args.command == "trainable-kernel":
+        return _run_trainable_kernel_command(args)
 
     if args.command == "regression":
         return _run_regression_command(args)

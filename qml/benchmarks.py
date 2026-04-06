@@ -22,6 +22,7 @@ from qml.classifiers import run_vqc
 from qml.io_utils import results_path, save_json
 from qml.kernel_methods import run_quantum_kernel_classifier
 from qml.regression import run_vqr
+from qml.trainable_kernels import run_trainable_quantum_kernel_classifier
 
 ClassificationRunner = Callable[..., dict[str, Any]]
 RegressionRunner = Callable[..., dict[str, Any]]
@@ -30,6 +31,7 @@ RegressionRunner = Callable[..., dict[str, Any]]
 _CLASSIFICATION_MODELS: dict[str, ClassificationRunner] = {
     "vqc": run_vqc,
     "quantum_kernel": run_quantum_kernel_classifier,
+    "trainable_quantum_kernel": run_trainable_quantum_kernel_classifier,
     "logistic_regression": run_logistic_classifier,
     "svm_classifier": run_svm_classifier,
     "mlp_classifier": run_mlp_classifier,
@@ -195,13 +197,26 @@ def compare_classification_models(
             if "final_loss" in result:
                 run_record["final_loss"] = float(result["final_loss"])
 
+            if "final_alignment" in result:
+                run_record["final_alignment"] = float(result["final_alignment"])
+
             runs.append(run_record)
 
-        summary[model_name] = {
+        model_summary = {
             "train_accuracy": _mean_std(train_accuracies),
             "test_accuracy": _mean_std(test_accuracies),
             "n_runs": len(seeds),
         }
+
+        alignment_values = [
+            float(run["final_alignment"])
+            for run in runs
+            if run["model"] == model_name and "final_alignment" in run
+        ]
+        if alignment_values:
+            model_summary["final_alignment"] = _mean_std(alignment_values)
+
+        summary[model_name] = model_summary
 
     benchmark = {
         "benchmark_type": "classification",

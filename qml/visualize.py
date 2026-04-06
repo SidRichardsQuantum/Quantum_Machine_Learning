@@ -297,3 +297,35 @@ def plot_regression_predictions(
     plt.title(title)
 
     _finalize_figure(show=show, save_path=save_path)
+
+
+def plot_alignment_curve(
+    alignment_history,
+    *,
+    title: str = "Kernel-target alignment",
+    show: bool = True,
+    save_path: str | Path | None = None,
+) -> None:
+    """
+    Plot kernel-target alignment versus optimization step.
+
+    Parameters
+    ----------
+    alignment_history
+        Sequence of alignment values.
+    title
+        Plot title.
+    show
+        Whether to display the figure.
+    save_path
+        Optional figure output path.
+    """
+    alignment_history = np.asarray(alignment_history, dtype=float)
+
+    plt.figure()
+    plt.plot(np.arange(1, len(alignment_history) + 1), alignment_history)
+    plt.xlabel("Step")
+    plt.ylabel("Alignment")
+    plt.title(title)
+
+    _finalize_figure(show=show, save_path=save_path)
