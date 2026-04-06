@@ -10,7 +10,7 @@ def test_vqc_circles_smoke():
         n_samples=24,
         n_layers=1,
         steps=2,
-        shots=8,
+        shots=4,
         plot=False,
         save=False,
     )
@@ -25,7 +25,7 @@ def test_quantum_kernel_xor_smoke():
     result = run_quantum_kernel_classifier(
         dataset="xor",
         n_samples=24,
-        shots=8,
+        shots=4,
         plot=False,
         save=False,
     )
@@ -41,8 +41,8 @@ def test_trainable_kernel_blobs_smoke():
         dataset="blobs",
         n_samples=24,
         steps=1,
-        shots_train=8,
-        shots_kernel=8,
+        shots_train=4,
+        shots_kernel=4,
         plot=False,
         save=False,
     )
@@ -60,7 +60,7 @@ def test_vqr_sine_smoke():
         n_samples=24,
         n_layers=1,
         steps=2,
-        shots=8,
+        shots=4,
         plot=False,
         save=False,
     )

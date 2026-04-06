@@ -26,6 +26,7 @@ from qml.visualize import (
     plot_regression_predictions,
 )
 from qml.training import run_training_loop
+from qml.optimizers import get_optimizer
 
 
 def run_vqr(
@@ -36,6 +37,10 @@ def run_vqr(
     n_layers: int = 2,
     steps: int = 50,
     step_size: float = 0.1,
+    optimizer: str = "adam",
+    optimizer_kwargs: dict[str, Any] | None = None,
+    early_stopping_patience: int | None = None,
+    early_stopping_min_delta: float = 0.0,
     shots: int | None = None,
     plot: bool = False,
     save: bool = False,
@@ -113,12 +118,22 @@ def run_vqr(
     rng = np.random.default_rng(seed)
     init_params = 0.01 * rng.standard_normal(parameter_shape(n_layers=n_layers, n_qubits=n_qubits))
     params = pnp.array(init_params, requires_grad=True)
-    opt = qml.AdamOptimizer(stepsize=step_size)
+    opt = get_optimizer(
+        optimizer,
+        stepsize=step_size,
+        **(optimizer_kwargs or {}),
+    )
 
     def step_fn(params):
         return opt.step_and_cost(cost, params)
 
-    params, loss_history = run_training_loop(step_fn, params, steps)
+    params, loss_history = run_training_loop(
+        step_fn,
+        params,
+        steps,
+        patience=early_stopping_patience,
+        min_delta=early_stopping_min_delta,
+    )
 
     y_train_pred = np.asarray(predict_batch(x_train, params), dtype=float)
     y_test_pred = np.asarray(predict_batch(x_test, params), dtype=float)
@@ -133,6 +148,10 @@ def run_vqr(
         "n_qubits": n_qubits,
         "n_layers": n_layers,
         "steps": steps,
+        "optimizer": optimizer,
+        "optimizer_kwargs": optimizer_kwargs or {},
+        "early_stopping_patience": early_stopping_patience,
+        "early_stopping_min_delta": early_stopping_min_delta,
         "step_size": step_size,
         "shots": shots,
         "loss_history": loss_history,

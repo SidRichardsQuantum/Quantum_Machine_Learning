@@ -398,6 +398,10 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_common_benchmark_args(regression_benchmark_parser)
 
+    parser.add_argument("--optimizer", type=str, default="adam")
+    parser.add_argument("--early-stopping-patience", type=int, default=None)
+    parser.add_argument("--early-stopping-min-delta", type=float, default=0.0)
+
     return parser
 
 
@@ -417,6 +421,9 @@ def _run_vqc_command(args: argparse.Namespace) -> int:
         plot=args.plot,
         save=args.save,
         shots=args.shots,
+        optimizer=args.optimizer,
+        early_stopping_patience=args.early_stopping_patience,
+        early_stopping_min_delta=args.early_stopping_min_delta,
     )
 
     print(f"Model: {result['model']}")
@@ -443,6 +450,9 @@ def _run_regression_command(args: argparse.Namespace) -> int:
         plot=args.plot,
         save=args.save,
         shots=args.shots,
+        optimizer=args.optimizer,
+        early_stopping_patience=args.early_stopping_patience,
+        early_stopping_min_delta=args.early_stopping_min_delta,
     )
 
     print(f"Model: {result['model']}")
@@ -475,6 +485,9 @@ def _run_trainable_kernel_command(args: argparse.Namespace) -> int:
         save=args.save,
         shots_train=args.shots_train,
         shots_kernel=args.shots_kernel,
+        optimizer=args.optimizer,
+        early_stopping_patience=args.early_stopping_patience,
+        early_stopping_min_delta=args.early_stopping_min_delta,
     )
 
     print(f"Model: {result['model']}")

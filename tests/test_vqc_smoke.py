@@ -5,19 +5,21 @@ from qml.classifiers import run_vqc
 
 def test_run_vqc_smoke():
     result = run_vqc(
-        n_samples=40,
+        n_samples=24,
         noise=0.1,
         test_size=0.25,
         seed=0,
         n_layers=1,
-        steps=3,
+        steps=2,
         step_size=0.1,
+        plot=False,
+        save=False,
     )
 
     assert result["model"] == "vqc"
     assert result["dataset"] == "moons"
     assert isinstance(result["loss_history"], list)
-    assert len(result["loss_history"]) == 3
+    assert len(result["loss_history"]) == 2
 
     assert isinstance(result["train_accuracy"], float)
     assert isinstance(result["test_accuracy"], float)

@@ -1,41 +1,54 @@
-from __future__ import annotations
+"""
+qml.training
+"""
 
-from typing import Any, Callable
+from __future__ import annotations
 
 
 def run_training_loop(
-    step_fn: Callable[[Any], tuple[Any, Any]],
-    params: Any,
-    n_steps: int,
-    log_every: int | None = None,
-) -> tuple[Any, list[float]]:
+    step_fn,
+    init_params,
+    steps: int,
+    patience: int | None = None,
+    min_delta: float = 0.0,
+):
     """
-    Run a minimal generic training loop.
-
-    Parameters
-    ----------
-    step_fn
-        Callable representing one optimisation step. Must accept the current
-        parameters and return ``(new_params, loss)``.
-    params
-        Initial parameter tensor/array.
-    n_steps
-        Number of optimisation steps.
-    log_every
-        Optional logging interval.
+    Generic optimizer loop.
 
     Returns
     -------
-    tuple[Any, list[float]]
-        Final parameters and loss history.
+    tuple
+        (final_params, loss_trace)
     """
-    losses: list[float] = []
 
-    for step in range(n_steps):
-        params, loss = step_fn(params)
-        losses.append(float(loss))
+    params = init_params
+    loss_trace: list[float] = []
 
-        if log_every is not None and step % log_every == 0:
-            print(f"step {step}: loss={float(loss):.6f}")
+    best_loss = float("inf")
+    patience_counter = 0
 
-    return params, losses
+    for _ in range(steps):
+
+        out = step_fn(params)
+
+        # allow step_fn to return extra metadata safely
+        if isinstance(out, tuple):
+            params = out[0]
+            loss = out[1]
+        else:
+            raise ValueError("step_fn must return at least (params, loss)")
+
+        loss_trace.append(float(loss))
+
+        if patience is not None:
+
+            if loss < best_loss - min_delta:
+                best_loss = loss
+                patience_counter = 0
+            else:
+                patience_counter += 1
+
+            if patience_counter >= patience:
+                break
+
+    return params, loss_trace

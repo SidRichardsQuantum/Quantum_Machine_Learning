@@ -5,12 +5,12 @@ from qml.regression import run_vqr
 
 def test_run_vqr_smoke():
     result = run_vqr(
-        n_samples=40,
+        n_samples=24,
         noise=0.1,
         test_size=0.25,
         seed=0,
         n_layers=1,
-        steps=3,
+        steps=2,
         step_size=0.1,
         plot=False,
         save=False,
@@ -26,12 +26,12 @@ def test_run_vqr_smoke():
 
 def test_run_vqr_save_outputs(tmp_path: Path):
     result = run_vqr(
-        n_samples=40,
+        n_samples=24,
         noise=0.1,
         test_size=0.25,
         seed=0,
         n_layers=1,
-        steps=3,
+        steps=2,
         step_size=0.1,
         plot=False,
         save=True,

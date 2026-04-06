@@ -7,10 +7,11 @@ from qml.kernel_methods import run_quantum_kernel_classifier
 
 def test_run_quantum_kernel_classifier_smoke():
     result = run_quantum_kernel_classifier(
-        n_samples=40,
+        n_samples=24,
         noise=0.1,
         test_size=0.25,
         seed=0,
+        shots=None,  # analytic mode = fastest
         plot=False,
         save=False,
     )
@@ -48,10 +49,11 @@ def test_run_quantum_kernel_classifier_smoke():
 
 def test_run_quantum_kernel_classifier_save_outputs(tmp_path: Path):
     result = run_quantum_kernel_classifier(
-        n_samples=40,
+        n_samples=24,
         noise=0.1,
         test_size=0.25,
         seed=0,
+        shots=None,
         plot=False,
         save=True,
         results_dir=tmp_path / "results",
@@ -59,5 +61,6 @@ def test_run_quantum_kernel_classifier_save_outputs(tmp_path: Path):
     )
 
     assert result["model"] == "quantum_kernel_classifier"
+
     assert any((tmp_path / "results").glob("*.json"))
     assert any((tmp_path / "images").glob("*.png"))

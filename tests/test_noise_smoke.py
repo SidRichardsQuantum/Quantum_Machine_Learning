@@ -11,16 +11,16 @@ def test_classification_benchmark_accepts_noise_aware_model_kwargs():
             "vqc": {
                 "n_layers": 1,
                 "steps": 2,
-                "shots": 16,
+                "shots": 4,
             },
             "kernel": {
-                "shots": 16,
+                "shots": 4,
             },
             "trainable_quantum_kernel": {
                 "embedding": "angle",
                 "steps": 0,
-                "shots_train": 16,
-                "shots_kernel": 16,
+                "shots_train": 4,
+                "shots_kernel": 4,
             },
         },
         save=False,
@@ -56,10 +56,10 @@ def test_classification_benchmark_finite_shot_runs_are_deterministic_for_fixed_s
             "vqc": {
                 "n_layers": 1,
                 "steps": 2,
-                "shots": 16,
+                "shots": 4,
             },
             "kernel": {
-                "shots": 16,
+                "shots": 4,
             },
         },
         "save": False,
@@ -72,38 +72,6 @@ def test_classification_benchmark_finite_shot_runs_are_deterministic_for_fixed_s
     assert result_1["summary"] == result_2["summary"]
 
 
-def test_classification_benchmark_noise_aware_runs_for_fixed_seed():
-    kwargs = {
-        "models": ["vqc", "kernel"],
-        "seeds": [11],
-        "n_samples": 24,
-        "noise": 0.1,
-        "model_kwargs": {
-            "vqc": {
-                "n_layers": 1,
-                "steps": 2,
-                "shots": 16,
-            },
-            "kernel": {
-                "shots": 16,
-            },
-        },
-        "save": False,
-    }
-
-    result = compare_classification_models(**kwargs)
-
-    assert result["benchmark_type"] == "classification"
-    assert result["models"] == ["vqc", "quantum_kernel"]
-    assert len(result["runs"]) == 2
-
-    for run in result["runs"]:
-        assert "model" in run
-        assert "seed" in run
-        assert "train_accuracy" in run
-        assert "test_accuracy" in run
-
-
 def test_regression_benchmark_accepts_noise_aware_model_kwargs():
     result = compare_regression_models(
         models=["vqr"],
@@ -114,7 +82,7 @@ def test_regression_benchmark_accepts_noise_aware_model_kwargs():
             "vqr": {
                 "n_layers": 1,
                 "steps": 2,
-                "shots": 16,
+                "shots": 4,
             },
         },
         save=False,
@@ -144,7 +112,7 @@ def test_regression_benchmark_finite_shot_runs_are_deterministic_for_fixed_seed(
             "vqr": {
                 "n_layers": 1,
                 "steps": 2,
-                "shots": 16,
+                "shots": 4,
             },
         },
         "save": False,

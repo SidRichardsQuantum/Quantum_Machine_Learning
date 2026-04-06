@@ -1,6 +1,6 @@
 """
 qml.__init__
-===
+============
 
 Quantum Machine Learning package built on PennyLane.
 
@@ -17,14 +17,13 @@ from importlib.metadata import PackageNotFoundError, version
 
 from .classifiers import run_vqc
 from .kernel_methods import run_quantum_kernel_classifier
+from .optimizers import get_optimizer, list_supported_optimizers
 from .regression import run_vqr
 from .trainable_kernels import run_trainable_quantum_kernel_classifier
 
 try:
     __version__ = version("qml-pennylane")
-
 except PackageNotFoundError:
-    # package is not installed (e.g. local development)
     __version__ = "0.0.0"
 
 
@@ -42,8 +41,11 @@ __all__ = [
     "classical_baselines",
     "visualize",
     "io_utils",
+    "optimizers",
     "run_vqc",
     "run_vqr",
     "run_quantum_kernel_classifier",
     "run_trainable_quantum_kernel_classifier",
+    "get_optimizer",
+    "list_supported_optimizers",
 ]

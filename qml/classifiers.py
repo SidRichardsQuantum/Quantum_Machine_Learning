@@ -29,6 +29,7 @@ from qml.visualize import (
     plot_loss_curve,
 )
 from qml.training import run_training_loop
+from qml.optimizers import get_optimizer
 
 
 def _binary_cross_entropy_tensor(y_true, y_prob):
@@ -59,6 +60,10 @@ def run_vqc(
     n_layers: int = 2,
     steps: int = 50,
     step_size: float = 0.1,
+    optimizer: str = "adam",
+    optimizer_kwargs: dict[str, Any] | None = None,
+    early_stopping_patience: int | None = None,
+    early_stopping_min_delta: float = 0.0,
     embedding: str = "angle",
     embedding_layers: int = 1,
     shots: int | None = None,
@@ -177,12 +182,22 @@ def run_vqc(
     init_params = 0.01 * rng.standard_normal(total_size)
     params = pnp.array(init_params, requires_grad=True)
 
-    opt = qml.AdamOptimizer(stepsize=step_size)
+    opt = get_optimizer(
+        optimizer,
+        stepsize=step_size,
+        **(optimizer_kwargs or {}),
+    )
 
     def step_fn(params):
         return opt.step_and_cost(cost, params)
 
-    params, loss_history = run_training_loop(step_fn, params, steps)
+    params, loss_history = run_training_loop(
+        step_fn,
+        params,
+        steps,
+        patience=early_stopping_patience,
+        min_delta=early_stopping_min_delta,
+    )
 
     train_probs = np.asarray(predict_proba_batch(x_train, params), dtype=float)
     test_probs = np.asarray(predict_proba_batch(x_test, params), dtype=float)
@@ -205,6 +220,10 @@ def run_vqc(
         "n_layers": n_layers,
         "steps": steps,
         "step_size": step_size,
+        "optimizer": optimizer,
+        "optimizer_kwargs": optimizer_kwargs or {},
+        "early_stopping_patience": early_stopping_patience,
+        "early_stopping_min_delta": early_stopping_min_delta,
         "shots": shots,
         "loss_history": loss_history,
         "final_loss": _binary_cross_entropy(y_train, train_probs),

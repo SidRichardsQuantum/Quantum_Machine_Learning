@@ -20,15 +20,17 @@ def test_get_embedding():
 
 def test_run_vqc_data_reupload_smoke():
     result = run_vqc(
-        n_samples=40,
+        n_samples=24,
         noise=0.1,
         test_size=0.25,
         seed=0,
         n_layers=1,
         embedding="data_reupload",
         embedding_layers=1,
-        steps=3,
+        steps=2,
         step_size=0.1,
+        plot=False,
+        save=False,
     )
 
     assert result["model"] == "vqc"

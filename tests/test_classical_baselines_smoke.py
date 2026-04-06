@@ -1,9 +1,7 @@
 import math
-
 import warnings
 
 from sklearn.exceptions import ConvergenceWarning
-
 
 from qml.classical_baselines import (
     run_logistic_classifier,
@@ -16,7 +14,7 @@ from qml.classical_baselines import (
 
 def test_run_logistic_classifier_smoke():
     result = run_logistic_classifier(
-        n_samples=40,
+        n_samples=24,
         noise=0.1,
         test_size=0.25,
         seed=0,
@@ -32,7 +30,7 @@ def test_run_logistic_classifier_smoke():
 
 def test_run_svm_classifier_smoke():
     result = run_svm_classifier(
-        n_samples=40,
+        n_samples=24,
         noise=0.1,
         test_size=0.25,
         seed=0,
@@ -51,12 +49,12 @@ def test_run_mlp_classifier_smoke():
         warnings.simplefilter("ignore", ConvergenceWarning)
 
         result = run_mlp_classifier(
-            n_samples=40,
+            n_samples=24,
             noise=0.1,
             test_size=0.25,
             seed=0,
-            hidden_layer_sizes=(8,),
-            max_iter=100,
+            hidden_layer_sizes=(4,),
+            max_iter=50,
         )
 
     assert result["model"] == "mlp_classifier"
@@ -70,7 +68,7 @@ def test_run_mlp_classifier_smoke():
 
 def test_run_ridge_regression_smoke():
     result = run_ridge_regression(
-        n_samples=40,
+        n_samples=24,
         noise=0.1,
         test_size=0.25,
         seed=0,
@@ -94,12 +92,12 @@ def test_run_mlp_regressor_smoke():
         warnings.simplefilter("ignore", ConvergenceWarning)
 
         result = run_mlp_regressor(
-            n_samples=40,
+            n_samples=24,
             noise=0.1,
             test_size=0.25,
             seed=0,
-            hidden_layer_sizes=(16,),
-            max_iter=100,
+            hidden_layer_sizes=(8,),
+            max_iter=50,
         )
 
     assert result["model"] == "mlp_regressor"

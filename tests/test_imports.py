@@ -12,4 +12,5 @@ def test_imports_smoke():
     import qml.utils
     import qml.visualize
 
-    assert qml.__version__
+    assert isinstance(qml.__version__, str)
+    assert len(qml.__version__) > 0

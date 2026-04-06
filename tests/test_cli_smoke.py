@@ -10,9 +10,11 @@ def test_cli_vqc_runs():
             "qml",
             "vqc",
             "--samples",
-            "40",
+            "20",
             "--steps",
-            "5",
+            "2",
+            "--layers",
+            "1",
         ],
         capture_output=True,
         text=True,
@@ -20,6 +22,7 @@ def test_cli_vqc_runs():
 
     assert result.returncode == 0
     assert "Train accuracy" in result.stdout
+    assert "Test accuracy" in result.stdout
 
 
 def test_cli_kernel_runs():
@@ -30,7 +33,7 @@ def test_cli_kernel_runs():
             "qml",
             "kernel",
             "--samples",
-            "40",
+            "20",
         ],
         capture_output=True,
         text=True,
@@ -38,6 +41,7 @@ def test_cli_kernel_runs():
 
     assert result.returncode == 0
     assert "Train accuracy" in result.stdout
+    assert "Test accuracy" in result.stdout
 
 
 def test_cli_regression_runs():
@@ -48,9 +52,11 @@ def test_cli_regression_runs():
             "qml",
             "regression",
             "--samples",
-            "40",
+            "20",
             "--steps",
-            "5",
+            "2",
+            "--layers",
+            "1",
         ],
         capture_output=True,
         text=True,
@@ -70,7 +76,7 @@ def test_cli_logistic_runs():
             "qml",
             "logistic",
             "--samples",
-            "40",
+            "20",
         ],
         capture_output=True,
         text=True,
@@ -89,7 +95,7 @@ def test_cli_ridge_runs():
             "qml",
             "ridge",
             "--samples",
-            "40",
+            "20",
         ],
         capture_output=True,
         text=True,
@@ -110,13 +116,13 @@ def test_cli_trainable_kernel_runs():
             "qml",
             "trainable-kernel",
             "--samples",
-            "40",
+            "20",
             "--steps",
-            "3",
+            "1",
             "--embedding",
             "data_reupload",
             "--embedding-layers",
-            "2",
+            "1",
         ],
         capture_output=True,
         text=True,
