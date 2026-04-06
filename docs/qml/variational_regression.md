@@ -368,17 +368,6 @@ The current VQR is intentionally minimal.
 - MSE and MAE reporting
 - prediction visualisation
 
-## Not yet included
-
-- multi-output regression
-- minibatching
-- alternative observables
-- alternative ansätze
-- alternative embeddings
-- rescaling from bounded outputs to unbounded targets
-- shot noise / hardware execution
-- uncertainty estimates
-
 ---
 
 # Relation to the code

@@ -151,6 +151,106 @@ def plot_dataset_2d(
     _finalize_figure(show=show, save_path=save_path)
 
 
+def plot_metric_learning_embeddings(
+    train_embeddings,
+    y_train,
+    *,
+    test_embeddings=None,
+    y_test=None,
+    centroids=None,
+    title: str = "Quantum metric learning embeddings",
+    show: bool = True,
+    save_path: str | Path | None = None,
+) -> None:
+    """
+    Plot learned metric-learning embeddings in 2D.
+
+    Parameters
+    ----------
+    train_embeddings
+        Training embedding matrix of shape ``(n_train, 2)``.
+    y_train
+        Training label vector.
+    test_embeddings
+        Optional test embedding matrix of shape ``(n_test, 2)``.
+    y_test
+        Optional test label vector.
+    centroids
+        Optional mapping from class label to centroid coordinates.
+    title
+        Plot title.
+    show
+        Whether to display the figure.
+    save_path
+        Optional figure output path.
+    """
+    train_embeddings = np.asarray(train_embeddings, dtype=float)
+    y_train = np.asarray(y_train)
+
+    if train_embeddings.ndim != 2 or train_embeddings.shape[1] != 2:
+        raise ValueError(
+            "Expected train_embeddings with shape (n_samples, 2), " f"got {train_embeddings.shape}."
+        )
+
+    if len(train_embeddings) != len(y_train):
+        raise ValueError("train_embeddings and y_train must have the same length.")
+
+    if test_embeddings is not None:
+        test_embeddings = np.asarray(test_embeddings, dtype=float)
+        if test_embeddings.ndim != 2 or test_embeddings.shape[1] != 2:
+            raise ValueError(
+                "Expected test_embeddings with shape (n_samples, 2), "
+                f"got {test_embeddings.shape}."
+            )
+        if y_test is None:
+            raise ValueError("y_test must be provided when test_embeddings is provided.")
+        y_test = np.asarray(y_test)
+        if len(test_embeddings) != len(y_test):
+            raise ValueError("test_embeddings and y_test must have the same length.")
+
+    plt.figure()
+
+    for cls in np.unique(y_train):
+        mask = y_train == cls
+        plt.scatter(
+            train_embeddings[mask, 0],
+            train_embeddings[mask, 1],
+            label=f"train class {cls}",
+        )
+
+    if test_embeddings is not None:
+        for cls in np.unique(y_test):
+            mask = y_test == cls
+            plt.scatter(
+                test_embeddings[mask, 0],
+                test_embeddings[mask, 1],
+                marker="x",
+                label=f"test class {cls}",
+            )
+
+    if centroids is not None:
+        for cls, centroid in centroids.items():
+            centroid = np.asarray(centroid, dtype=float)
+            if centroid.shape != (2,):
+                raise ValueError(
+                    "Each centroid must have shape (2,), " f"got {centroid.shape} for class {cls}."
+                )
+            plt.scatter(
+                centroid[0],
+                centroid[1],
+                marker="X",
+                s=160,
+                label=f"centroid {cls}",
+            )
+
+    plt.xlabel("Embedding dim 1")
+    plt.ylabel("Embedding dim 2")
+    plt.title(title)
+    plt.legend()
+
+    _finalize_figure(show=show, save_path=save_path)
+
+
 def plot_decision_boundary(
     predict_proba_fn,
     x,

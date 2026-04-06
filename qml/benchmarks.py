@@ -21,12 +21,9 @@ from qml.classical_baselines import (
 from qml.classifiers import run_vqc
 from qml.io_utils import results_path, save_json
 from qml.kernel_methods import run_quantum_kernel_classifier
+from qml.metric_learning import run_quantum_metric_learner
 from qml.regression import run_vqr
 from qml.trainable_kernels import run_trainable_quantum_kernel_classifier
-
-ClassificationRunner = Callable[..., dict[str, Any]]
-RegressionRunner = Callable[..., dict[str, Any]]
-
 
 ClassificationRunner = Callable[..., dict[str, Any]]
 RegressionRunner = Callable[..., dict[str, Any]]
@@ -36,6 +33,7 @@ _CLASSIFICATION_MODELS: dict[str, ClassificationRunner] = {
     "vqc": run_vqc,
     "quantum_kernel": run_quantum_kernel_classifier,
     "trainable_quantum_kernel": run_trainable_quantum_kernel_classifier,
+    "quantum_metric_learning": run_quantum_metric_learner,
     "logistic_regression": run_logistic_classifier,
     "svm_classifier": run_svm_classifier,
     "mlp_classifier": run_mlp_classifier,
@@ -51,6 +49,8 @@ _MODEL_NAME_ALIASES: dict[str, str] = {
     "kernel": "quantum_kernel",
     "trainable_kernel": "trainable_quantum_kernel",
     "trainable-kernel": "trainable_quantum_kernel",
+    "metric_learning": "quantum_metric_learning",
+    "metric-learning": "quantum_metric_learning",
 }
 
 
@@ -160,7 +160,7 @@ def _run_classification_model(
     runner: ClassificationRunner,
     common_kwargs: dict[str, Any],
     model_kwargs: dict[str, dict[str, Any]],
-) -> dict[str, Any]:
+) -> Any:
     """
     Run one classification model with merged kwargs.
     """
@@ -169,12 +169,24 @@ def _run_classification_model(
         common_kwargs=common_kwargs,
         model_kwargs=model_kwargs,
     )
+
     if model_name in {
         "logistic_regression",
         "svm_classifier",
         "mlp_classifier",
     }:
         kwargs.pop("dataset", None)
+
+    if model_name == "quantum_metric_learning":
+        if "n_samples" in kwargs:
+            kwargs["samples"] = kwargs.pop("n_samples")
+        if "n_layers" in kwargs:
+            kwargs["layers"] = kwargs.pop("n_layers")
+        if "step_size" in kwargs:
+            kwargs["stepsize"] = kwargs.pop("step_size")
+        kwargs.pop("noise", None)
+        kwargs.pop("save", None)
+
     return runner(**kwargs)
 
 
@@ -269,8 +281,12 @@ def compare_classification_models(
                 model_kwargs=model_kwargs,
             )
 
-            train_accuracy = float(result["train_accuracy"])
-            test_accuracy = float(result["test_accuracy"])
+            if isinstance(result, dict):
+                train_accuracy = float(result["train_accuracy"])
+                test_accuracy = float(result["test_accuracy"])
+            else:
+                train_accuracy = float(result.train_accuracy)
+                test_accuracy = float(result.test_accuracy)
 
             train_accuracies.append(train_accuracy)
             test_accuracies.append(test_accuracy)
@@ -282,11 +298,15 @@ def compare_classification_models(
                 "test_accuracy": test_accuracy,
             }
 
-            if "final_loss" in result:
-                run_record["final_loss"] = float(result["final_loss"])
+            if isinstance(result, dict):
+                if "final_loss" in result:
+                    run_record["final_loss"] = float(result["final_loss"])
 
-            if "final_alignment" in result:
-                run_record["final_alignment"] = float(result["final_alignment"])
+                if "final_alignment" in result:
+                    run_record["final_alignment"] = float(result["final_alignment"])
+            else:
+                if hasattr(result, "loss_history") and result.loss_history:
+                    run_record["final_loss"] = float(result.loss_history[-1])
 
             runs.append(run_record)
 

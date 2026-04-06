@@ -18,7 +18,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pennylane as qml
 from pennylane import numpy as pnp
@@ -26,6 +25,8 @@ from sklearn.datasets import make_blobs, make_circles, make_moons
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+
+from qml.visualize import plot_loss_curve, plot_metric_learning_embeddings
 
 ArrayLike = np.ndarray
 
@@ -59,6 +60,8 @@ class QuantumMetricLearningResult:
     train_embeddings: ArrayLike
     test_embeddings: ArrayLike
     train_centroids: dict[int, ArrayLike]
+    y_train: ArrayLike
+    y_test: ArrayLike
 
 
 def _make_dataset(
@@ -238,17 +241,6 @@ def _predict_nearest_centroid(
     return np.asarray([classes[idx] for idx in preds], dtype=int)
 
 
-def _plot_loss_curve(loss_history: list[float]) -> None:
-    """Plot training loss history."""
-    plt.figure(figsize=(7, 4))
-    plt.plot(loss_history)
-    plt.xlabel("Step")
-    plt.ylabel("Contrastive loss")
-    plt.title("Quantum metric learning loss")
-    plt.tight_layout()
-    plt.show()
-
-
 def run_quantum_metric_learner(
     dataset: Literal["moons", "circles", "blobs"] = "moons",
     samples: int = 120,
@@ -378,7 +370,21 @@ def run_quantum_metric_learner(
     test_accuracy = float(accuracy_score(y_test, y_test_pred))
 
     if config.plot:
-        _plot_loss_curve(loss_history)
+        plot_loss_curve(
+            loss_history,
+            title="Quantum metric learning loss",
+            show=True,
+        )
+        if train_embeddings.shape[1] == 2:
+            plot_metric_learning_embeddings(
+                train_embeddings=train_embeddings,
+                y_train=y_train,
+                test_embeddings=test_embeddings,
+                y_test=y_test,
+                centroids=train_centroids,
+                title="Quantum metric learning embeddings",
+                show=True,
+            )
 
     return QuantumMetricLearningResult(
         train_accuracy=train_accuracy,
@@ -388,4 +394,6 @@ def run_quantum_metric_learner(
         train_embeddings=train_embeddings,
         test_embeddings=test_embeddings,
         train_centroids=train_centroids,
+        y_train=np.asarray(y_train, dtype=int),
+        y_test=np.asarray(y_test, dtype=int),
     )

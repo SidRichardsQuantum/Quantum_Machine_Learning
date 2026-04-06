@@ -37,6 +37,8 @@ def test_run_quantum_metric_learner_smoke() -> None:
     assert result.train_embeddings.shape == (n_train, n_qubits)
     assert result.test_embeddings.shape == (n_test, n_qubits)
     assert set(result.train_centroids.keys()) == {0, 1}
+    assert result.y_train.shape == (n_train,)
+    assert result.y_test.shape == (n_test,)
 
 
 def test_metric_learning_cli_smoke() -> None:

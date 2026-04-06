@@ -331,17 +331,6 @@ The current quantum kernel classifier is intentionally minimal.
 - train/test accuracy
 - returned train and test kernel matrices
 
-## Not yet included
-
-- trainable feature maps
-- alternative kernels
-- multiclass extensions
-- shot-based kernel estimation
-- kernel centering or alignment analysis
-- kernel matrix visualisation
-- classical baseline comparisons inside the same workflow
-- larger dataset support
-
 ---
 
 # Relation to the code

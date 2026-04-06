@@ -392,17 +392,6 @@ The current VQC is intentionally minimal.
 - train/test accuracy
 - loss curve and decision-boundary visualisation
 
-## Not yet included
-
-- multiclass classification
-- minibatching
-- alternative observables
-- alternative ansätze
-- alternative embeddings
-- shot noise / hardware execution
-- regularisation terms
-- calibration or uncertainty estimates
-
 ---
 
 # Interpretation

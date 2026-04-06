@@ -1,5 +1,86 @@
 # CHANGELOG.md
 
+## [0.1.9] - 06-04-2026
+
+### Added
+
+#### Quantum metric learning
+- Implemented supervised **quantum metric learning** using contrastive loss
+- Trainable data re-uploading embedding circuits
+- Nearest-centroid classification in learned quantum feature space
+- CLI workflow:
+
+```bash
+python -m qml metric-learning --samples 200 --layers 2 --steps 50 --plot
+```
+
+- Notebook:
+
+```
+notebooks/09_quantum_metric_learning.ipynb
+```
+
+- Documentation:
+
+```
+docs/qml/metric_learning.md
+```
+
+#### Visualisation support
+
+- Added `plot_metric_learning_embeddings(...)` to `qml.visualize`
+- Standardised plotting via shared visualisation utilities
+- Automatic embedding plots when `plot=True`
+
+#### Benchmark integration
+
+- Added `quantum_metric_learning` to classification benchmark framework
+- Supports multi-seed comparison with VQC, quantum kernel, and classical baselines
+- Compatible with per-model hyperparameter overrides
+
+#### CLI integration
+
+- Added `metric-learning` subcommand
+- Consistent interface with other QML workflows
+
+#### Testing
+
+- Added smoke tests for:
+
+  - API workflow
+  - CLI execution
+- Ensures reproducibility with small-step configurations
+
+#### Documentation updates
+
+- README feature list updated
+- USAGE.md includes API and CLI usage examples
+- THEORY.md extended with contrastive learning formulation
+- Added dedicated docs page:
+
+```
+docs/qml/metric_learning.md
+```
+
+### Internal improvements
+
+- Unified plotting interface across models
+- Improved result dataclass structure for embedding-based workflows
+- Added label outputs (`y_train`, `y_test`) to metric learning results
+- Improved compatibility of benchmark framework with dataclass-based outputs
+
+### Summary
+
+New core QML capability:
+
+- variational quantum classification (VQC)
+- variational quantum regression (VQR)
+- quantum kernel methods
+- trainable quantum kernels
+- quantum metric learning
+
+Metric learning provides a flexible representation-learning approach compatible with classical classifiers and similarity-based workflows.
+
 ---
 
 ## [0.2.0] - 06-04-2026
