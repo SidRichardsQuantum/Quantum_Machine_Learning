@@ -114,6 +114,8 @@ def run_trainable_quantum_kernel_classifier(
     step_size: float = 0.1,
     reg_strength: float = 1e-4,
     svc_c: float = 1.0,
+    shots_train: int | None = None,
+    shots_kernel: int | None = None,
     plot: bool = False,
     save: bool = False,
     results_dir: str | Path | None = None,
@@ -182,7 +184,8 @@ def run_trainable_quantum_kernel_classifier(
         n_qubits=n_qubits,
     )
 
-    dev = qml.device("default.qubit", wires=n_qubits)
+    dev_train = qml.device("default.qubit", wires=n_qubits, seed=seed)
+    dev_kernel = qml.device("default.qubit", wires=n_qubits, seed=seed)
 
     def _apply_embedding(x, params) -> None:
         if param_shape:
@@ -193,15 +196,45 @@ def run_trainable_quantum_kernel_classifier(
                 for i in range(len(wires) - 1):
                     qml.CNOT(wires=[wires[i], wires[i + 1]])
 
-    @qml.qnode(dev, interface="autograd")
-    def kernel_circuit(x1, x2, params):
+    @qml.qnode(dev_train, interface="autograd")
+    def kernel_circuit_train_base(x1, x2, params):
         _apply_embedding(x1, params)
         qml.adjoint(_apply_embedding)(x2, params)
         return qml.probs(wires=wires)
 
+    @qml.qnode(dev_kernel)
+    def kernel_circuit_eval_base(x1, x2, params):
+        _apply_embedding(x1, params)
+        qml.adjoint(_apply_embedding)(x2, params)
+        return qml.probs(wires=wires)
+
+    kernel_circuit_train = (
+        qml.set_shots(kernel_circuit_train_base, shots_train)
+        if shots_train is not None
+        else kernel_circuit_train_base
+    )
+
+    kernel_circuit_eval = (
+        qml.set_shots(kernel_circuit_eval_base, shots_kernel)
+        if shots_kernel is not None
+        else kernel_circuit_eval_base
+    )
+
     def kernel_value_autodiff(x1, x2, params):
-        probs = kernel_circuit(x1, x2, params)
+
+        probs = kernel_circuit_train(x1, x2, params)
+
         return probs[0]
+
+    def kernel_fn(x1, x2) -> float:
+
+        probs = kernel_circuit_eval(
+            np.asarray(x1, dtype=float),
+            np.asarray(x2, dtype=float),
+            trained_params,
+        )
+
+        return float(probs[0])
 
     x_train_q = pnp.array(x_train, requires_grad=False)
     y_train_pm = pnp.array(2 * y_train - 1, requires_grad=False)
@@ -261,14 +294,6 @@ def run_trainable_quantum_kernel_classifier(
 
     trained_params = np.asarray(params, dtype=float)
 
-    def kernel_fn(x1, x2) -> float:
-        probs = kernel_circuit(
-            np.asarray(x1, dtype=float),
-            np.asarray(x2, dtype=float),
-            trained_params,
-        )
-        return float(probs[0])
-
     kernel_matrix_train = _compute_kernel_matrix(x_train, x_train, kernel_fn)
     kernel_matrix_test = _compute_kernel_matrix(x_test, x_train, kernel_fn)
 
@@ -307,7 +332,12 @@ def run_trainable_quantum_kernel_classifier(
         "y_test": y_test,
         "y_train_pred": np.asarray(y_train_pred, dtype=int),
         "y_test_pred": np.asarray(y_test_pred, dtype=int),
+        "shots_train": shots_train,
+        "shots_kernel": shots_kernel,
     }
+
+    train_tag = "analytic" if shots_train is None else f"train{shots_train}"
+    kernel_tag = "analytic" if shots_kernel is None else f"kernel{shots_kernel}"
 
     stem = (
         f"moons_trainable_kernel_"
@@ -315,7 +345,8 @@ def run_trainable_quantum_kernel_classifier(
         f"layers{embedding_layers}_"
         f"samples{n_samples}_"
         f"noise{str(noise).replace('.', 'p')}_"
-        f"seed{seed}"
+        f"seed{seed}_"
+        f"{train_tag}_{kernel_tag}"
     )
 
     def _results_file(filename: str) -> Path:

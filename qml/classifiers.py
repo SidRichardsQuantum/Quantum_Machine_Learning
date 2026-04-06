@@ -59,6 +59,7 @@ def run_vqc(
     step_size: float = 0.1,
     embedding: str = "angle",
     embedding_layers: int = 1,
+    shots: int | None = None,
     plot: bool = False,
     save: bool = False,
     results_dir: str | Path | None = None,
@@ -89,6 +90,8 @@ def run_vqc(
     embedding_layers
         Number of trainable embedding layers for embeddings that require
         parameters.
+    shots
+        Number of measurement shots. If ``None``, uses analytic mode.
     plot
         Whether to show generated plots.
     save
@@ -131,8 +134,6 @@ def run_vqc(
     ansatz_size = int(np.prod(ansatz_shape))
     total_size = embedding_size + ansatz_size
 
-    dev = qml.device("default.qubit", wires=n_qubits)
-
     def unpack_params(params):
         if embedding_size > 0:
             embedding_params = pnp.reshape(params[:embedding_size], embedding_shape)
@@ -142,8 +143,10 @@ def run_vqc(
             ansatz_params = pnp.reshape(params, ansatz_shape)
         return embedding_params, ansatz_params
 
+    dev = qml.device("default.qubit", wires=n_qubits, seed=seed)
+
     @qml.qnode(dev, interface="autograd")
-    def circuit(x, params):
+    def circuit_base(x, params):
         embedding_params, ansatz_params = unpack_params(params)
 
         if embedding_params is None:
@@ -153,6 +156,8 @@ def run_vqc(
 
         apply_hardware_efficient_ansatz(ansatz_params, wires=wires)
         return qml.expval(qml.PauliZ(wires[0]))
+
+    circuit = qml.set_shots(circuit_base, shots) if shots is not None else circuit_base
 
     def predict_proba_single(x, params):
         return 0.5 * (1.0 - circuit(x, params))
@@ -196,6 +201,7 @@ def run_vqc(
         "n_layers": n_layers,
         "steps": steps,
         "step_size": step_size,
+        "shots": shots,
         "loss_history": loss_history,
         "final_loss": _binary_cross_entropy(y_train, train_probs),
         "train_accuracy": accuracy_score(y_train, y_train_pred),
@@ -213,9 +219,10 @@ def run_vqc(
         "test_probabilities": test_probs,
     }
 
+    shots_tag = "analytic" if shots is None else f"shots{shots}"
     stem = (
         f"moons_embed{embedding_name}_layers{n_layers}_steps{steps}_samples{n_samples}"
-        f"_noise{str(noise).replace('.', 'p')}_seed{seed}"
+        f"_noise{str(noise).replace('.', 'p')}_seed{seed}_{shots_tag}"
     )
 
     def predict_proba_grid(x_grid):

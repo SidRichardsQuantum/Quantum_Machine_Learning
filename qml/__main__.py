@@ -1,4 +1,6 @@
 """
+qml.__main__
+
 Command-line entrypoint for the qml package.
 """
 
@@ -95,6 +97,15 @@ def _add_common_dataset_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--save", action="store_true", help="Save results and figures.")
 
 
+def _add_shots_arg(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--shots",
+        type=int,
+        default=None,
+        help="Number of measurement shots (None = analytic mode).",
+    )
+
+
 def _build_parser() -> argparse.ArgumentParser:
     """
     Build the top-level CLI parser.
@@ -114,12 +125,14 @@ def _build_parser() -> argparse.ArgumentParser:
     vqc_parser.add_argument("--layers", type=int, default=2, help="Number of ansatz layers.")
     vqc_parser.add_argument("--steps", type=int, default=50, help="Number of optimizer steps.")
     vqc_parser.add_argument("--step-size", type=float, default=0.1, help="Optimizer step size.")
+    _add_shots_arg(vqc_parser)
 
     kernel_parser = subparsers.add_parser(
         "kernel",
         help="Run a quantum kernel classifier.",
     )
     _add_common_dataset_args(kernel_parser)
+    _add_shots_arg(kernel_parser)
 
     trainable_kernel_parser = subparsers.add_parser(
         "trainable-kernel",
@@ -163,6 +176,19 @@ def _build_parser() -> argparse.ArgumentParser:
         default=1.0,
         help="SVM regularisation parameter for the learned precomputed kernel.",
     )
+    trainable_kernel_parser.add_argument(
+        "--shots-train",
+        type=int,
+        default=None,
+        help="Shots used during kernel training (alignment optimisation).",
+    )
+
+    trainable_kernel_parser.add_argument(
+        "--shots-kernel",
+        type=int,
+        default=None,
+        help="Shots used when evaluating final kernel matrices.",
+    )
 
     regression_parser = subparsers.add_parser(
         "regression",
@@ -187,6 +213,7 @@ def _build_parser() -> argparse.ArgumentParser:
         default=0.1,
         help="Optimizer step size.",
     )
+    _add_shots_arg(regression_parser)
 
     logistic_parser = subparsers.add_parser(
         "logistic",
@@ -343,6 +370,7 @@ def _run_vqc_command(args: argparse.Namespace) -> int:
         step_size=args.step_size,
         plot=args.plot,
         save=args.save,
+        shots=args.shots,
     )
 
     print(f"Model: {result['model']}")
@@ -367,6 +395,7 @@ def _run_regression_command(args: argparse.Namespace) -> int:
         step_size=args.step_size,
         plot=args.plot,
         save=args.save,
+        shots=args.shots,
     )
 
     print(f"Model: {result['model']}")
@@ -396,6 +425,8 @@ def _run_trainable_kernel_command(args: argparse.Namespace) -> int:
         svc_c=args.svc_c,
         plot=args.plot,
         save=args.save,
+        shots_train=args.shots_train,
+        shots_kernel=args.shots_kernel,
     )
 
     print(f"Model: {result['model']}")
@@ -419,6 +450,7 @@ def _run_kernel_command(args: argparse.Namespace) -> int:
         test_size=args.test_size,
         seed=args.seed,
         plot=args.plot,
+        shots=args.shots,
         save=args.save,
     )
 

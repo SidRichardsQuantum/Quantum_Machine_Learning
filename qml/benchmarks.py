@@ -28,6 +28,10 @@ ClassificationRunner = Callable[..., dict[str, Any]]
 RegressionRunner = Callable[..., dict[str, Any]]
 
 
+ClassificationRunner = Callable[..., dict[str, Any]]
+RegressionRunner = Callable[..., dict[str, Any]]
+
+
 _CLASSIFICATION_MODELS: dict[str, ClassificationRunner] = {
     "vqc": run_vqc,
     "quantum_kernel": run_quantum_kernel_classifier,
@@ -41,6 +45,12 @@ _REGRESSION_MODELS: dict[str, RegressionRunner] = {
     "vqr": run_vqr,
     "ridge_regression": run_ridge_regression,
     "mlp_regressor": run_mlp_regressor,
+}
+
+_MODEL_NAME_ALIASES: dict[str, str] = {
+    "kernel": "quantum_kernel",
+    "trainable_kernel": "trainable_quantum_kernel",
+    "trainable-kernel": "trainable_quantum_kernel",
 }
 
 
@@ -60,6 +70,77 @@ def _mean_std(values: list[float]) -> dict[str, float]:
     }
 
 
+def _canonical_model_name(
+    model_name: str,
+    available_models: dict[str, Callable[..., dict[str, Any]]],
+) -> str:
+    """
+    Return the canonical model name, resolving supported aliases.
+    """
+    canonical = _MODEL_NAME_ALIASES.get(model_name, model_name)
+    if canonical not in available_models:
+        available = sorted(set(available_models) | set(_MODEL_NAME_ALIASES))
+        raise ValueError(
+            f"Unknown model: {model_name}. " f"Available models: {', '.join(available)}."
+        )
+    return canonical
+
+
+def _normalize_model_names(
+    requested_models: list[str] | None,
+    available_models: dict[str, Callable[..., dict[str, Any]]],
+) -> list[str]:
+    """
+    Validate and canonicalize requested model names while preserving order.
+    """
+    if requested_models is None:
+        return list(available_models.keys())
+
+    normalized: list[str] = []
+    for name in requested_models:
+        canonical = _canonical_model_name(name, available_models)
+        if canonical not in normalized:
+            normalized.append(canonical)
+
+    return normalized
+
+
+def _normalize_model_kwargs(
+    model_kwargs: dict[str, dict[str, Any]] | None,
+    available_models: dict[str, Callable[..., dict[str, Any]]],
+) -> dict[str, dict[str, Any]]:
+    """
+    Canonicalize per-model kwargs keys and merge alias entries if needed.
+    """
+    if model_kwargs is None:
+        return {}
+
+    normalized: dict[str, dict[str, Any]] = {}
+
+    for model_name, kwargs in model_kwargs.items():
+        canonical = _canonical_model_name(model_name, available_models)
+        if canonical not in normalized:
+            normalized[canonical] = {}
+        normalized[canonical].update(kwargs)
+
+    return normalized
+
+
+def _prepare_runner_kwargs(
+    model_name: str,
+    common_kwargs: dict[str, Any],
+    model_kwargs: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """
+    Merge common kwargs with model-specific kwargs and disable plotting/saving.
+    """
+    kwargs = dict(common_kwargs)
+    kwargs.update(model_kwargs.get(model_name, {}))
+    kwargs["plot"] = False
+    kwargs["save"] = False
+    return kwargs
+
+
 def _validate_models(
     requested_models: list[str] | None,
     available_models: dict[str, Callable[..., dict[str, Any]]],
@@ -68,18 +149,10 @@ def _validate_models(
     """
     Validate requested model names against the available registry.
     """
-    if requested_models is None:
-        return list(available_models.keys())
-
-    unknown = [name for name in requested_models if name not in available_models]
-    if unknown:
-        available = ", ".join(sorted(available_models))
-        missing = ", ".join(sorted(unknown))
-        raise ValueError(
-            f"Unknown model(s) for {benchmark_name}: {missing}. " f"Available models: {available}."
-        )
-
-    return requested_models
+    try:
+        return _normalize_model_names(requested_models, available_models)
+    except ValueError as exc:
+        raise ValueError(f"Invalid model selection for {benchmark_name}: {exc}") from exc
 
 
 def _run_classification_model(
@@ -91,10 +164,11 @@ def _run_classification_model(
     """
     Run one classification model with merged kwargs.
     """
-    kwargs = dict(common_kwargs)
-    kwargs.update(model_kwargs.get(model_name, {}))
-    kwargs["plot"] = False
-    kwargs["save"] = False
+    kwargs = _prepare_runner_kwargs(
+        model_name=model_name,
+        common_kwargs=common_kwargs,
+        model_kwargs=model_kwargs,
+    )
     return runner(**kwargs)
 
 
@@ -107,10 +181,11 @@ def _run_regression_model(
     """
     Run one regression model with merged kwargs.
     """
-    kwargs = dict(common_kwargs)
-    kwargs.update(model_kwargs.get(model_name, {}))
-    kwargs["plot"] = False
-    kwargs["save"] = False
+    kwargs = _prepare_runner_kwargs(
+        model_name=model_name,
+        common_kwargs=common_kwargs,
+        model_kwargs=model_kwargs,
+    )
     return runner(**kwargs)
 
 
@@ -157,7 +232,7 @@ def compare_classification_models(
         benchmark_name="classification benchmark",
     )
     seeds = [123] if seeds is None else seeds
-    model_kwargs = {} if model_kwargs is None else model_kwargs
+    model_kwargs = _normalize_model_kwargs(model_kwargs, _CLASSIFICATION_MODELS)
 
     common_kwargs = {
         "n_samples": n_samples,
@@ -278,7 +353,7 @@ def compare_regression_models(
         benchmark_name="regression benchmark",
     )
     seeds = [123] if seeds is None else seeds
-    model_kwargs = {} if model_kwargs is None else model_kwargs
+    model_kwargs = _normalize_model_kwargs(model_kwargs, _REGRESSION_MODELS)
 
     common_kwargs = {
         "n_samples": n_samples,

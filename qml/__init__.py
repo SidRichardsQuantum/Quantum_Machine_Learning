@@ -1,5 +1,5 @@
 """
-qml
+qml.__init__
 ===
 
 Quantum Machine Learning package built on PennyLane.

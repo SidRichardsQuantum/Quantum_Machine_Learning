@@ -46,20 +46,6 @@ def _angle_feature_map(x, wires) -> None:
 def _compute_kernel_matrix(x_a, x_b, kernel_fn) -> np.ndarray:
     """
     Compute the kernel matrix K_ij = k(x_a^(i), x_b^(j)).
-
-    Parameters
-    ----------
-    x_a
-        First input array of shape ``(n_a, n_features)``.
-    x_b
-        Second input array of shape ``(n_b, n_features)``.
-    kernel_fn
-        Callable returning a scalar kernel value.
-
-    Returns
-    -------
-    np.ndarray
-        Kernel matrix of shape ``(n_a, n_b)``.
     """
     x_a = np.asarray(x_a, dtype=float)
     x_b = np.asarray(x_b, dtype=float)
@@ -76,6 +62,7 @@ def run_quantum_kernel_classifier(
     noise: float = 0.1,
     test_size: float = 0.25,
     seed: int = 123,
+    shots: int | None = None,
     plot: bool = False,
     save: bool = False,
     results_dir: str | Path | None = None,
@@ -94,15 +81,12 @@ def run_quantum_kernel_classifier(
         Fraction reserved for test data.
     seed
         Random seed.
+    shots
+        Number of measurement shots. If ``None``, uses analytic mode.
     plot
         Whether to display plots.
     save
         Whether to save results JSON and figures.
-
-    Returns
-    -------
-    dict[str, Any]
-        Run summary including kernel matrices, predictions, and accuracies.
     """
     dataset = make_moons_dataset(
         n_samples=n_samples,
@@ -110,6 +94,7 @@ def run_quantum_kernel_classifier(
         test_size=test_size,
         seed=seed,
     )
+
     x_train = dataset["x_train"]
     x_test = dataset["x_test"]
     y_train = dataset["y_train"]
@@ -118,20 +103,33 @@ def run_quantum_kernel_classifier(
     n_qubits = x_train.shape[1]
     wires = list(range(n_qubits))
 
-    dev = qml.device("default.qubit", wires=n_qubits)
+    dev = qml.device("default.qubit", wires=n_qubits, seed=seed)
 
     @qml.qnode(dev)
-    def kernel_circuit(x1, x2):
+    def kernel_circuit_base(x1, x2):
         _angle_feature_map(x1, wires)
         qml.adjoint(_angle_feature_map)(x2, wires)
         return qml.probs(wires=wires)
+
+    kernel_circuit = (
+        qml.set_shots(kernel_circuit_base, shots) if shots is not None else kernel_circuit_base
+    )
 
     def kernel_fn(x1, x2) -> float:
         probs = kernel_circuit(x1, x2)
         return float(probs[0])
 
-    kernel_matrix_train = _compute_kernel_matrix(x_train, x_train, kernel_fn)
-    kernel_matrix_test = _compute_kernel_matrix(x_test, x_train, kernel_fn)
+    kernel_matrix_train = _compute_kernel_matrix(
+        x_train,
+        x_train,
+        kernel_fn,
+    )
+
+    kernel_matrix_test = _compute_kernel_matrix(
+        x_test,
+        x_train,
+        kernel_fn,
+    )
 
     clf = SVC(kernel="precomputed")
     clf.fit(kernel_matrix_train, y_train)
@@ -147,6 +145,7 @@ def run_quantum_kernel_classifier(
         "noise": noise,
         "test_size": test_size,
         "n_qubits": n_qubits,
+        "shots": shots,
         "train_accuracy": accuracy_score(y_train, y_train_pred),
         "test_accuracy": accuracy_score(y_test, y_test_pred),
         "kernel_matrix_train": kernel_matrix_train,
@@ -159,21 +158,36 @@ def run_quantum_kernel_classifier(
         "y_test_pred": np.asarray(y_test_pred, dtype=int),
     }
 
-    stem = f"moons_samples{n_samples}_noise{str(noise).replace('.', 'p')}_seed{seed}"
+    shots_tag = "analytic" if shots is None else f"shots{shots}"
+
+    stem = (
+        f"moons_samples{n_samples}"
+        f"_noise{str(noise).replace('.', 'p')}"
+        f"_seed{seed}"
+        f"_{shots_tag}"
+    )
 
     def _results_file(filename: str) -> Path:
         if results_dir is not None:
             path = Path(results_dir) / filename
             path.parent.mkdir(parents=True, exist_ok=True)
             return path
-        return results_path("kernel", filename)
+
+        return results_path(
+            "kernel",
+            filename,
+        )
 
     def _images_file(filename: str) -> Path:
         if images_dir is not None:
             path = Path(images_dir) / filename
             path.parent.mkdir(parents=True, exist_ok=True)
             return path
-        return images_path("kernel", filename)
+
+        return images_path(
+            "kernel",
+            filename,
+        )
 
     if plot or save:
         plot_dataset_2d(
@@ -199,6 +213,9 @@ def run_quantum_kernel_classifier(
         )
 
     if save:
-        save_json(result, _results_file(f"{stem}.json"))
+        save_json(
+            result,
+            _results_file(f"{stem}.json"),
+        )
 
     return result

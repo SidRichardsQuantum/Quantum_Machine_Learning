@@ -34,6 +34,7 @@ def run_vqr(
     n_layers: int = 2,
     steps: int = 50,
     step_size: float = 0.1,
+    shots: int | None = None,
     plot: bool = False,
     save: bool = False,
     results_dir: str | Path | None = None,
@@ -58,6 +59,8 @@ def run_vqr(
         Number of optimizer steps.
     step_size
         Optimizer step size.
+    shots
+        Number of measurement shots. If ``None``, uses analytic mode.
     plot
         Whether to display plots.
     save
@@ -82,13 +85,15 @@ def run_vqr(
     n_qubits = x_train.shape[1]
     wires = list(range(n_qubits))
 
-    dev = qml.device("default.qubit", wires=n_qubits)
+    dev = qml.device("default.qubit", wires=n_qubits, seed=seed)
 
     @qml.qnode(dev, interface="autograd")
-    def circuit(x, params):
+    def circuit_base(x, params):
         apply_angle_embedding(x, wires=wires)
         apply_hardware_efficient_ansatz(params, wires=wires)
         return qml.expval(qml.PauliZ(wires[0]))
+
+    circuit = qml.set_shots(circuit_base, shots) if shots is not None else circuit_base
 
     def predict_single(x, params):
         return circuit(x, params)
@@ -126,6 +131,7 @@ def run_vqr(
         "n_layers": n_layers,
         "steps": steps,
         "step_size": step_size,
+        "shots": shots,
         "loss_history": loss_history,
         "final_loss": float(loss_history[-1]) if loss_history else float("nan"),
         "train_mse": mean_squared_error(y_train, y_train_pred),
@@ -141,9 +147,10 @@ def run_vqr(
         "y_test_pred": y_test_pred,
     }
 
+    shots_tag = "analytic" if shots is None else f"shots{shots}"
     stem = (
         f"regression_layers{n_layers}_steps{steps}_samples{n_samples}"
-        f"_noise{str(noise).replace('.', 'p')}_seed{seed}"
+        f"_noise{str(noise).replace('.', 'p')}_seed{seed}_{shots_tag}"
     )
 
     def _results_file(filename: str) -> Path:
