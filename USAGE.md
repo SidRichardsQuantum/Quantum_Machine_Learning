@@ -261,6 +261,81 @@ Typical fields:
 
 ---
 
+# Quantum autoencoder
+
+Train a quantum autoencoder on a structured family of four-qubit states:
+
+```python
+from qml.autoencoder import run_quantum_autoencoder
+
+result = run_quantum_autoencoder(
+    n_samples=200,
+    noise=0.05,
+    test_size=0.25,
+    seed=123,
+    n_layers=2,
+    latent_qubits=2,
+    steps=50,
+    step_size=0.1,
+    family="correlated",
+    plot=True,
+    save=False,
+)
+```
+
+---
+
+## Parameters
+
+| parameter | description | default |
+| --------- | ----------- | ------- |
+| n_samples | dataset size | 200 |
+| noise | family perturbation level | 0.05 |
+| test_size | test fraction | 0.25 |
+| seed | random seed | 123 |
+| n_layers | autoencoder ansatz depth | 2 |
+| latent_qubits | retained latent qubits | 2 |
+| steps | optimisation steps | 50 |
+| step_size | Adam learning rate | 0.1 |
+| family | state family | "correlated" |
+| plot | show plots | False |
+| save | save JSON + plots | False |
+
+---
+
+## Returned dictionary
+
+Typical fields:
+
+```python
+{
+    "model",
+    "family",
+
+    "seed",
+
+    "n_qubits",
+    "latent_qubits",
+    "trash_qubits",
+
+    "n_layers",
+    "steps",
+    "step_size",
+
+    "loss_history",
+
+    "train_compression_fidelity",
+    "test_compression_fidelity",
+
+    "train_reconstruction_fidelity",
+    "test_reconstruction_fidelity",
+
+    "params",
+}
+```
+
+---
+
 # Quantum kernel classifier
 
 Compute a quantum kernel matrix and train an SVM:
@@ -610,6 +685,8 @@ Run workflows directly:
 python -m qml vqc --steps 50 --plot
 
 python -m qml qcnn --steps 50 --plot
+
+python -m qml autoencoder --steps 50 --plot
 
 python -m qml regression --steps 50 --plot
 

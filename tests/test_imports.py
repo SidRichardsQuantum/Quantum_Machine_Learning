@@ -1,5 +1,6 @@
 def test_imports_smoke():
     import qml
+    import qml.autoencoder
     import qml.ansatz
     import qml.classifiers
     import qml.data

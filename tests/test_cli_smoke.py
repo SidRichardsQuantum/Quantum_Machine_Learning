@@ -77,6 +77,26 @@ def test_cli_qcnn_runs(monkeypatch: pytest.MonkeyPatch):
     assert "Final loss" in stdout
 
 
+def test_cli_autoencoder_runs(monkeypatch: pytest.MonkeyPatch):
+    returncode, stdout, _ = _run_cli_in_process(
+        monkeypatch,
+        [
+            "autoencoder",
+            "--samples",
+            "20",
+            "--steps",
+            "2",
+            "--layers",
+            "1",
+        ],
+    )
+
+    assert returncode == 0
+    assert "Train compression fidelity" in stdout
+    assert "Test compression fidelity" in stdout
+    assert "Final loss" in stdout
+
+
 def test_cli_regression_runs(monkeypatch: pytest.MonkeyPatch):
     returncode, stdout, _ = _run_cli_in_process(
         monkeypatch,

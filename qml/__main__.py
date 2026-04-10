@@ -12,6 +12,7 @@ from qml.benchmarks import (
     compare_classification_models,
     compare_regression_models,
 )
+from qml.autoencoder import run_quantum_autoencoder
 from qml.classical_baselines import (
     run_logistic_classifier,
     run_mlp_classifier,
@@ -290,6 +291,43 @@ def _build_parser() -> argparse.ArgumentParser:
         "--no-scale-data",
         action="store_true",
         help="Disable feature standardization before angle encoding.",
+    )
+
+    autoencoder_parser = subparsers.add_parser(
+        "autoencoder",
+        help="Run a quantum autoencoder workflow.",
+    )
+    _add_common_dataset_args(autoencoder_parser)
+    autoencoder_parser.add_argument(
+        "--family",
+        type=str,
+        default="correlated",
+        choices=["correlated", "entangled", "hybrid"],
+        help="Structured quantum state family.",
+    )
+    autoencoder_parser.add_argument(
+        "--layers",
+        type=int,
+        default=2,
+        help="Number of autoencoder ansatz layers.",
+    )
+    autoencoder_parser.add_argument(
+        "--latent-qubits",
+        type=int,
+        default=2,
+        help="Number of latent qubits retained by the autoencoder.",
+    )
+    autoencoder_parser.add_argument(
+        "--steps",
+        type=int,
+        default=50,
+        help="Number of optimizer steps.",
+    )
+    autoencoder_parser.add_argument(
+        "--step-size",
+        type=float,
+        default=0.1,
+        help="Optimizer step size.",
     )
 
     regression_parser = subparsers.add_parser(
@@ -629,6 +667,37 @@ def _run_metric_learning_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_autoencoder_command(args: argparse.Namespace) -> int:
+    """
+    Run the quantum autoencoder workflow from parsed CLI arguments.
+    """
+    result = run_quantum_autoencoder(
+        n_samples=args.samples,
+        noise=args.noise,
+        test_size=args.test_size,
+        seed=args.seed,
+        n_layers=args.layers,
+        latent_qubits=args.latent_qubits,
+        steps=args.steps,
+        step_size=args.step_size,
+        plot=args.plot,
+        save=args.save,
+        family=args.family,
+        optimizer=args.optimizer,
+        early_stopping_patience=args.early_stopping_patience,
+        early_stopping_min_delta=args.early_stopping_min_delta,
+    )
+
+    print(f"Model: {result['model']}")
+    print(f"Family: {result['family']}")
+    print(f"Train compression fidelity: {result['train_compression_fidelity']:.6f}")
+    print(f"Test compression fidelity: {result['test_compression_fidelity']:.6f}")
+    print(f"Train reconstruction fidelity: {result['train_reconstruction_fidelity']:.6f}")
+    print(f"Test reconstruction fidelity: {result['test_reconstruction_fidelity']:.6f}")
+    print(f"Final loss: {result['final_loss']:.6f}")
+    return 0
+
+
 def _run_kernel_command(args: argparse.Namespace) -> int:
     """
     Run the quantum kernel workflow from parsed CLI arguments.
@@ -790,6 +859,9 @@ def main() -> int:
 
     if args.command == "metric-learning":
         return _run_metric_learning_command(args)
+
+    if args.command == "autoencoder":
+        return _run_autoencoder_command(args)
 
     if args.command == "regression":
         return _run_regression_command(args)

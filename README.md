@@ -11,6 +11,7 @@ Modular **PennyLane-based quantum machine learning library** implementing reusab
 • Variational quantum classification (VQC)  
 • Variational quantum regression (VQR)  
 • Quantum convolutional neural networks (QCNN)  
+• Quantum autoencoders  
 • Quantum kernel methods  
 • Trainable quantum kernels (kernel-target alignment)  
 • Quantum metric learning (trainable embedding geometry)  
@@ -100,6 +101,27 @@ Learns a small hierarchical quantum classifier using:
 • trainable data embedding across four qubits  
 • shared convolution-style two-qubit blocks  
 • pooling-style entangling reductions before final readout  
+
+---
+
+## Quantum autoencoder
+
+```python
+from qml.autoencoder import run_quantum_autoencoder
+
+result = run_quantum_autoencoder(
+    n_samples=200,
+    family="correlated",
+    steps=50,
+    plot=True,
+)
+```
+
+Learns a compression map for structured four-qubit state families using:
+
+• a trainable encoder/decoder ansatz  
+• a latent subspace retained across selected qubits  
+• compression and reconstruction fidelity metrics  
 
 ---
 
@@ -267,6 +289,7 @@ Run workflows directly:
 ```bash
 python -m qml vqc --steps 50 --plot
 python -m qml qcnn --steps 50 --plot
+python -m qml autoencoder --steps 50 --plot
 python -m qml regression --steps 50 --plot
 python -m qml kernel --plot
 python -m qml trainable-kernel --steps 50 --plot
@@ -308,6 +331,7 @@ Algorithm notes:
 • docs/qml/variational_quantum_classifier.md
 • docs/qml/variational_regression.md
 • docs/qml/qcnn.md
+• docs/qml/autoencoder.md
 • docs/qml/quantum_kernels.md
 • docs/qml/metric_learning.md
 
@@ -316,6 +340,7 @@ Example notebooks:
 • quantum_variational_classifier.ipynb
 • quantum_regressor.ipynb
 • quantum_convolutional_neural_network.ipynb
+• quantum_autoencoder.ipynb
 • quantum_kernel_classifier.ipynb
 • quantum_metric_learning.ipynb
 • classical_vs_quantum_classifier.ipynb
@@ -341,6 +366,9 @@ qml/
 
     qcnn.py
         quantum convolutional classifier workflows
+
+    autoencoder.py
+        quantum autoencoder workflows
 
     kernel_methods.py
         quantum kernel workflows

@@ -1,5 +1,28 @@
 # CHANGELOG.md
 
+## [0.1.12] - 10-04-2026
+
+### Added
+
+- Implemented a first-class quantum autoencoder workflow in `qml.autoencoder`
+- Added `autoencoder` CLI support via `python -m qml autoencoder`
+- Added smoke, artifact, CLI, and import coverage for the quantum autoencoder
+- Added autoencoder documentation and example notebook support
+
+### Summary
+
+New core QML capability:
+
+- variational quantum classification (VQC)
+- variational quantum regression (VQR)
+- quantum convolutional neural networks (QCNN)
+- quantum autoencoders
+- quantum kernel methods
+- trainable quantum kernels
+- quantum metric learning
+
+---
+
 ## [0.1.11] - 10-04-2026
 
 ### Added

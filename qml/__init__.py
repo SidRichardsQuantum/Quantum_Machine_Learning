@@ -18,6 +18,7 @@ from importlib.metadata import PackageNotFoundError, version
 from .classifiers import run_vqc
 from .kernel_methods import run_quantum_kernel_classifier
 from .optimizers import get_optimizer, list_supported_optimizers
+from .autoencoder import run_quantum_autoencoder
 from .qcnn import run_qcnn
 from .regression import run_vqr
 from .trainable_kernels import run_trainable_quantum_kernel_classifier
@@ -35,6 +36,7 @@ __all__ = [
     "ansatz",
     "training",
     "metric_learning",
+    "autoencoder",
     "run_quantum_metric_learner",
     "losses",
     "metrics",
@@ -49,6 +51,7 @@ __all__ = [
     "optimizers",
     "run_vqc",
     "run_vqr",
+    "run_quantum_autoencoder",
     "run_qcnn",
     "run_quantum_kernel_classifier",
     "run_trainable_quantum_kernel_classifier",

@@ -810,6 +810,74 @@ Finite-shot execution approximates behaviour of real quantum hardware.
 
 ---
 
+# Quantum autoencoders
+
+Quantum autoencoders learn a unitary compression map that moves irrelevant
+information into a designated trash subsystem while preserving the informative
+degrees of freedom in a smaller latent subsystem.
+
+Let the input state be
+
+$$
+|\psi(x)\rangle \in \mathcal{H}_A \otimes \mathcal{H}_B
+$$
+
+where:
+
+• $\mathcal{H}_A$ is the retained latent subsystem  
+• $\mathcal{H}_B$ is the trash subsystem  
+
+The encoder aims to transform the state so that the trash subsystem is close to
+a fixed reference state, typically $|0\rangle^{\otimes k}$.
+
+---
+
+## Compression objective
+
+Given encoder unitary $U(\theta)$, the compressed state is
+
+$$
+|\phi(x,\theta)\rangle
+=
+U(\theta)|\psi(x)\rangle.
+$$
+
+Compression succeeds when the trash subsystem factors as
+
+$$
+|\phi(x,\theta)\rangle
+\approx
+|\tilde{\psi}(x)\rangle_A \otimes |0\rangle_B.
+$$
+
+This repository optimizes the probability of measuring the trash subsystem in
+the all-zero state.
+
+---
+
+## Reconstruction
+
+After compression, a decoder can be defined by the adjoint unitary
+
+$$
+U(\theta)^\dagger.
+$$
+
+Applying the decoder gives a reconstructed state
+
+$$
+|\psi_{\mathrm{rec}}(x,\theta)\rangle
+=
+U(\theta)^\dagger U(\theta)|\psi(x)\rangle.
+$$
+
+The implementation reports both:
+
+• compression fidelity on the trash subsystem  
+• reconstruction fidelity on the full state  
+
+---
+
 # References
 
 Schuld, M., Sinayskiy, I., & Petruccione, F. (2015)  
