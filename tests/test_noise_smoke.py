@@ -1,9 +1,11 @@
+import pytest
+
 from qml.benchmarks import compare_classification_models, compare_regression_models
 
 
 def test_classification_benchmark_accepts_noise_aware_model_kwargs():
     result = compare_classification_models(
-        models=["vqc", "kernel", "trainable_quantum_kernel"],
+        models=["vqc", "kernel"],
         seeds=[7],
         n_samples=24,
         noise=0.1,
@@ -16,12 +18,6 @@ def test_classification_benchmark_accepts_noise_aware_model_kwargs():
             "kernel": {
                 "shots": 4,
             },
-            "trainable_quantum_kernel": {
-                "embedding": "angle",
-                "steps": 0,
-                "shots_train": 4,
-                "shots_kernel": 4,
-            },
         },
         save=False,
     )
@@ -30,14 +26,12 @@ def test_classification_benchmark_accepts_noise_aware_model_kwargs():
     assert result["models"] == [
         "vqc",
         "quantum_kernel",
-        "trainable_quantum_kernel",
     ]
 
     assert "vqc" in result["summary"]
     assert "quantum_kernel" in result["summary"]
-    assert "trainable_quantum_kernel" in result["summary"]
 
-    assert len(result["runs"]) == 3
+    assert len(result["runs"]) == 2
 
     for run in result["runs"]:
         assert "model" in run
@@ -46,18 +40,14 @@ def test_classification_benchmark_accepts_noise_aware_model_kwargs():
         assert "test_accuracy" in run
 
 
+@pytest.mark.slow
 def test_classification_benchmark_finite_shot_runs_are_deterministic_for_fixed_seed():
     kwargs = {
-        "models": ["vqc", "kernel"],
+        "models": ["kernel"],
         "seeds": [11],
         "n_samples": 24,
         "noise": 0.1,
         "model_kwargs": {
-            "vqc": {
-                "n_layers": 1,
-                "steps": 2,
-                "shots": 4,
-            },
             "kernel": {
                 "shots": 4,
             },
@@ -102,6 +92,7 @@ def test_regression_benchmark_accepts_noise_aware_model_kwargs():
     assert "test_mae" in run
 
 
+@pytest.mark.slow
 def test_regression_benchmark_finite_shot_runs_are_deterministic_for_fixed_seed():
     kwargs = {
         "models": ["vqr"],

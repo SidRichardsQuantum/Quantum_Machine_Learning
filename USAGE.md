@@ -29,6 +29,34 @@ pip install -e ".[dev]"
 
 ---
 
+# Testing and CI
+
+Run the default fast local test pass:
+
+```bash
+pytest -m "not slow"
+```
+
+Run the slower end-to-end coverage as well:
+
+```bash
+pytest
+```
+
+Tests marked with `@pytest.mark.slow` are used for heavier CLI and determinism
+checks. CI mirrors this split:
+
+• fast tests run across the Python version matrix  
+• the full suite runs on Python 3.12  
+
+Linting remains separate:
+
+```bash
+ruff check .
+```
+
+---
+
 # Variational quantum classifier (VQC)
 
 Train a minimal variational quantum classifier on a synthetic dataset:

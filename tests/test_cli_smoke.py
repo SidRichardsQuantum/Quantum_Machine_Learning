@@ -1,7 +1,26 @@
+import io
 import subprocess
 import sys
+from contextlib import redirect_stderr, redirect_stdout
+
+import pytest
+
+from qml.__main__ import main
 
 
+def _run_cli_in_process(monkeypatch: pytest.MonkeyPatch, args: list[str]) -> tuple[int, str, str]:
+    stdout = io.StringIO()
+    stderr = io.StringIO()
+
+    monkeypatch.setattr(sys, "argv", ["python -m qml", *args])
+
+    with redirect_stdout(stdout), redirect_stderr(stderr):
+        returncode = main()
+
+    return returncode, stdout.getvalue(), stderr.getvalue()
+
+
+@pytest.mark.slow
 def test_cli_vqc_runs():
     result = subprocess.run(
         [
@@ -25,53 +44,43 @@ def test_cli_vqc_runs():
     assert "Test accuracy" in result.stdout
 
 
-def test_cli_kernel_runs():
-    result = subprocess.run(
+def test_cli_kernel_runs(monkeypatch: pytest.MonkeyPatch):
+    returncode, stdout, _ = _run_cli_in_process(
+        monkeypatch,
         [
-            sys.executable,
-            "-m",
-            "qml",
             "kernel",
             "--samples",
             "20",
         ],
-        capture_output=True,
-        text=True,
     )
 
-    assert result.returncode == 0
-    assert "Train accuracy" in result.stdout
-    assert "Test accuracy" in result.stdout
+    assert returncode == 0
+    assert "Train accuracy" in stdout
+    assert "Test accuracy" in stdout
 
 
-def test_cli_qcnn_runs():
-    result = subprocess.run(
+def test_cli_qcnn_runs(monkeypatch: pytest.MonkeyPatch):
+    returncode, stdout, _ = _run_cli_in_process(
+        monkeypatch,
         [
-            sys.executable,
-            "-m",
-            "qml",
             "qcnn",
             "--samples",
             "20",
             "--steps",
             "2",
         ],
-        capture_output=True,
-        text=True,
     )
 
-    assert result.returncode == 0
-    assert "Train accuracy" in result.stdout
-    assert "Test accuracy" in result.stdout
-    assert "Final loss" in result.stdout
+    assert returncode == 0
+    assert "Train accuracy" in stdout
+    assert "Test accuracy" in stdout
+    assert "Final loss" in stdout
 
 
-def test_cli_regression_runs():
-    result = subprocess.run(
+def test_cli_regression_runs(monkeypatch: pytest.MonkeyPatch):
+    returncode, stdout, _ = _run_cli_in_process(
+        monkeypatch,
         [
-            sys.executable,
-            "-m",
-            "qml",
             "regression",
             "--samples",
             "20",
@@ -80,62 +89,50 @@ def test_cli_regression_runs():
             "--layers",
             "1",
         ],
-        capture_output=True,
-        text=True,
     )
 
-    assert result.returncode == 0
-    assert "Train MSE" in result.stdout
-    assert "Test MSE" in result.stdout
-    assert "Final loss" in result.stdout
+    assert returncode == 0
+    assert "Train MSE" in stdout
+    assert "Test MSE" in stdout
+    assert "Final loss" in stdout
 
 
-def test_cli_logistic_runs():
-    result = subprocess.run(
+def test_cli_logistic_runs(monkeypatch: pytest.MonkeyPatch):
+    returncode, stdout, _ = _run_cli_in_process(
+        monkeypatch,
         [
-            sys.executable,
-            "-m",
-            "qml",
             "logistic",
             "--samples",
             "20",
         ],
-        capture_output=True,
-        text=True,
     )
 
-    assert result.returncode == 0
-    assert "Train accuracy" in result.stdout
-    assert "Test accuracy" in result.stdout
+    assert returncode == 0
+    assert "Train accuracy" in stdout
+    assert "Test accuracy" in stdout
 
 
-def test_cli_ridge_runs():
-    result = subprocess.run(
+def test_cli_ridge_runs(monkeypatch: pytest.MonkeyPatch):
+    returncode, stdout, _ = _run_cli_in_process(
+        monkeypatch,
         [
-            sys.executable,
-            "-m",
-            "qml",
             "ridge",
             "--samples",
             "20",
         ],
-        capture_output=True,
-        text=True,
     )
 
-    assert result.returncode == 0
-    assert "Train MSE" in result.stdout
-    assert "Test MSE" in result.stdout
-    assert "Train MAE" in result.stdout
-    assert "Test MAE" in result.stdout
+    assert returncode == 0
+    assert "Train MSE" in stdout
+    assert "Test MSE" in stdout
+    assert "Train MAE" in stdout
+    assert "Test MAE" in stdout
 
 
-def test_cli_trainable_kernel_runs():
-    result = subprocess.run(
+def test_cli_trainable_kernel_runs(monkeypatch: pytest.MonkeyPatch):
+    returncode, stdout, _ = _run_cli_in_process(
+        monkeypatch,
         [
-            sys.executable,
-            "-m",
-            "qml",
             "trainable-kernel",
             "--samples",
             "20",
@@ -146,12 +143,10 @@ def test_cli_trainable_kernel_runs():
             "--embedding-layers",
             "1",
         ],
-        capture_output=True,
-        text=True,
     )
 
-    assert result.returncode == 0
-    assert "Train accuracy" in result.stdout
-    assert "Test accuracy" in result.stdout
-    assert "Final alignment" in result.stdout
-    assert "Final loss" in result.stdout
+    assert returncode == 0
+    assert "Train accuracy" in stdout
+    assert "Test accuracy" in stdout
+    assert "Final alignment" in stdout
+    assert "Final loss" in stdout

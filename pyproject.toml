@@ -50,6 +50,9 @@ include = ["qml*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+markers = [
+    "slow: slower end-to-end tests kept in the full test pass",
+]
 
 [tool.ruff]
 line-length = 100
