@@ -573,6 +573,7 @@ def _run_metric_learning_command(args: argparse.Namespace) -> int:
         log_every=args.log_every,
         scale_data=not args.no_scale_data,
         plot=args.plot,
+        save=args.save,
     )
 
     print("Model: quantum_metric_learning")

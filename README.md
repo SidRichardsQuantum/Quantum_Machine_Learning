@@ -131,12 +131,9 @@ Classification is performed via nearest-centroid prediction in the learned embed
 
 ---
 
-All workflows return structured dictionaries containing:
-
-• training metrics
-• predictions
-• learned parameters
-• configuration metadata
+Workflows return structured result objects containing training metrics, predictions,
+learned parameters, and configuration metadata. Most APIs return dictionaries; the
+metric-learning workflow returns a typed dataclass.
 
 ---
 

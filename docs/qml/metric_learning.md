@@ -287,6 +287,15 @@ Outputs include:
 • training and test accuracy
 • optimisation loss history
 
+The public API returns a `QuantumMetricLearningResult` dataclass rather than a
+plain dictionary, so values are accessed via attributes such as
+`result.train_accuracy` and `result.loss_history`.
+
+When `save=True`, the workflow also writes JSON results and generated figures to:
+
+• `results/metric_learning/`
+• `images/metric_learning/`
+
 ---
 
 # When to use quantum metric learning

@@ -90,6 +90,8 @@ images/
 
 .vscode/
 .idea/
+.codex
+.codex/
 
 # macOS
 .DS_Store

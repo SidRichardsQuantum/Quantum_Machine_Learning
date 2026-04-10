@@ -15,7 +15,8 @@ fits naturally into the existing package structure and synthetic demo workflows.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Literal
 
 import numpy as np
@@ -26,6 +27,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
+from qml.io_utils import ensure_dir, images_path, results_path, save_json
 from qml.visualize import plot_loss_curve, plot_metric_learning_embeddings
 
 ArrayLike = np.ndarray
@@ -254,6 +256,9 @@ def run_quantum_metric_learner(
     log_every: int = 10,
     scale_data: bool = True,
     plot: bool = False,
+    save: bool = False,
+    results_dir: str | Path | None = None,
+    images_dir: str | Path | None = None,
 ) -> QuantumMetricLearningResult:
     """
     Train a simple quantum metric learner and evaluate it.
@@ -284,6 +289,12 @@ def run_quantum_metric_learner(
         Standardise features before angle encoding.
     plot:
         Whether to plot the training loss curve.
+    save:
+        Whether to save JSON results and generated figures.
+    results_dir:
+        Optional override for result output directory.
+    images_dir:
+        Optional override for figure output directory.
 
     Returns
     -------
@@ -369,24 +380,7 @@ def run_quantum_metric_learner(
     train_accuracy = float(accuracy_score(y_train, y_train_pred))
     test_accuracy = float(accuracy_score(y_test, y_test_pred))
 
-    if config.plot:
-        plot_loss_curve(
-            loss_history,
-            title="Quantum metric learning loss",
-            show=True,
-        )
-        if train_embeddings.shape[1] == 2:
-            plot_metric_learning_embeddings(
-                train_embeddings=train_embeddings,
-                y_train=y_train,
-                test_embeddings=test_embeddings,
-                y_test=y_test,
-                centroids=train_centroids,
-                title="Quantum metric learning embeddings",
-                show=True,
-            )
-
-    return QuantumMetricLearningResult(
+    result = QuantumMetricLearningResult(
         train_accuracy=train_accuracy,
         test_accuracy=test_accuracy,
         loss_history=loss_history,
@@ -397,3 +391,54 @@ def run_quantum_metric_learner(
         y_train=np.asarray(y_train, dtype=int),
         y_test=np.asarray(y_test, dtype=int),
     )
+
+    stem = (
+        f"{dataset}_layers{layers}_steps{steps}_samples{samples}"
+        f"_margin{str(margin).replace('.', 'p')}_seed{seed}"
+    )
+
+    def _results_file(filename: str) -> Path:
+        if results_dir is not None:
+            path = Path(results_dir) / filename
+            ensure_dir(path.parent)
+            return path
+        return results_path("metric_learning", filename)
+
+    def _images_file(filename: str) -> Path:
+        if images_dir is not None:
+            path = Path(images_dir) / filename
+            ensure_dir(path.parent)
+            return path
+        return images_path("metric_learning", filename)
+
+    if config.plot or save:
+        plot_loss_curve(
+            loss_history,
+            title="Quantum metric learning loss",
+            show=config.plot,
+            save_path=_images_file(f"{stem}_loss.png") if save else None,
+        )
+        if train_embeddings.shape[1] == 2:
+            plot_metric_learning_embeddings(
+                train_embeddings=train_embeddings,
+                y_train=y_train,
+                test_embeddings=test_embeddings,
+                y_test=y_test,
+                centroids=train_centroids,
+                title="Quantum metric learning embeddings",
+                show=config.plot,
+                save_path=_images_file(f"{stem}_embeddings.png") if save else None,
+            )
+
+    if save:
+        save_json(
+            {
+                "model": "quantum_metric_learning",
+                "dataset": dataset,
+                "config": asdict(config),
+                "result": asdict(result),
+            },
+            _results_file(f"{stem}.json"),
+        )
+
+    return result

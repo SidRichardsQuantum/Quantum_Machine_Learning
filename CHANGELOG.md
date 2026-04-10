@@ -1,5 +1,26 @@
 # CHANGELOG.md
 
+## [0.1.10] - 10-04-2026
+
+### Fixed
+
+- `metric-learning` now honors `--save` in the CLI and API
+- Added JSON/plot artifact saving for quantum metric learning
+- Normalised VQR artifact output paths to `results/vqr/` and `images/vqr/`
+- Updated API docs to reflect that metric learning returns a dataclass result
+
+### Added
+
+- Regression tests for metric-learning artifact saving
+- Regression tests for VQR default artifact path selection
+
+### Maintenance
+
+- Ignored local `.codex` file and `.codex/` directory
+- Removed stale local build artifacts before the next release cut
+
+---
+
 ## [0.1.9] - 06-04-2026
 
 ### Added

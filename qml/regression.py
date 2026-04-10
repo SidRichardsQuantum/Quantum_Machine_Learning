@@ -180,14 +180,14 @@ def run_vqr(
             path = Path(results_dir) / filename
             ensure_dir(path.parent)
             return path
-        return results_path(f"{dataset}", filename)
+        return results_path("vqr", filename)
 
     def _images_file(filename: str) -> Path:
         if images_dir is not None:
             path = Path(images_dir) / filename
             ensure_dir(path.parent)
             return path
-        return images_path(f"{dataset}", filename)
+        return images_path("vqr", filename)
 
     if plot or save:
         plot_dataset_2d(

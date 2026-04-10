@@ -294,6 +294,9 @@ Classification is performed using nearest-centroid prediction in the learned emb
 | log_every | logging frequency | 10 |
 | scale_data | standardise features before encoding | True |
 | plot | display training loss | False |
+| save | save JSON + plots | False |
+| results_dir | override results output directory | None |
+| images_dir | override images output directory | None |
 
 ---
 
@@ -321,6 +324,14 @@ result.test_embeddings
 result.train_centroids
 ```
 
+When `save=True`, the workflow writes JSON results and generated figures. By
+default these are stored under:
+
+```text
+results/metric_learning/
+images/metric_learning/
+```
+
 ---
 
 ## CLI usage
@@ -330,7 +341,8 @@ python -m qml metric-learning \
     --samples 200 \
     --layers 2 \
     --steps 50 \
-    --plot
+    --plot \
+    --save
 ```
 
 Optional arguments:
@@ -340,6 +352,7 @@ Optional arguments:
 --pairs-per-step 32
 --log-every 10
 --no-scale-data
+--save
 ```
 
 ---
