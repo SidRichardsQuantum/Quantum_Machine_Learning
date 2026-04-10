@@ -492,6 +492,69 @@ Alignment encourages kernel similarity to reflect class structure.
 
 ---
 
+# Quantum convolutional neural networks
+
+Quantum convolutional neural networks use a hierarchical circuit structure to
+combine local feature extraction with progressive reduction of the active
+degrees of freedom.
+
+A QCNN alternates:
+
+• convolution-style local two-qubit blocks  
+• pooling-style entangling reductions  
+• a final readout on a reduced register  
+
+In the implementation used here, the classifier applies a trainable embedding
+on four qubits, followed by shared convolution blocks on neighbouring pairs,
+then a second-stage convolution on the pooled representation.
+
+---
+
+## Hierarchical structure
+
+Let the initial embedded state be
+
+$$
+|\phi(x, \theta_{\mathrm{emb}})\rangle.
+$$
+
+The QCNN transforms it as
+
+$$
+|\psi(x, \theta)\rangle
+=
+U_{\mathrm{dense}}
+U_{\mathrm{conv},2}
+U_{\mathrm{pool}}
+U_{\mathrm{conv},1}
+|\phi(x, \theta_{\mathrm{emb}})\rangle.
+$$
+
+This differs from a flat variational classifier because information is processed
+through successive local blocks rather than a repeated global ansatz layer.
+
+---
+
+## Binary classification readout
+
+The final prediction is obtained from a Pauli-$Z$ expectation on the readout qubit:
+
+$$
+s(x, \theta) = \langle Z \rangle.
+$$
+
+This is mapped to a class probability by
+
+$$
+p(y=1 \mid x, \theta)
+=
+\frac{1 - s(x, \theta)}{2}.
+$$
+
+Training then minimizes binary cross-entropy over the dataset.
+
+---
+
 # Quantum metric learning
 
 Quantum metric learning aims to learn an embedding geometry in which distances between samples reflect label similarity.

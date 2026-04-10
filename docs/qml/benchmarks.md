@@ -42,6 +42,7 @@ Compare multiple classifiers on the same dataset.
 Supported models:
 
 - `vqc`
+- `qcnn`
 - `quantum_kernel`
 - `logistic_regression`
 - `svm_classifier`
@@ -53,7 +54,7 @@ Example:
 from qml.benchmarks import compare_classification_models
 
 result = compare_classification_models(
-    models=["vqc", "quantum_kernel", "svm_classifier"],
+    models=["vqc", "qcnn", "quantum_kernel", "svm_classifier"],
     seeds=[0, 1, 2, 3],
     n_samples=200,
     noise=0.1,
@@ -153,7 +154,7 @@ Classification benchmark:
 
 ```bash
 python -m qml benchmark classification \
-    --models vqc quantum_kernel svm_classifier logistic_regression \
+    --models vqc qcnn quantum_kernel svm_classifier logistic_regression \
     --seeds 123 456 789
 ```
 
@@ -215,6 +216,7 @@ Classification:
 
 ```
 vqc
+qcnn
 quantum_kernel
 logistic_regression
 svm_classifier
@@ -272,6 +274,7 @@ Benchmark utilities call the following workflows:
 Classification:
 
 - `qml.classifiers.run_vqc`
+- `qml.qcnn.run_qcnn`
 - `qml.kernel_methods.run_quantum_kernel_classifier`
 - `qml.classical_baselines.run_logistic_classifier`
 - `qml.classical_baselines.run_svm_classifier`

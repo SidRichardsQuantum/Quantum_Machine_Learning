@@ -18,6 +18,7 @@ from importlib.metadata import PackageNotFoundError, version
 from .classifiers import run_vqc
 from .kernel_methods import run_quantum_kernel_classifier
 from .optimizers import get_optimizer, list_supported_optimizers
+from .qcnn import run_qcnn
 from .regression import run_vqr
 from .trainable_kernels import run_trainable_quantum_kernel_classifier
 from .metric_learning import run_quantum_metric_learner
@@ -39,6 +40,7 @@ __all__ = [
     "metrics",
     "classifiers",
     "regression",
+    "qcnn",
     "kernel_methods",
     "trainable_kernels",
     "classical_baselines",
@@ -47,6 +49,7 @@ __all__ = [
     "optimizers",
     "run_vqc",
     "run_vqr",
+    "run_qcnn",
     "run_quantum_kernel_classifier",
     "run_trainable_quantum_kernel_classifier",
     "get_optimizer",

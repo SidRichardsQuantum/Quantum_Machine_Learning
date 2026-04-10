@@ -6,12 +6,15 @@ from qml.benchmarks import (
 
 def test_classification_benchmark_runs():
     result = compare_classification_models(
-        models=["vqc", "logistic_regression"],
+        models=["vqc", "qcnn", "logistic_regression"],
         seeds=[0],
         n_samples=20,
         model_kwargs={
             "vqc": {
                 "n_layers": 1,
+                "steps": 2,
+            },
+            "qcnn": {
                 "steps": 2,
             },
         },

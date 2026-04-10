@@ -44,6 +44,28 @@ def test_cli_kernel_runs():
     assert "Test accuracy" in result.stdout
 
 
+def test_cli_qcnn_runs():
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "qml",
+            "qcnn",
+            "--samples",
+            "20",
+            "--steps",
+            "2",
+        ],
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+    assert "Train accuracy" in result.stdout
+    assert "Test accuracy" in result.stdout
+    assert "Final loss" in result.stdout
+
+
 def test_cli_regression_runs():
     result = subprocess.run(
         [

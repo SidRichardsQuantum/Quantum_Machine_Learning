@@ -156,6 +156,83 @@ result = run_vqr(
 
 ---
 
+# Quantum convolutional neural network (QCNN)
+
+Train a hierarchical quantum classifier on a synthetic dataset:
+
+```python
+from qml.qcnn import run_qcnn
+
+result = run_qcnn(
+    n_samples=200,
+    noise=0.1,
+    test_size=0.25,
+    seed=123,
+    steps=50,
+    step_size=0.1,
+    plot=True,
+    save=False,
+)
+```
+
+---
+
+## Parameters
+
+| parameter | description | default |
+| --------- | ----------- | ------- |
+| n_samples | dataset size | 200 |
+| noise | dataset noise level | 0.1 |
+| test_size | test fraction | 0.25 |
+| seed | random seed | 123 |
+| steps | optimisation steps | 50 |
+| step_size | Adam learning rate | 0.1 |
+| shots | finite-shot sampling | None |
+| plot | show plots | False |
+| save | save JSON + plots | False |
+
+---
+
+## Returned dictionary
+
+Typical fields:
+
+```python
+{
+    "model",
+    "dataset",
+
+    "seed",
+
+    "n_qubits",
+
+    "steps",
+    "step_size",
+
+    "loss_history",
+
+    "train_accuracy",
+    "test_accuracy",
+
+    "params",
+    "embedding_params",
+    "conv1_params",
+    "conv2_params",
+    "dense_params",
+
+    "y_train",
+    "y_test",
+
+    "y_train_pred",
+    "y_test_pred",
+
+    "train_probabilities",
+    "test_probabilities",
+}
+```
+
+---
+
 # Quantum kernel classifier
 
 Compute a quantum kernel matrix and train an SVM:
@@ -423,6 +500,7 @@ from qml.benchmarks import compare_classification_models
 result = compare_classification_models(
     models=[
         "vqc",
+        "qcnn",
         "quantum_kernel",
         "trainable_quantum_kernel",
         "logistic_regression",
@@ -465,6 +543,7 @@ result = compare_classification_models(
 
     models=[
         "vqc",
+        "qcnn",
         "quantum_kernel",
         "trainable_quantum_kernel",
     ],
@@ -502,6 +581,8 @@ Run workflows directly:
 ```bash
 python -m qml vqc --steps 50 --plot
 
+python -m qml qcnn --steps 50 --plot
+
 python -m qml regression --steps 50 --plot
 
 python -m qml kernel --plot
@@ -519,7 +600,7 @@ Classification:
 
 ```bash
 python -m qml benchmark classification \
-    --models vqc quantum_kernel logistic_regression svm_classifier \
+    --models vqc qcnn quantum_kernel logistic_regression svm_classifier \
     --seeds 123 456
 ```
 

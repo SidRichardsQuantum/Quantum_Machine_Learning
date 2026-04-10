@@ -10,6 +10,7 @@ Modular **PennyLane-based quantum machine learning library** implementing reusab
 
 • Variational quantum classification (VQC)  
 • Variational quantum regression (VQR)  
+• Quantum convolutional neural networks (QCNN)  
 • Quantum kernel methods  
 • Trainable quantum kernels (kernel-target alignment)  
 • Quantum metric learning (trainable embedding geometry)  
@@ -79,6 +80,26 @@ result = run_vqr(
     plot=True,
 )
 ```
+
+---
+
+## Quantum convolutional neural network
+
+```python
+from qml.qcnn import run_qcnn
+
+result = run_qcnn(
+    n_samples=200,
+    steps=50,
+    plot=True,
+)
+```
+
+Learns a small hierarchical quantum classifier using:
+
+• trainable data embedding across four qubits  
+• shared convolution-style two-qubit blocks  
+• pooling-style entangling reductions before final readout  
 
 ---
 
@@ -184,6 +205,7 @@ from qml.benchmarks import compare_classification_models
 result = compare_classification_models(
     models=[
         "vqc",
+        "qcnn",
         "quantum_kernel",
         "trainable_quantum_kernel",
         "logistic_regression",
@@ -203,6 +225,7 @@ Benchmarks accept per-model kwargs:
 result = compare_classification_models(
     models=[
         "vqc",
+        "qcnn",
         "quantum_kernel",
         "trainable_quantum_kernel",
     ],
@@ -243,6 +266,7 @@ Run workflows directly:
 
 ```bash
 python -m qml vqc --steps 50 --plot
+python -m qml qcnn --steps 50 --plot
 python -m qml regression --steps 50 --plot
 python -m qml kernel --plot
 python -m qml trainable-kernel --steps 50 --plot
@@ -253,7 +277,7 @@ Run benchmarks:
 
 ```bash
 python -m qml benchmark classification \
-    --models vqc quantum_kernel svm_classifier logistic_regression \
+    --models vqc qcnn quantum_kernel svm_classifier logistic_regression \
     --seeds 123 456
 ```
 
@@ -283,13 +307,17 @@ Algorithm notes:
 
 • docs/qml/variational_quantum_classifier.md
 • docs/qml/variational_regression.md
+• docs/qml/qcnn.md
 • docs/qml/quantum_kernels.md
+• docs/qml/metric_learning.md
 
 Example notebooks:
 
 • quantum_variational_classifier.ipynb
 • quantum_regressor.ipynb
+• quantum_convolutional_neural_network.ipynb
 • quantum_kernel_classifier.ipynb
+• quantum_metric_learning.ipynb
 • classical_vs_quantum_classifier.ipynb
 
 ---
@@ -310,6 +338,9 @@ qml/
 
     regression.py
         variational quantum regression workflows
+
+    qcnn.py
+        quantum convolutional classifier workflows
 
     kernel_methods.py
         quantum kernel workflows

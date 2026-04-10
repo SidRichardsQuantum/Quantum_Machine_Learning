@@ -22,6 +22,7 @@ from qml.classical_baselines import (
 from qml.classifiers import run_vqc
 from qml.kernel_methods import run_quantum_kernel_classifier
 from qml.metric_learning import run_quantum_metric_learner
+from qml.qcnn import run_qcnn
 from qml.regression import run_vqr
 from qml.trainable_kernels import run_trainable_quantum_kernel_classifier
 
@@ -152,6 +153,22 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_common_dataset_args(kernel_parser)
     _add_shots_arg(kernel_parser)
     kernel_parser.add_argument(
+        "--dataset",
+        type=str,
+        default="moons",
+        choices=["moons", "circles", "blobs", "xor"],
+        help="Classification dataset.",
+    )
+
+    qcnn_parser = subparsers.add_parser(
+        "qcnn",
+        help="Run a quantum convolutional neural network classifier.",
+    )
+    _add_common_dataset_args(qcnn_parser)
+    qcnn_parser.add_argument("--steps", type=int, default=50, help="Number of optimizer steps.")
+    qcnn_parser.add_argument("--step-size", type=float, default=0.1, help="Optimizer step size.")
+    _add_shots_arg(qcnn_parser)
+    qcnn_parser.add_argument(
         "--dataset",
         type=str,
         default="moons",
@@ -520,6 +537,34 @@ def _run_regression_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_qcnn_command(args: argparse.Namespace) -> int:
+    """
+    Run the QCNN workflow from parsed CLI arguments.
+    """
+    result = run_qcnn(
+        n_samples=args.samples,
+        noise=args.noise,
+        test_size=args.test_size,
+        dataset=args.dataset,
+        seed=args.seed,
+        steps=args.steps,
+        step_size=args.step_size,
+        plot=args.plot,
+        save=args.save,
+        shots=args.shots,
+        optimizer=args.optimizer,
+        early_stopping_patience=args.early_stopping_patience,
+        early_stopping_min_delta=args.early_stopping_min_delta,
+    )
+
+    print(f"Model: {result['model']}")
+    print(f"Dataset: {result['dataset']}")
+    print(f"Train accuracy: {result['train_accuracy']:.6f}")
+    print(f"Test accuracy: {result['test_accuracy']:.6f}")
+    print(f"Final loss: {result['final_loss']:.6f}")
+    return 0
+
+
 def _run_trainable_kernel_command(args: argparse.Namespace) -> int:
     """
     Run the trainable quantum kernel workflow from parsed CLI arguments.
@@ -736,6 +781,9 @@ def main() -> int:
 
     if args.command == "kernel":
         return _run_kernel_command(args)
+
+    if args.command == "qcnn":
+        return _run_qcnn_command(args)
 
     if args.command == "trainable-kernel":
         return _run_trainable_kernel_command(args)

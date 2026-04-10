@@ -1,5 +1,29 @@
 # CHANGELOG.md
 
+## [0.1.11] - 10-04-2026
+
+### Added
+
+- Implemented a first-class QCNN workflow in `qml.qcnn`
+- Added `qcnn` CLI support via `python -m qml qcnn`
+- Added QCNN benchmark support in classification benchmarks
+- Added QCNN smoke, CLI, benchmark, and import coverage
+- Added QCNN documentation across README, usage docs, theory notes, and a dedicated algorithm page
+- Added QCNN example notebook: `notebooks/quantum_convolutional_neural_network.ipynb`
+
+### Summary
+
+New core QML capability:
+
+- variational quantum classification (VQC)
+- variational quantum regression (VQR)
+- quantum convolutional neural networks (QCNN)
+- quantum kernel methods
+- trainable quantum kernels
+- quantum metric learning
+
+---
+
 ## [0.1.10] - 10-04-2026
 
 ### Fixed

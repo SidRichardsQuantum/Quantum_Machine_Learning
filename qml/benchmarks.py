@@ -22,6 +22,7 @@ from qml.classifiers import run_vqc
 from qml.io_utils import results_path, save_json
 from qml.kernel_methods import run_quantum_kernel_classifier
 from qml.metric_learning import run_quantum_metric_learner
+from qml.qcnn import run_qcnn
 from qml.regression import run_vqr
 from qml.trainable_kernels import run_trainable_quantum_kernel_classifier
 
@@ -31,6 +32,7 @@ RegressionRunner = Callable[..., dict[str, Any]]
 
 _CLASSIFICATION_MODELS: dict[str, ClassificationRunner] = {
     "vqc": run_vqc,
+    "qcnn": run_qcnn,
     "quantum_kernel": run_quantum_kernel_classifier,
     "trainable_quantum_kernel": run_trainable_quantum_kernel_classifier,
     "quantum_metric_learning": run_quantum_metric_learner,
