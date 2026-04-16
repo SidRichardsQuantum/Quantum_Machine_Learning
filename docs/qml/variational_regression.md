@@ -12,7 +12,7 @@ The model is a **hybrid quantum–classical regressor**:
 
 ---
 
-# Data
+## Data
 
 We consider a regression dataset:
 
@@ -44,7 +44,7 @@ denote one standardised input sample.
 
 ---
 
-# Quantum state preparation
+## Quantum state preparation
 
 The input is encoded into a quantum state using an angle embedding.
 
@@ -62,7 +62,7 @@ $$
 
 where $U_{\text{enc}}(x)$ is the encoding unitary.
 
-## Angle embedding
+### Angle embedding
 
 For an input vector $x \in \mathbb{R}^n$, the encoding applies one $R_Y$ rotation per qubit:
 
@@ -90,7 +90,7 @@ $$
 
 ---
 
-# Variational ansatz
+## Variational ansatz
 
 After encoding, a trainable circuit is applied.
 
@@ -116,7 +116,7 @@ $$
 U_{\text{ans}}(\theta)\,U_{\text{enc}}(x)\,|0\rangle^{\otimes n}
 $$
 
-## Layered hardware-efficient ansatz
+### Layered hardware-efficient ansatz
 
 The implemented ansatz uses:
 
@@ -179,7 +179,7 @@ $$
 
 ---
 
-# Measurement and model output
+## Measurement and model output
 
 The circuit measures the expectation value of the Pauli-$Z$ observable on the first qubit.
 
@@ -208,7 +208,7 @@ Because the targets are standardised, this bounded output is sufficient for the 
 
 ---
 
-# Loss function
+## Loss function
 
 Training uses mean squared error.
 
@@ -234,7 +234,7 @@ where:
 
 ---
 
-# Optimisation
+## Optimisation
 
 The parameters $\theta$ are trained using a classical optimiser.
 
@@ -272,7 +272,7 @@ where $\mathcal{L}^{(t)}$ is the loss after optimisation step $t$.
 
 ---
 
-# Regression metrics
+## Regression metrics
 
 After training, predictions are formed on both train and test sets.
 
@@ -281,7 +281,7 @@ For any evaluation set of size $M$, let:
 - $y_i$ be the true target of sample $i$
 - $\hat{y}_i$ be the predicted target of sample $i$
 
-## Mean squared error
+### Mean squared error
 
 $$
 \mathrm{MSE}
@@ -296,7 +296,7 @@ where:
 - $\mathrm{MSE}$ is the mean squared error
 - $M$ is the number of evaluated samples
 
-## Mean absolute error
+### Mean absolute error
 
 $$
 \mathrm{MAE}
@@ -319,7 +319,7 @@ The implementation reports:
 
 ---
 
-# Parameter count
+## Parameter count
 
 The ansatz parameter tensor has shape:
 
@@ -352,11 +352,11 @@ $$
 
 ---
 
-# Current implementation choices
+## Current implementation choices
 
 The current VQR is intentionally minimal.
 
-## Included
+### Included
 
 - regression with scalar targets
 - two-dimensional input
@@ -370,7 +370,7 @@ The current VQR is intentionally minimal.
 
 ---
 
-# Relation to the code
+## Relation to the code
 
 The implemented workflow is organised as follows:
 
@@ -384,7 +384,7 @@ So the notebook remains a package client, while the full VQR logic lives in the 
 
 ---
 
-# Summary
+## Summary
 
 The implemented VQR is a regressor defined by:
 

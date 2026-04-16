@@ -28,7 +28,48 @@ The repository follows a **package-first design**:
 
 ---
 
-# Installation
+## Table of Contents
+
+- [Installation](#installation)
+- [Quick start](#quick-start)
+
+  - [Variational quantum classifier](#variational-quantum-classifier)
+  - [Variational quantum regression](#variational-quantum-regression)
+  - [Quantum convolutional neural network](#quantum-convolutional-neural-network)
+  - [Quantum autoencoder](#quantum-autoencoder)
+  - [Quantum kernel classifier](#quantum-kernel-classifier)
+  - [Trainable quantum kernel](#trainable-quantum-kernel-kernel-target-alignment)
+  - [Quantum metric learning](#quantum-metric-learning)
+
+- [Noise-aware execution (finite shots)](#noise-aware-execution-finite-shots)
+- [Benchmark framework](#benchmark-framework)
+- [Model-specific configuration](#model-specific-configuration)
+- [Classical baselines](#classical-baselines)
+- [Command line interface](#command-line-interface)
+- [Documentation](#documentation)
+- [Repository structure](#repository-structure)
+- [Design principles](#design-principles)
+
+  - [Package-first architecture](#package-first-architecture)
+  - [Deterministic workflows](#deterministic-workflows)
+  - [Minimal abstractions](#minimal-abstractions)
+
+- [Current algorithms](#current-algorithms)
+
+  - [Variational quantum classifier](#variational-quantum-classifier-1)
+  - [Variational quantum regression](#variational-quantum-regression-1)
+  - [Quantum kernel classifier](#quantum-kernel-classifier-1)
+  - [Trainable quantum kernel](#trainable-quantum-kernel-1)
+  - [Quantum metric learning](#quantum-metric-learning-1)
+
+- [Development workflow](#development-workflow)
+- [Support development](#support-development)
+- [Author](#author)
+- [License](#license)
+
+---
+
+## Installation
 
 Clone and install in editable mode:
 
@@ -52,9 +93,9 @@ Requirements:
 
 ---
 
-# Quick start
+## Quick start
 
-## Variational quantum classifier
+### Variational quantum classifier
 
 ```python
 from qml.classifiers import run_vqc
@@ -69,7 +110,7 @@ result = run_vqc(
 
 ---
 
-## Variational quantum regression
+### Variational quantum regression
 
 ```python
 from qml.regression import run_vqr
@@ -84,7 +125,7 @@ result = run_vqr(
 
 ---
 
-## Quantum convolutional neural network
+### Quantum convolutional neural network
 
 ```python
 from qml.qcnn import run_qcnn
@@ -104,7 +145,7 @@ Learns a small hierarchical quantum classifier using:
 
 ---
 
-## Quantum autoencoder
+### Quantum autoencoder
 
 ```python
 from qml.autoencoder import run_quantum_autoencoder
@@ -125,7 +166,7 @@ Learns a compression map for structured four-qubit state families using:
 
 ---
 
-## Quantum kernel classifier
+### Quantum kernel classifier
 
 ```python
 from qml.kernel_methods import run_quantum_kernel_classifier
@@ -138,7 +179,7 @@ result = run_quantum_kernel_classifier(
 
 ---
 
-## Trainable quantum kernel (kernel-target alignment)
+### Trainable quantum kernel (kernel-target alignment)
 
 ```python
 from qml.trainable_kernels import run_trainable_quantum_kernel_classifier
@@ -152,7 +193,7 @@ result = run_trainable_quantum_kernel_classifier(
 
 ---
 
-## Quantum metric learning
+### Quantum metric learning
 
 ```python
 from qml.metric_learning import run_quantum_metric_learner
@@ -180,7 +221,7 @@ metric-learning workflow returns a typed dataclass.
 
 ---
 
-# Noise-aware execution (finite shots)
+## Noise-aware execution (finite shots)
 
 Quantum circuits can be evaluated either analytically or with finite sampling.
 
@@ -215,7 +256,7 @@ All workflows remain deterministic when a fixed seed is provided.
 
 ---
 
-# Benchmark framework
+## Benchmark framework
 
 Benchmark utilities compare quantum and classical models across multiple seeds.
 
@@ -239,7 +280,7 @@ result = compare_classification_models(
 
 ---
 
-## Model-specific configuration
+### Model-specific configuration
 
 Benchmarks accept per-model kwargs:
 
@@ -269,7 +310,7 @@ Result structure remains consistent across models.
 
 ---
 
-# Classical baselines
+## Classical baselines
 
 Included reference models:
 
@@ -282,7 +323,7 @@ These provide performance context for quantum models.
 
 ---
 
-# Command line interface
+## Command line interface
 
 Run workflows directly:
 
@@ -319,7 +360,7 @@ CLI outputs include:
 
 ---
 
-# Documentation
+## Documentation
 
 Core documentation:
 
@@ -347,7 +388,7 @@ Example notebooks:
 
 ---
 
-# Repository structure
+## Repository structure
 
 ```
 qml/
@@ -432,9 +473,9 @@ images/
 
 ---
 
-# Design principles
+## Design principles
 
-## Package-first architecture
+### Package-first architecture
 
 Core implementations live in:
 
@@ -446,7 +487,7 @@ Notebooks import public APIs rather than defining circuits inline.
 
 ---
 
-## Deterministic workflows
+### Deterministic workflows
 
 Reproducibility is prioritised:
 
@@ -458,7 +499,7 @@ Reproducibility is prioritised:
 
 ---
 
-## Minimal abstractions
+### Minimal abstractions
 
 Shared infrastructure intentionally remains lightweight:
 
@@ -469,9 +510,9 @@ Shared infrastructure intentionally remains lightweight:
 
 ---
 
-# Current algorithms
+## Current algorithms
 
-## Variational quantum classifier
+### Variational quantum classifier
 
 Binary classification using:
 
@@ -481,7 +522,7 @@ Binary classification using:
 
 ---
 
-## Variational quantum regression
+### Variational quantum regression
 
 Continuous prediction using:
 
@@ -491,7 +532,7 @@ Continuous prediction using:
 
 ---
 
-## Quantum kernel classifier
+### Quantum kernel classifier
 
 Support vector machine using quantum feature maps:
 
@@ -504,7 +545,7 @@ $$
 
 ---
 
-## Trainable quantum kernel
+### Trainable quantum kernel
 
 Kernel alignment objective:
 
@@ -525,7 +566,7 @@ where:
 
 ---
 
-## Quantum metric learning
+### Quantum metric learning
 
 Supervised embedding optimisation using contrastive loss:
 
@@ -552,7 +593,7 @@ Supports:
 
 ---
 
-# Development workflow
+## Development workflow
 
 Run tests:
 
@@ -572,6 +613,18 @@ Run module:
 ```bash
 python -m qml
 ```
+
+---
+
+## Support development
+
+If this project is useful for research, learning, or experimentation, you can support continued development via GitHub Sponsors:
+
+https://github.com/sponsors/SidRichardsQuantum
+
+Sponsorship supports continued work on open-source implementations of quantum machine learning models, including improvements to documentation, reproducible experiments, benchmark utilities, and example workflows.
+
+Support helps maintain accessible implementations of variational quantum models, quantum kernels, and hybrid quantum–classical learning tools.
 
 ---
 

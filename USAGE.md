@@ -13,7 +13,67 @@ The design goal is:
 
 ---
 
-# Installation
+## Table of Contents
+
+- [Installation](#installation)
+- [Testing and CI](#testing-and-ci)
+
+- [Variational quantum classifier (VQC)](#variational-quantum-classifier-vqc)
+
+  - [Parameters](#parameters)
+  - [Returned dictionary](#returned-dictionary)
+
+- [Variational quantum regression (VQR)](#variational-quantum-regression-vqr)
+
+  - [Parameters](#parameters-1)
+  - [Returned metrics](#returned-metrics)
+
+- [Quantum convolutional neural network (QCNN)](#quantum-convolutional-neural-network-qcnn)
+
+  - [Parameters](#parameters-2)
+  - [Returned dictionary](#returned-dictionary-1)
+
+- [Quantum autoencoder](#quantum-autoencoder)
+
+  - [Parameters](#parameters-3)
+  - [Returned dictionary](#returned-dictionary-2)
+
+- [Quantum kernel classifier](#quantum-kernel-classifier)
+
+  - [Parameters](#parameters-4)
+  - [Returned dictionary](#returned-dictionary-3)
+
+- [Trainable quantum kernel classifier](#trainable-quantum-kernel-classifier)
+
+  - [Parameters](#parameters-5)
+  - [Returned metrics](#returned-metrics-1)
+
+- [Quantum metric learning](#quantum-metric-learning)
+
+  - [Parameters](#parameters-6)
+  - [Returned object](#returned-object)
+
+- [CLI usage](#cli-usage)
+- [Noise-aware execution](#noise-aware-execution)
+- [Classical baselines](#classical-baselines)
+- [Benchmarking](#benchmarking)
+
+  - [Classification benchmark](#classification-benchmark)
+  - [Regression benchmark](#regression-benchmark)
+  - [Model-specific kwargs](#model-specific-kwargs)
+
+- [Command line interface](#command-line-interface)
+- [CLI benchmarks](#cli-benchmarks)
+- [Reproducibility](#reproducibility)
+- [Running from notebooks](#running-from-notebooks)
+- [Running tests](#running-tests)
+- [Development workflow](#development-workflow)
+- [Author](#author)
+- [License](#license)
+
+---
+
+## Installation
 
 Install the package in editable mode:
 
@@ -29,7 +89,7 @@ pip install -e ".[dev]"
 
 ---
 
-# Testing and CI
+## Testing and CI
 
 Run the default fast local test pass:
 
@@ -57,7 +117,7 @@ ruff check .
 
 ---
 
-# Variational quantum classifier (VQC)
+## Variational quantum classifier (VQC)
 
 Train a minimal variational quantum classifier on a synthetic dataset:
 
@@ -79,7 +139,7 @@ result = run_vqc(
 
 ---
 
-## Parameters
+### Parameters
 
 | parameter | description          | default |
 | --------- | -------------------- | ------- |
@@ -96,7 +156,7 @@ result = run_vqc(
 
 ---
 
-## Returned dictionary
+### Returned dictionary
 
 Typical fields:
 
@@ -133,7 +193,7 @@ Typical fields:
 
 ---
 
-# Variational quantum regression (VQR)
+## Variational quantum regression (VQR)
 
 Train a variational quantum regressor:
 
@@ -151,7 +211,7 @@ result = run_vqr(
 
 ---
 
-## Parameters
+### Parameters
 
 | parameter | description          | default |
 | --------- | -------------------- | ------- |
@@ -168,7 +228,7 @@ result = run_vqr(
 
 ---
 
-## Returned metrics
+### Returned metrics
 
 ```python
 {
@@ -184,7 +244,7 @@ result = run_vqr(
 
 ---
 
-# Quantum convolutional neural network (QCNN)
+## Quantum convolutional neural network (QCNN)
 
 Train a hierarchical quantum classifier on a synthetic dataset:
 
@@ -205,7 +265,7 @@ result = run_qcnn(
 
 ---
 
-## Parameters
+### Parameters
 
 | parameter | description | default |
 | --------- | ----------- | ------- |
@@ -221,7 +281,7 @@ result = run_qcnn(
 
 ---
 
-## Returned dictionary
+### Returned dictionary
 
 Typical fields:
 
@@ -261,7 +321,7 @@ Typical fields:
 
 ---
 
-# Quantum autoencoder
+## Quantum autoencoder
 
 Train a quantum autoencoder on a structured family of four-qubit states:
 
@@ -285,7 +345,7 @@ result = run_quantum_autoencoder(
 
 ---
 
-## Parameters
+### Parameters
 
 | parameter | description | default |
 | --------- | ----------- | ------- |
@@ -303,7 +363,7 @@ result = run_quantum_autoencoder(
 
 ---
 
-## Returned dictionary
+### Returned dictionary
 
 Typical fields:
 
@@ -336,7 +396,7 @@ Typical fields:
 
 ---
 
-# Quantum kernel classifier
+## Quantum kernel classifier
 
 Compute a quantum kernel matrix and train an SVM:
 
@@ -352,7 +412,7 @@ result = run_quantum_kernel_classifier(
 
 ---
 
-## Parameters
+### Parameters
 
 | parameter | description                   | default |
 | --------- | ----------------------------- | ------- |
@@ -366,7 +426,7 @@ result = run_quantum_kernel_classifier(
 
 ---
 
-## Returned dictionary
+### Returned dictionary
 
 ```python
 {
@@ -383,7 +443,7 @@ result = run_quantum_kernel_classifier(
 
 ---
 
-# Trainable quantum kernel classifier
+## Trainable quantum kernel classifier
 
 Optimise feature-map parameters using kernel-target alignment.
 
@@ -399,7 +459,7 @@ result = run_trainable_quantum_kernel_classifier(
 
 ---
 
-## Parameters
+### Parameters
 
 | parameter    | description                      | default |
 | ------------ | -------------------------------- | ------- |
@@ -412,7 +472,7 @@ result = run_trainable_quantum_kernel_classifier(
 
 ---
 
-## Returned metrics
+### Returned metrics
 
 ```python
 {
@@ -429,7 +489,7 @@ result = run_trainable_quantum_kernel_classifier(
 
 ---
 
-# Quantum metric learning
+## Quantum metric learning
 
 Train a supervised quantum embedding model using contrastive loss.
 
@@ -458,7 +518,7 @@ Classification is performed using nearest-centroid prediction in the learned emb
 
 ---
 
-## Parameters
+### Parameters
 
 | parameter | description | default |
 |----------|-------------|--------|
@@ -480,7 +540,7 @@ Classification is performed using nearest-centroid prediction in the learned emb
 
 ---
 
-## Returned object
+### Returned object
 
 Returns a dataclass:
 
@@ -514,7 +574,7 @@ images/metric_learning/
 
 ---
 
-## CLI usage
+### CLI usage
 
 ```bash
 python -m qml metric-learning \
@@ -537,7 +597,7 @@ Optional arguments:
 
 ---
 
-# Noise-aware execution
+## Noise-aware execution
 
 Finite-shot simulation is supported across all quantum workflows.
 
@@ -564,7 +624,7 @@ When a seed is provided, runs remain deterministic.
 
 ---
 
-# Classical baselines
+## Classical baselines
 
 Classical reference models:
 
@@ -589,13 +649,13 @@ result = run_logistic_classifier(
 
 ---
 
-# Benchmarking
+## Benchmarking
 
 Compare models across multiple seeds.
 
 ---
 
-## Classification benchmark
+### Classification benchmark
 
 ```python
 from qml.benchmarks import compare_classification_models
@@ -619,7 +679,7 @@ result = compare_classification_models(
 
 ---
 
-## Regression benchmark
+### Regression benchmark
 
 ```python
 from qml.benchmarks import compare_regression_models
@@ -637,7 +697,7 @@ result = compare_regression_models(
 
 ---
 
-## Model-specific kwargs
+### Model-specific kwargs
 
 Per-model configuration can be passed via:
 
@@ -677,7 +737,7 @@ Benchmark results remain consistent in structure across models.
 
 ---
 
-# Command line interface
+## Command line interface
 
 Run workflows directly:
 
@@ -699,7 +759,7 @@ python -m qml metric-learning --steps 50 --plot
 
 ---
 
-## CLI benchmarks
+### CLI benchmarks
 
 Classification:
 
@@ -719,7 +779,7 @@ python -m qml benchmark regression \
 
 ---
 
-# Reproducibility
+## Reproducibility
 
 All workflows support deterministic execution via:
 
@@ -745,7 +805,7 @@ These directories are gitignored.
 
 ---
 
-# Running from notebooks
+## Running from notebooks
 
 Notebooks should import from the package:
 
@@ -764,7 +824,7 @@ This ensures:
 
 ---
 
-# Running tests
+## Running tests
 
 Execute:
 
@@ -774,7 +834,7 @@ pytest
 
 ---
 
-# Development workflow
+## Development workflow
 
 Format code:
 
@@ -788,6 +848,18 @@ Run module:
 ```bash
 python -m qml
 ```
+
+---
+
+## Author
+
+Sid Richards
+
+LinkedIn:
+[https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
+
+GitHub:
+[https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
 
 ---
 

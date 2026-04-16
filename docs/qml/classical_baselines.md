@@ -16,9 +16,9 @@ All models follow the same interface pattern as the quantum workflows:
 
 ---
 
-# Classification baselines
+## Classification baselines
 
-## Logistic regression
+### Logistic regression
 
 Linear classifier trained using maximum likelihood.
 
@@ -48,7 +48,7 @@ Logistic regression provides a simple reference for linear decision boundaries.
 
 ---
 
-## Support vector machine (SVM)
+### Support vector machine (SVM)
 
 Kernel-based classifier.
 
@@ -74,7 +74,7 @@ Useful for comparison with quantum kernel methods.
 
 ---
 
-## Multi-layer perceptron (MLP) classifier
+### Multi-layer perceptron (MLP) classifier
 
 Feedforward neural network trained with backpropagation.
 
@@ -99,9 +99,9 @@ MLPs provide a flexible nonlinear baseline.
 
 ---
 
-# Regression baselines
+## Regression baselines
 
-## Ridge regression
+### Ridge regression
 
 Linear regression with L2 regularisation.
 
@@ -130,7 +130,7 @@ Provides a simple baseline for variational quantum regression.
 
 ---
 
-## Multi-layer perceptron (MLP) regressor
+### Multi-layer perceptron (MLP) regressor
 
 Nonlinear regression using a neural network.
 
@@ -157,7 +157,7 @@ MLP regression is a useful nonlinear comparison for VQR.
 
 ---
 
-# Result structure
+## Result structure
 
 All baseline workflows return dictionaries containing:
 
@@ -188,7 +188,7 @@ images/regression_baselines/
 
 ---
 
-# CLI usage
+## CLI usage
 
 Run baselines from the command line:
 
@@ -209,7 +209,7 @@ python -m qml ridge --samples 200 --noise 0.05 --alpha 0.5 --plot
 
 ---
 
-# Relationship to quantum models
+## Relationship to quantum models
 
 Classical baselines help contextualise quantum model performance:
 
@@ -228,7 +228,7 @@ classical_vs_quantum_regression.ipynb
 
 ---
 
-# Design notes
+## Design notes
 
 The implementation prioritises:
 

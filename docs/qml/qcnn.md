@@ -11,7 +11,7 @@ The current implementation is intentionally compact and package-oriented:
 
 ---
 
-# Overview
+## Overview
 
 A quantum convolutional neural network mirrors the high-level idea of a
 classical CNN: local processing is applied first, and information is then
@@ -22,7 +22,7 @@ is trained directly on synthetic binary classification datasets.
 
 ---
 
-# Model structure
+## Model structure
 
 Let the embedded input state be
 
@@ -53,7 +53,7 @@ The components are:
 
 ---
 
-# Readout and loss
+## Readout and loss
 
 The model measures a Pauli-$Z$ expectation on the readout qubit:
 
@@ -73,7 +73,7 @@ Training minimizes binary cross-entropy over the training set.
 
 ---
 
-# Example usage
+## Example usage
 
 ```python
 from qml.qcnn import run_qcnn
@@ -101,7 +101,7 @@ When `save=True`, the workflow writes JSON results and generated figures to:
 
 ---
 
-# Relationship to Other Models
+## Relationship to Other Models
 
 Compared with the existing VQC workflow:
 
@@ -115,7 +115,7 @@ Compared with quantum kernels:
 
 ---
 
-# When to Use QCNN
+## When to Use QCNN
 
 QCNN is useful when:
 
@@ -125,7 +125,7 @@ QCNN is useful when:
 
 ---
 
-# References
+## References
 
 Cong et al. (2019)
 Quantum convolutional neural networks.

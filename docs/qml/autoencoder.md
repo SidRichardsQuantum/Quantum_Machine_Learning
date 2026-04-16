@@ -11,7 +11,7 @@ The current implementation is intentionally compact and package-oriented:
 
 ---
 
-# Overview
+## Overview
 
 A quantum autoencoder learns a unitary compression map that preserves the
 informative degrees of freedom of a quantum state in a smaller latent subspace.
@@ -21,7 +21,7 @@ discardable information into a trash subsystem.
 
 ---
 
-# Model structure
+## Model structure
 
 Let the input state be
 
@@ -52,7 +52,7 @@ how often the trash subsystem lands in the all-zero basis state.
 
 ---
 
-# Training objective
+## Training objective
 
 The training signal is the probability of measuring the trash subsystem in
 $|0\rangle^{\otimes k}$.
@@ -76,7 +76,7 @@ family into the latent subsystem.
 
 ---
 
-# Reconstruction fidelity
+## Reconstruction fidelity
 
 To assess whether useful information is preserved, the workflow also computes a
 reconstruction fidelity by applying the decoder
@@ -94,7 +94,7 @@ This yields two complementary metrics:
 
 ---
 
-# Example usage
+## Example usage
 
 ```python
 from qml.autoencoder import run_quantum_autoencoder
@@ -122,7 +122,7 @@ When `save=True`, the workflow writes JSON results and generated figures to:
 
 ---
 
-# State families
+## State families
 
 The current implementation provides several synthetic state families:
 

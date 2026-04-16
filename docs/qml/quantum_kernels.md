@@ -13,7 +13,7 @@ Unlike the variational quantum classifier, there are **no trainable quantum circ
 
 ---
 
-# Data
+## Data
 
 We consider a binary classification dataset:
 
@@ -44,7 +44,7 @@ denote one standardised input sample.
 
 ---
 
-# Quantum feature map
+## Quantum feature map
 
 A quantum kernel method begins by encoding each classical input $x$ into a quantum state:
 
@@ -64,7 +64,7 @@ In the current implementation:
 - each feature is encoded by a single-qubit $R_Y$ rotation
 - a short entangling chain is applied afterward
 
-## Feature map definition
+### Feature map definition
 
 For an input vector $x \in \mathbb{R}^n$, the feature map is:
 
@@ -99,7 +99,7 @@ $$
 
 ---
 
-# Quantum kernel
+## Quantum kernel
 
 The kernel between two samples $x_i$ and $x_j$ is defined by the squared state overlap:
 
@@ -124,7 +124,7 @@ It acts as a similarity measure in the Hilbert space induced by the feature map.
 
 ---
 
-# Circuit evaluation of the kernel
+## Circuit evaluation of the kernel
 
 The overlap can be computed using a single quantum circuit.
 
@@ -167,7 +167,7 @@ where $p_{0\cdots0}$ is the measured probability of bitstring $00\cdots0$.
 
 ---
 
-# Kernel matrix
+## Kernel matrix
 
 For a training set:
 
@@ -223,7 +223,7 @@ So:
 
 ---
 
-# Classical support vector machine
+## Classical support vector machine
 
 Once the kernel matrix is computed, classification is performed by a classical SVM using the precomputed kernel.
 
@@ -248,7 +248,7 @@ The quantum computer is used only for kernel evaluation. The optimisation of the
 
 ---
 
-# Why kernels are useful
+## Why kernels are useful
 
 Kernel methods are attractive because they separate two tasks:
 
@@ -267,7 +267,7 @@ This means the model can represent nonlinear decision boundaries in the original
 
 ---
 
-# Accuracy
+## Accuracy
 
 After fitting the SVM, predictions are made on both train and test sets.
 
@@ -298,7 +298,7 @@ The implementation reports:
 
 ---
 
-# Computational structure
+## Computational structure
 
 Let:
 
@@ -316,11 +316,11 @@ It is appropriate for small educational and research-scale examples.
 
 ---
 
-# Current implementation choices
+## Current implementation choices
 
 The current quantum kernel classifier is intentionally minimal.
 
-## Included
+### Included
 
 - binary classification
 - two-dimensional input
@@ -333,7 +333,7 @@ The current quantum kernel classifier is intentionally minimal.
 
 ---
 
-# Relation to the code
+## Relation to the code
 
 The implemented workflow is organised as follows:
 
@@ -346,7 +346,7 @@ So the notebook remains a package client, while the full kernel logic lives in t
 
 ---
 
-# Summary
+## Summary
 
 The implemented quantum kernel classifier is defined by:
 

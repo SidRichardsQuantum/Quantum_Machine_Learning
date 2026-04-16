@@ -12,7 +12,7 @@ The model is a **hybrid quantum–classical binary classifier**:
 
 ---
 
-# Data
+## Data
 
 We consider a binary classification dataset:
 
@@ -43,7 +43,7 @@ denote one standardised input sample.
 
 ---
 
-# Quantum state preparation
+## Quantum state preparation
 
 The input is encoded into a quantum state using an angle embedding.
 
@@ -61,7 +61,7 @@ $$
 
 where $U_{\text{enc}}(x)$ is the encoding unitary.
 
-## Angle embedding
+### Angle embedding
 
 For an input vector $x \in \mathbb{R}^n$, the encoding applies one $R_Y$ rotation per qubit:
 
@@ -91,7 +91,7 @@ So the encoded state depends directly on the input features.
 
 ---
 
-# Variational ansatz
+## Variational ansatz
 
 After encoding, a trainable circuit is applied.
 
@@ -117,7 +117,7 @@ $$
 U_{\text{ans}}(\theta)\,U_{\text{enc}}(x)\,|0\rangle^{\otimes n}
 $$
 
-## Layered hardware-efficient ansatz
+### Layered hardware-efficient ansatz
 
 The implemented ansatz uses:
 
@@ -180,7 +180,7 @@ $$
 
 ---
 
-# Measurement and model output
+## Measurement and model output
 
 The circuit measures the expectation value of the Pauli-$Z$ observable on the first qubit.
 
@@ -227,7 +227,7 @@ where:
 - $p_\theta(y=1 \mid x)$ is the predicted probability of class 1
 - $p_\theta(y=0 \mid x)$ is the predicted probability of class 0
 
-## Decision rule
+### Decision rule
 
 The predicted class is:
 
@@ -244,7 +244,7 @@ where $\hat{y}(x)$ is the predicted label for input $x$.
 
 ---
 
-# Loss function
+## Loss function
 
 Training uses binary cross-entropy.
 
@@ -274,7 +274,7 @@ In implementation, probabilities are clipped slightly away from 0 and 1 for nume
 
 ---
 
-# Optimisation
+## Optimisation
 
 The parameters $\theta$ are trained using a classical optimiser.
 
@@ -312,7 +312,7 @@ where $\mathcal{L}^{(t)}$ is the loss after optimisation step $t$.
 
 ---
 
-# Accuracy
+## Accuracy
 
 After training, predictions are formed on both train and test sets.
 
@@ -343,7 +343,7 @@ The implementation reports:
 
 ---
 
-# Parameter count
+## Parameter count
 
 The ansatz parameter tensor has shape:
 
@@ -376,11 +376,11 @@ $$
 
 ---
 
-# Current implementation choices
+## Current implementation choices
 
 The current VQC is intentionally minimal.
 
-## Included
+### Included
 
 - binary classification
 - two-dimensional input
@@ -394,7 +394,7 @@ The current VQC is intentionally minimal.
 
 ---
 
-# Interpretation
+## Interpretation
 
 The model learns a map:
 
@@ -418,7 +418,7 @@ In practice, the VQC behaves like a compact hybrid classifier whose expressive p
 
 ---
 
-# Relation to the code
+## Relation to the code
 
 The implemented workflow is organised as follows:
 
@@ -432,7 +432,7 @@ So the notebook remains a package client, while the full VQC logic lives in the 
 
 ---
 
-# Summary
+## Summary
 
 The implemented VQC is a binary classifier defined by:
 

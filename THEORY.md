@@ -16,7 +16,76 @@ All models rely on parameterised quantum circuits evaluated within classical opt
 
 ---
 
-# Hybrid quantum–classical learning
+## Table of Contents
+
+- [Hybrid quantum–classical learning](#hybrid-quantumclassical-learning)
+
+- [Data encoding (feature maps)](#data-encoding-feature-maps)
+
+  - [Angle embedding](#angle-embedding)
+
+- [Variational quantum circuits](#variational-quantum-circuits)
+
+- [Hardware-efficient ansatz](#hardware-efficient-ansatz)
+
+- [Expectation values](#expectation-values)
+
+- [Finite-shot estimation (noise-aware execution)](#finite-shot-estimation-noise-aware-execution)
+
+- [Variational quantum classifier (VQC)](#variational-quantum-classifier-vqc)
+
+  - [Classification loss](#classification-loss)
+
+- [Variational quantum regression (VQR)](#variational-quantum-regression-vqr)
+
+  - [Regression loss](#regression-loss)
+
+- [Quantum kernel methods](#quantum-kernel-methods)
+
+- [Kernel evaluation using quantum circuits](#kernel-evaluation-using-quantum-circuits)
+
+- [Support vector machines with quantum kernels](#support-vector-machines-with-quantum-kernels)
+
+- [Trainable quantum kernels](#trainable-quantum-kernels)
+
+  - [Kernel-target alignment](#kernel-target-alignment)
+
+- [Quantum convolutional neural networks](#quantum-convolutional-neural-networks)
+
+  - [Hierarchical structure](#hierarchical-structure)
+  - [Binary classification readout](#binary-classification-readout)
+
+- [Quantum metric learning](#quantum-metric-learning)
+
+  - [Distance-based supervision](#distance-based-supervision)
+  - [Contrastive loss](#contrastive-loss)
+  - [Data re-uploading embeddings](#data-re-uploading-embeddings)
+  - [Classification in embedding space](#classification-in-embedding-space)
+  - [Relationship to kernel methods](#relationship-to-kernel-methods)
+  - [Relationship to variational models](#relationship-to-variational-models)
+
+- [Model capacity considerations](#model-capacity-considerations)
+
+- [Relationship between models](#relationship-between-models)
+
+- [Model capacity](#model-capacity)
+
+- [General workflow](#general-workflow)
+
+- [Noise considerations](#noise-considerations)
+
+- [Quantum autoencoders](#quantum-autoencoders)
+
+  - [Compression objective](#compression-objective)
+  - [Reconstruction](#reconstruction)
+
+- [References](#references)
+- [Author](#author)
+- [License](#license)
+
+---
+
+## Hybrid quantum–classical learning
 
 Most QML models take the form:
 
@@ -44,7 +113,7 @@ Gradients are computed using automatic differentiation and the parameter-shift r
 
 ---
 
-# Data encoding (feature maps)
+## Data encoding (feature maps)
 
 Classical data must be embedded into quantum states.
 
@@ -72,7 +141,7 @@ is a parameterised unitary.
 
 ---
 
-## Angle embedding
+### Angle embedding
 
 A simple encoding uses single-qubit rotations:
 
@@ -103,7 +172,7 @@ Angle embedding maps classical features directly to rotation angles.
 
 ---
 
-# Variational quantum circuits
+## Variational quantum circuits
 
 Variational models use parameterised circuits:
 
@@ -135,7 +204,7 @@ where:
 
 ---
 
-# Hardware-efficient ansatz
+## Hardware-efficient ansatz
 
 A common ansatz uses repeated layers:
 
@@ -169,7 +238,7 @@ Properties:
 
 ---
 
-# Expectation values
+## Expectation values
 
 Variational models produce scalar outputs via expectation values:
 
@@ -201,7 +270,7 @@ $$
 
 ---
 
-# Finite-shot estimation (noise-aware execution)
+## Finite-shot estimation (noise-aware execution)
 
 Expectation values may be computed either analytically or via sampling.
 
@@ -241,7 +310,7 @@ Finite-shot sampling simulates noise effects present on real hardware.
 
 ---
 
-# Variational quantum classifier (VQC)
+## Variational quantum classifier (VQC)
 
 Binary classification uses expectation values mapped to probabilities.
 
@@ -274,7 +343,7 @@ $$
 
 ---
 
-## Classification loss
+### Classification loss
 
 Binary cross-entropy:
 
@@ -294,7 +363,7 @@ Optimisation adjusts parameters $\theta$ to minimise classification error.
 
 ---
 
-# Variational quantum regression (VQR)
+## Variational quantum regression (VQR)
 
 Regression uses expectation values as continuous predictions.
 
@@ -316,7 +385,7 @@ to match the observable output range.
 
 ---
 
-## Regression loss
+### Regression loss
 
 Mean squared error:
 
@@ -344,7 +413,7 @@ Regression uses the same quantum architecture as classification but a different 
 
 ---
 
-# Quantum kernel methods
+## Quantum kernel methods
 
 Kernel methods avoid explicit parameter optimisation.
 
@@ -366,7 +435,7 @@ $$
 
 ---
 
-# Kernel evaluation using quantum circuits
+## Kernel evaluation using quantum circuits
 
 Kernel values are computed using:
 
@@ -395,7 +464,7 @@ $$
 
 ---
 
-# Support vector machines with quantum kernels
+## Support vector machines with quantum kernels
 
 Given kernel matrix:
 
@@ -426,7 +495,7 @@ The quantum computer supplies kernel values.
 
 ---
 
-# Trainable quantum kernels
+## Trainable quantum kernels
 
 Instead of fixing the feature map, parameters $\theta$ can be introduced:
 
@@ -446,7 +515,7 @@ $$
 
 ---
 
-## Kernel-target alignment
+### Kernel-target alignment
 
 Trainable kernels optimise similarity between:
 
@@ -492,7 +561,7 @@ Alignment encourages kernel similarity to reflect class structure.
 
 ---
 
-# Quantum convolutional neural networks
+## Quantum convolutional neural networks
 
 Quantum convolutional neural networks use a hierarchical circuit structure to
 combine local feature extraction with progressive reduction of the active
@@ -510,7 +579,7 @@ then a second-stage convolution on the pooled representation.
 
 ---
 
-## Hierarchical structure
+### Hierarchical structure
 
 Let the initial embedded state be
 
@@ -535,7 +604,7 @@ through successive local blocks rather than a repeated global ansatz layer.
 
 ---
 
-## Binary classification readout
+### Binary classification readout
 
 The final prediction is obtained from a Pauli-$Z$ expectation on the readout qubit:
 
@@ -555,7 +624,7 @@ Training then minimizes binary cross-entropy over the dataset.
 
 ---
 
-# Quantum metric learning
+## Quantum metric learning
 
 Quantum metric learning aims to learn an embedding geometry in which distances between samples reflect label similarity.
 
@@ -586,7 +655,7 @@ for a $k$-qubit circuit.
 
 ---
 
-## Distance-based supervision
+### Distance-based supervision
 
 Given two samples:
 
@@ -609,7 +678,7 @@ Training encourages:
 
 ---
 
-## Contrastive loss
+### Contrastive loss
 
 Define label similarity indicator:
 
@@ -642,7 +711,7 @@ The margin encourages separation between classes.
 
 ---
 
-## Data re-uploading embeddings
+### Data re-uploading embeddings
 
 Expressive embeddings may be constructed using repeated feature encoding layers:
 
@@ -669,7 +738,7 @@ Repeated encoding increases expressivity without increasing qubit count.
 
 ---
 
-## Classification in embedding space
+### Classification in embedding space
 
 After optimisation, predictions may be performed using classical methods.
 
@@ -701,7 +770,7 @@ Metric learning therefore separates:
 
 ---
 
-## Relationship to kernel methods
+### Relationship to kernel methods
 
 Metric learning and kernel methods both rely on quantum feature maps.
 
@@ -719,7 +788,7 @@ Both approaches use quantum circuits to construct feature representations.
 
 ---
 
-## Relationship to variational models
+### Relationship to variational models
 
 Variational classifiers directly optimise prediction error.
 
@@ -734,7 +803,7 @@ Advantages:
 
 ---
 
-## Model capacity considerations
+### Model capacity considerations
 
 Embedding expressivity depends on:
 
@@ -747,7 +816,7 @@ As circuit depth increases, the embedding may represent more complex similarity 
 
 ---
 
-# Relationship between models
+## Relationship between models
 
 Variational models:
 
@@ -763,7 +832,7 @@ learn parameters inside the feature map rather than classifier weights.
 
 ---
 
-# Model capacity
+## Model capacity
 
 Expressivity depends on:
 
@@ -780,7 +849,7 @@ Tradeoffs:
 
 ---
 
-# General workflow
+## General workflow
 
 Common structure across models:
 
@@ -792,7 +861,7 @@ Common structure across models:
 
 ---
 
-# Noise considerations
+## Noise considerations
 
 Finite-shot sampling introduces:
 
@@ -810,7 +879,7 @@ Finite-shot execution approximates behaviour of real quantum hardware.
 
 ---
 
-# Quantum autoencoders
+## Quantum autoencoders
 
 Quantum autoencoders learn a unitary compression map that moves irrelevant
 information into a designated trash subsystem while preserving the informative
@@ -832,7 +901,7 @@ a fixed reference state, typically $|0\rangle^{\otimes k}$.
 
 ---
 
-## Compression objective
+### Compression objective
 
 Given encoder unitary $U(\theta)$, the compressed state is
 
@@ -855,7 +924,7 @@ the all-zero state.
 
 ---
 
-## Reconstruction
+### Reconstruction
 
 After compression, a decoder can be defined by the adjoint unitary
 
@@ -878,7 +947,7 @@ The implementation reports both:
 
 ---
 
-# References
+## References
 
 Schuld, M., Sinayskiy, I., & Petruccione, F. (2015)  
 An introduction to quantum machine learning.
@@ -894,6 +963,18 @@ Quantum circuit learning.
 
 Cristianini et al. (2002)  
 On kernel-target alignment.
+
+---
+
+## Author
+
+Sid Richards
+
+LinkedIn:
+[https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
+
+GitHub:
+[https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
 
 ---
 

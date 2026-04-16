@@ -13,7 +13,7 @@ Both **classification** and **regression** workflows are supported.
 
 ---
 
-# Overview
+## Overview
 
 Benchmark functions run multiple training jobs using different random seeds and aggregate performance metrics.
 
@@ -35,7 +35,7 @@ Results are returned as structured dictionaries and can optionally be saved to J
 
 ---
 
-# Classification Benchmarks
+## Classification Benchmarks
 
 Compare multiple classifiers on the same dataset.
 
@@ -92,7 +92,7 @@ Each run record includes:
 
 ---
 
-# Regression Benchmarks
+## Regression Benchmarks
 
 Compare regression models on the same dataset.
 
@@ -148,7 +148,7 @@ Each run record includes:
 
 ---
 
-# CLI Usage
+## CLI Usage
 
 Classification benchmark:
 
@@ -175,7 +175,7 @@ Default settings:
 
 ---
 
-# Saving Benchmark Results
+## Saving Benchmark Results
 
 Results can be saved to disk:
 
@@ -208,7 +208,7 @@ This allows reproducibility and later analysis.
 
 ---
 
-# Model Selection
+## Model Selection
 
 Models are referenced by string identifiers.
 
@@ -243,7 +243,7 @@ compare_classification_models(
 
 ---
 
-# Multi-seed Evaluation
+## Multi-seed Evaluation
 
 Variational quantum models depend on:
 
@@ -267,7 +267,7 @@ These values are computed for each metric.
 
 ---
 
-# Relationship to Other Modules
+## Relationship to Other Modules
 
 Benchmark utilities call the following workflows:
 
@@ -297,7 +297,7 @@ ensuring consistent experimental conditions across models.
 
 ---
 
-# When to Use Benchmarks
+## When to Use Benchmarks
 
 Benchmarking is useful when:
 

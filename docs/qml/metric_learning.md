@@ -16,7 +16,7 @@ classification rule (classical)
 
 ---
 
-# Overview
+## Overview
 
 Given input features:
 
@@ -53,7 +53,7 @@ Distances in this embedding space are used to measure similarity between inputs.
 
 ---
 
-# Model structure
+## Model structure
 
 The quantum embedding uses a parameterised circuit:
 
@@ -80,7 +80,7 @@ giving an embedding dimension equal to the number of qubits.
 
 ---
 
-# Data re-uploading embedding
+## Data re-uploading embedding
 
 To increase expressivity without increasing qubit count, features may be encoded multiple times:
 
@@ -107,7 +107,7 @@ Repeated encoding allows the circuit to learn nonlinear transformations of the i
 
 ---
 
-# Contrastive training objective
+## Contrastive training objective
 
 Training uses pairs of labelled samples.
 
@@ -159,7 +159,7 @@ This objective:
 
 ---
 
-# Training workflow
+## Training workflow
 
 Typical training loop:
 
@@ -175,7 +175,7 @@ Gradients are computed using automatic differentiation of expectation values.
 
 ---
 
-# Classification in embedding space
+## Classification in embedding space
 
 After training, embeddings can be used for classical classification.
 
@@ -208,9 +208,9 @@ Other possible classifiers include:
 
 ---
 
-# Relationship to other QML methods
+## Relationship to other QML methods
 
-## Variational classifiers
+### Variational classifiers
 
 Variational classifiers optimise prediction error directly:
 
@@ -223,7 +223,7 @@ Metric learning instead optimises representation geometry.
 
 ---
 
-## Quantum kernel methods
+### Quantum kernel methods
 
 Kernel methods compute similarity:
 
@@ -245,7 +245,7 @@ Both approaches use quantum circuits as feature maps.
 
 ---
 
-## Trainable quantum kernels
+### Trainable quantum kernels
 
 Trainable kernels optimise similarity structure via kernel alignment.
 
@@ -253,7 +253,7 @@ Metric learning directly shapes the embedding geometry.
 
 ---
 
-# Model capacity
+## Model capacity
 
 Expressivity depends on:
 
@@ -266,7 +266,7 @@ Increasing depth allows more complex similarity structure but may increase optim
 
 ---
 
-# Example usage
+## Example usage
 
 ```python
 from qml.metric_learning import run_quantum_metric_learner
@@ -298,7 +298,7 @@ When `save=True`, the workflow also writes JSON results and generated figures to
 
 ---
 
-# When to use quantum metric learning
+## When to use quantum metric learning
 
 Metric learning is useful when:
 
@@ -309,7 +309,7 @@ Metric learning is useful when:
 
 ---
 
-# References
+## References
 
 Hadsell et al. (2006)
 Dimensionality reduction by learning an invariant mapping.
