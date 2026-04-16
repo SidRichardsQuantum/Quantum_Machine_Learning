@@ -1,10 +1,30 @@
 # Quantum Machine Learning
 
-[![PyPI version](https://img.shields.io/pypi/v/qml-pennylane.svg)](https://pypi.org/project/qml-pennylane/)
-[![Python](https://img.shields.io/pypi/pyversions/qml-pennylane.svg)](https://pypi.org/project/qml-pennylane/)
-[![Tests](https://img.shields.io/github/actions/workflow/status/SidRichardsQuantum/Quantum_Machine_Learning/tests.yml?branch=main&label=tests)](https://github.com/SidRichardsQuantum/Quantum_Machine_Learning/actions)
-[![License](https://img.shields.io/github/license/SidRichardsQuantum/Quantum_Machine_Learning)](LICENSE)
-![datasets](https://img.shields.io/badge/datasets-moons%20|%20circles%20|%20xor%20|%20sine-informational)
+<p align="center">
+
+<a href="https://pypi.org/project/qml-pennylane/">
+<img src="https://img.shields.io/pypi/v/qml-pennylane?style=flat-square" alt="PyPI Version">
+</a>
+
+<a href="https://pypi.org/project/qml-pennylane/">
+<img src="https://img.shields.io/pypi/pyversions/qml-pennylane?style=flat-square" alt="Python Versions">
+</a>
+
+<a href="https://github.com/SidRichardsQuantum/Quantum_Machine_Learning/actions/workflows/tests.yml">
+<img src="https://img.shields.io/github/actions/workflow/status/SidRichardsQuantum/Quantum_Machine_Learning/tests.yml?branch=main&label=tests&style=flat-square" alt="Tests">
+</a>
+
+<a href="LICENSE">
+<img src="https://img.shields.io/github/license/SidRichardsQuantum/Quantum_Machine_Learning?style=flat-square" alt="License">
+</a>
+
+<a href="https://github.com/sponsors/SidRichardsQuantum">
+<img src="https://img.shields.io/badge/sponsor-GitHub-ea4aaa?style=flat-square&logo=githubsponsors" alt="Sponsor">
+</a>
+
+<img src="https://img.shields.io/badge/datasets-moons%20%7C%20circles%20%7C%20xor%20%7C%20sine-informational?style=flat-square" alt="Datasets">
+
+</p>
 
 PyPI[https://pypi.org/project/qml-pennylane/](https://pypi.org/project/qml-pennylane/)
 
