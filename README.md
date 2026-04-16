@@ -620,7 +620,7 @@ python -m qml
 
 If this project is useful for research, learning, or experimentation, you can support continued development via GitHub Sponsors:
 
-https://github.com/sponsors/SidRichardsQuantum
+[https://github.com/sponsors/SidRichardsQuantum](https://github.com/sponsors/SidRichardsQuantum)
 
 Sponsorship supports continued work on open-source implementations of quantum machine learning models, including improvements to documentation, reproducible experiments, benchmark utilities, and example workflows.
 
