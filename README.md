@@ -6,6 +6,8 @@
 [![License](https://img.shields.io/github/license/SidRichardsQuantum/Quantum_Machine_Learning)](LICENSE)
 ![datasets](https://img.shields.io/badge/datasets-moons%20|%20circles%20|%20xor%20|%20sine-informational)
 
+PyPI[https://pypi.org/project/qml-pennylane/](https://pypi.org/project/qml-pennylane/)
+
 Modular **PennyLane-based quantum machine learning library** implementing reusable workflows for:
 
 • Variational quantum classification (VQC)  
