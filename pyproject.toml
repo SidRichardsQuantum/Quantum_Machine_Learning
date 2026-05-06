@@ -49,6 +49,7 @@ include = ["qml*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "-q"
 markers = [
     "slow: slower end-to-end tests kept in the full test pass",

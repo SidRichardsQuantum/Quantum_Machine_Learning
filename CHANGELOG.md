@@ -1,5 +1,19 @@
 # CHANGELOG.md
 
+## Unreleased
+
+### Added
+
+- Added a GitHub Pages workflow for publishing the Markdown documentation site
+- Added README and usage-documentation links to the published Pages site
+
+### Maintenance
+
+- Ignored local MkDocs build output directories (`_site/` and `site_docs/`)
+- Configured pytest to include the repository root on the import path for local test runs
+
+---
+
 ## [0.1.12] - 10-04-2026
 
 ### Added

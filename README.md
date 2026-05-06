@@ -14,6 +14,10 @@
 <img src="https://img.shields.io/github/actions/workflow/status/SidRichardsQuantum/Quantum_Machine_Learning/tests.yml?branch=main&label=tests&style=flat-square" alt="Tests">
 </a>
 
+<a href="https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/">
+<img src="https://img.shields.io/badge/docs-GitHub%20Pages-2ea44f?style=flat-square&logo=githubpages" alt="Documentation">
+</a>
+
 <a href="LICENSE">
 <img src="https://img.shields.io/github/license/SidRichardsQuantum/Quantum_Machine_Learning?style=flat-square" alt="License">
 </a>
@@ -26,7 +30,9 @@
 
 </p>
 
-PyPI[https://pypi.org/project/qml-pennylane/](https://pypi.org/project/qml-pennylane/)
+**PyPI:** [https://pypi.org/project/qml-pennylane/](https://pypi.org/project/qml-pennylane/)
+
+**Web pages:** [https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/](https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/)
 
 Modular **PennyLane-based quantum machine learning library** implementing reusable workflows for:
 
@@ -383,6 +389,10 @@ CLI outputs include:
 ---
 
 ## Documentation
+
+Published documentation:
+
+• [https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/](https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/)
 
 Core documentation:
 

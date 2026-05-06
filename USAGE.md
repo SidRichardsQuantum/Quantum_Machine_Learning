@@ -115,6 +115,10 @@ Linting remains separate:
 ruff check .
 ```
 
+The documentation site is deployed by GitHub Pages from the repository Markdown:
+
+[https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/](https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/)
+
 ---
 
 ## Variational quantum classifier (VQC)
