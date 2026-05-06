@@ -22,6 +22,12 @@ DOCS = [
         "API, CLI, benchmarking, and reproducibility guide.",
     ),
     ("Theory", ROOT / "THEORY.md", "theory.html", "Mathematical background for the workflows."),
+    (
+        "Results",
+        ROOT / "RESULTS.md",
+        "results.html",
+        "Deterministic reference outputs from API workflows.",
+    ),
     ("Changelog", ROOT / "CHANGELOG.md", "changelog.html", "Release notes and project history."),
     (
         "Variational Quantum Classifier",
@@ -135,6 +141,7 @@ def nav(current: str | None) -> str:
         ("Home", "index.html"),
         ("Usage", "usage.html"),
         ("Theory", "theory.html"),
+        ("Results", "results.html"),
         ("Algorithms", "index.html#algorithms"),
         ("GitHub", REPO_URL),
     ]
@@ -202,7 +209,7 @@ def card(title: str, description: str, href: str, tags: list[str] | None = None)
 def home() -> str:
     algorithm_cards = "\n".join(card(*item) for item in ALGORITHMS)
     doc_cards = "\n".join(
-        card(label, description, output) for label, _, output, description in DOCS[1:4]
+        card(label, description, output) for label, _, output, description in DOCS[1:5]
     )
     body = f"""
       <section class="hero section">
@@ -218,6 +225,7 @@ def home() -> str:
             <a class="button primary" href="{REPO_URL}" target="_blank" rel="noopener noreferrer">GitHub</a>
             <a class="button" href="{PYPI_URL}" target="_blank" rel="noopener noreferrer">PyPI</a>
             <a class="button" href="usage.html">Usage</a>
+            <a class="button" href="results.html">Results</a>
             <a class="button" href="theory.html">Theory</a>
           </div>
         </div>
@@ -267,7 +275,7 @@ def home() -> str:
         <div class="section-heading">
           <p class="eyebrow">Reference material</p>
           <h2>Documentation</h2>
-          <p>Use the usage guide for API calls and CLI commands, the theory notes for mathematical background, and the changelog for release history.</p>
+          <p>Use the usage guide for API calls and CLI commands, results for deterministic reference outputs, theory notes for mathematical background, and the changelog for release history.</p>
         </div>
         <div class="project-grid">{doc_cards}</div>
       </section>
@@ -288,7 +296,7 @@ def home() -> str:
 
 def documentation_page(label: str, source: Path) -> str:
     doc_nav = "".join(f'<a href="{output}">{html.escape(name)}</a>' for name, _, output, _ in DOCS)
-    current = label if label in {"Usage", "Theory"} else None
+    current = label if label in {"Usage", "Theory", "Results"} else None
     body = f"""
       <section class="section doc-layout">
         <aside class="doc-sidebar" aria-label="Documentation navigation">
@@ -306,6 +314,9 @@ def main() -> None:
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)
     shutil.copyfile(ROOT / "docs/pages/styles.css", OUT / "styles.css")
+    assets = ROOT / "docs/pages/assets"
+    if assets.exists():
+        shutil.copytree(assets, OUT / "docs/pages/assets")
     (OUT / "index.html").write_text(home(), encoding="utf-8")
     for label, source, output, _ in DOCS:
         (OUT / output).write_text(documentation_page(label, source), encoding="utf-8")

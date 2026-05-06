@@ -473,6 +473,12 @@ main:focus-visible {
 
 .doc-content img {
   max-width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin: 0.75rem 0 1.25rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
 }
 
 .doc-content table {

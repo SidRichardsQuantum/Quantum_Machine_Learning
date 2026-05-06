@@ -119,6 +119,14 @@ The documentation site is deployed by GitHub Pages from the repository Markdown:
 
 [https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/](https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/)
 
+Reference results are generated from the same public APIs used by the notebooks:
+
+```bash
+python docs/pages/generate_results.py
+```
+
+The generated summary is written to `RESULTS.md` and included in the GitHub Pages site.
+
 ---
 
 ## Variational quantum classifier (VQC)

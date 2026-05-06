@@ -6,12 +6,15 @@
 
 - Added a GitHub Pages workflow for publishing a custom static documentation site
 - Added a Pages site generator and stylesheet matched to the root portfolio site
+- Added generated `RESULTS.md` reference outputs and a Results web page
+- Added generated result images to `RESULTS.md` and the Results web page
 - Added README and usage-documentation links to the published Pages site
 
 ### Maintenance
 
 - Ignored local static-site build output directories (`_site/` and `site_docs/`)
 - Configured pytest to include the repository root on the import path for local test runs
+- Regenerate reference results during the Pages workflow before building the site
 
 ---
 

@@ -74,6 +74,7 @@ The repository follows a **package-first design**:
 - [Model-specific configuration](#model-specific-configuration)
 - [Classical baselines](#classical-baselines)
 - [Command line interface](#command-line-interface)
+- [Results](#results)
 - [Documentation](#documentation)
 - [Repository structure](#repository-structure)
 - [Design principles](#design-principles)
@@ -388,6 +389,19 @@ CLI outputs include:
 
 ---
 
+## Results
+
+Reference results are generated from the public APIs used by the notebooks:
+
+```bash
+python docs/pages/generate_results.py
+```
+
+The generated summary is written to **RESULTS.md** and included in the GitHub Pages site.
+These are smoke-scale deterministic outputs, not claims of quantum advantage.
+
+---
+
 ## Documentation
 
 Published documentation:
@@ -398,6 +412,7 @@ Core documentation:
 
 - **THEORY.md** — mathematical background
 - **USAGE.md** — API examples
+- **RESULTS.md** — generated deterministic reference outputs
 
 Algorithm notes:
 

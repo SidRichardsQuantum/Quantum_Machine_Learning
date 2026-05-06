@@ -8,6 +8,7 @@ on:
       - README.md
       - USAGE.md
       - THEORY.md
+      - RESULTS.md
       - CHANGELOG.md
       - docs/**
       - .gitattributes
@@ -40,7 +41,14 @@ jobs:
       - name: Install documentation tooling
         run: |
           python -m pip install --upgrade pip
+          python -m pip install -e .
           python -m pip install markdown pymdown-extensions
+
+      - name: Generate reference results
+        env:
+          MPLBACKEND: Agg
+          MPLCONFIGDIR: /tmp/matplotlib
+        run: python docs/pages/generate_results.py
 
       - name: Build documentation site
         run: python docs/pages/build_site.py
