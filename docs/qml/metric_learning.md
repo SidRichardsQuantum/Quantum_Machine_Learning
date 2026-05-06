@@ -4,8 +4,8 @@ Quantum metric learning trains a parameterised quantum embedding such that dista
 
 Instead of directly predicting class labels, the model learns a representation in which:
 
-• samples from the same class are close  
-• samples from different classes are separated  
+- samples from the same class are close  
+- samples from different classes are separated  
 
 Classification can then be performed using simple classical methods such as nearest centroid or k-nearest neighbours.
 
@@ -33,8 +33,8 @@ $$
 
 where:
 
-• $k$ is the number of qubits  
-• $\theta$ are trainable circuit parameters  
+- $k$ is the number of qubits  
+- $\theta$ are trainable circuit parameters  
 
 The embedding is constructed using expectation values of Pauli observables:
 
@@ -65,8 +65,8 @@ $$
 
 where:
 
-• $U(x,\theta)$ contains both data encoding and trainable parameters
-• entangling gates allow correlations between features
+- $U(x,\theta)$ contains both data encoding and trainable parameters
+- entangling gates allow correlations between features
 
 The embedding vector is obtained from expectation values:
 
@@ -149,13 +149,13 @@ $$
 
 where:
 
-• $m$ is a margin hyperparameter  
-• $d_{ij}$ is Euclidean distance between embeddings  
+- $m$ is a margin hyperparameter  
+- $d_{ij}$ is Euclidean distance between embeddings  
 
 This objective:
 
-• pulls same-class samples together  
-• pushes different-class samples apart  
+- pulls same-class samples together  
+- pushes different-class samples apart  
 
 ---
 
@@ -202,9 +202,9 @@ $$
 
 Other possible classifiers include:
 
-• k-nearest neighbours
-• logistic regression
-• support vector machines
+- k-nearest neighbours
+- logistic regression
+- support vector machines
 
 ---
 
@@ -257,10 +257,10 @@ Metric learning directly shapes the embedding geometry.
 
 Expressivity depends on:
 
-• number of qubits
-• circuit depth
-• entanglement structure
-• number of re-uploading layers
+- number of qubits
+- circuit depth
+- entanglement structure
+- number of re-uploading layers
 
 Increasing depth allows more complex similarity structure but may increase optimisation difficulty.
 
@@ -281,11 +281,11 @@ result = run_quantum_metric_learner(
 
 Outputs include:
 
-• learned embedding parameters
-• embedding vectors
-• centroid positions
-• training and test accuracy
-• optimisation loss history
+- learned embedding parameters
+- embedding vectors
+- centroid positions
+- training and test accuracy
+- optimisation loss history
 
 The public API returns a `QuantumMetricLearningResult` dataclass rather than a
 plain dictionary, so values are accessed via attributes such as
@@ -293,8 +293,8 @@ plain dictionary, so values are accessed via attributes such as
 
 When `save=True`, the workflow also writes JSON results and generated figures to:
 
-• `results/metric_learning/`
-• `images/metric_learning/`
+- `results/metric_learning/`
+- `images/metric_learning/`
 
 ---
 
@@ -302,10 +302,10 @@ When `save=True`, the workflow also writes JSON results and generated figures to
 
 Metric learning is useful when:
 
-• classification boundaries are complex
-• similarity structure is more important than direct prediction
-• small datasets require expressive embeddings
-• classical classifiers benefit from learned representations
+- classification boundaries are complex
+- similarity structure is more important than direct prediction
+- small datasets require expressive embeddings
+- classical classifiers benefit from learned representations
 
 ---
 

@@ -36,23 +36,23 @@
 
 Modular **PennyLane-based quantum machine learning library** implementing reusable workflows for:
 
-• Variational quantum classification (VQC)  
-• Variational quantum regression (VQR)  
-• Quantum convolutional neural networks (QCNN)  
-• Quantum autoencoders  
-• Quantum kernel methods  
-• Trainable quantum kernels (kernel-target alignment)  
-• Quantum metric learning (trainable embedding geometry)  
-• Classical baseline models  
-• Deterministic benchmark utilities  
+- Variational quantum classification (VQC)  
+- Variational quantum regression (VQR)  
+- Quantum convolutional neural networks (QCNN)  
+- Quantum autoencoders  
+- Quantum kernel methods  
+- Trainable quantum kernels (kernel-target alignment)  
+- Quantum metric learning (trainable embedding geometry)  
+- Classical baseline models  
+- Deterministic benchmark utilities  
 
 The repository follows a **package-first design**:
 
-• algorithms implemented in `qml/`  
-• notebooks act as thin clients  
-• experiments produce reproducible outputs  
-• consistent plotting and result structures  
-• deterministic execution via explicit seeds  
+- algorithms implemented in `qml/`  
+- notebooks act as thin clients  
+- experiments produce reproducible outputs  
+- consistent plotting and result structures  
+- deterministic execution via explicit seeds  
 
 ---
 
@@ -113,11 +113,11 @@ pip install -e ".[dev]"
 
 Requirements:
 
-• Python ≥ 3.10
-• PennyLane ≥ 0.34
-• NumPy ≥ 1.24
-• scikit-learn ≥ 1.3
-• matplotlib ≥ 3.7
+- Python ≥ 3.10
+- PennyLane ≥ 0.34
+- NumPy ≥ 1.24
+- scikit-learn ≥ 1.3
+- matplotlib ≥ 3.7
 
 ---
 
@@ -167,9 +167,9 @@ result = run_qcnn(
 
 Learns a small hierarchical quantum classifier using:
 
-• trainable data embedding across four qubits  
-• shared convolution-style two-qubit blocks  
-• pooling-style entangling reductions before final readout  
+- trainable data embedding across four qubits  
+- shared convolution-style two-qubit blocks  
+- pooling-style entangling reductions before final readout  
 
 ---
 
@@ -188,9 +188,9 @@ result = run_quantum_autoencoder(
 
 Learns a compression map for structured four-qubit state families using:
 
-• a trainable encoder/decoder ansatz  
-• a latent subspace retained across selected qubits  
-• compression and reconstruction fidelity metrics  
+- a trainable encoder/decoder ansatz  
+- a latent subspace retained across selected qubits  
+- compression and reconstruction fidelity metrics  
 
 ---
 
@@ -236,8 +236,8 @@ result = run_quantum_metric_learner(
 
 Learns a trainable embedding circuit using contrastive supervision:
 
-• same-class samples mapped closer together  
-• different-class samples separated in feature space  
+- same-class samples mapped closer together  
+- different-class samples separated in feature space  
 
 Classification is performed via nearest-centroid prediction in the learned embedding.
 
@@ -342,10 +342,10 @@ Result structure remains consistent across models.
 
 Included reference models:
 
-• logistic regression
-• ridge regression
-• support vector machine
-• multilayer perceptron
+- logistic regression
+- ridge regression
+- support vector machine
+- multilayer perceptron
 
 These provide performance context for quantum models.
 
@@ -381,10 +381,10 @@ python -m qml benchmark regression \
 
 CLI outputs include:
 
-• training metrics
-• test metrics
-• final loss
-• saved plots (optional)
+- training metrics
+- test metrics
+- final loss
+- saved plots (optional)
 
 ---
 
@@ -392,31 +392,31 @@ CLI outputs include:
 
 Published documentation:
 
-• [https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/](https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/)
+- [https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/](https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/)
 
 Core documentation:
 
-• **THEORY.md** — mathematical background
-• **USAGE.md** — API examples
+- **THEORY.md** — mathematical background
+- **USAGE.md** — API examples
 
 Algorithm notes:
 
-• docs/qml/variational_quantum_classifier.md
-• docs/qml/variational_regression.md
-• docs/qml/qcnn.md
-• docs/qml/autoencoder.md
-• docs/qml/quantum_kernels.md
-• docs/qml/metric_learning.md
+- docs/qml/variational_quantum_classifier.md
+- docs/qml/variational_regression.md
+- docs/qml/qcnn.md
+- docs/qml/autoencoder.md
+- docs/qml/quantum_kernels.md
+- docs/qml/metric_learning.md
 
 Example notebooks:
 
-• quantum_variational_classifier.ipynb
-• quantum_regressor.ipynb
-• quantum_convolutional_neural_network.ipynb
-• quantum_autoencoder.ipynb
-• quantum_kernel_classifier.ipynb
-• quantum_metric_learning.ipynb
-• classical_vs_quantum_classifier.ipynb
+- quantum_variational_classifier.ipynb
+- quantum_regressor.ipynb
+- quantum_convolutional_neural_network.ipynb
+- quantum_autoencoder.ipynb
+- quantum_kernel_classifier.ipynb
+- quantum_metric_learning.ipynb
+- classical_vs_quantum_classifier.ipynb
 
 ---
 
@@ -523,11 +523,11 @@ Notebooks import public APIs rather than defining circuits inline.
 
 Reproducibility is prioritised:
 
-• explicit random seeds
-• deterministic dataset generation
-• reproducible optimisation
-• consistent JSON outputs
-• deterministic finite-shot execution
+- explicit random seeds
+- deterministic dataset generation
+- reproducible optimisation
+- consistent JSON outputs
+- deterministic finite-shot execution
 
 ---
 
@@ -535,10 +535,10 @@ Reproducibility is prioritised:
 
 Shared infrastructure intentionally remains lightweight:
 
-• small set of embeddings
-• hardware-efficient ansatz
-• simple optimisation loops
-• consistent plotting utilities
+- small set of embeddings
+- hardware-efficient ansatz
+- simple optimisation loops
+- consistent plotting utilities
 
 ---
 
@@ -548,9 +548,9 @@ Shared infrastructure intentionally remains lightweight:
 
 Binary classification using:
 
-• angle embedding
-• hardware-efficient ansatz
-• cross-entropy loss
+- angle embedding
+- hardware-efficient ansatz
+- cross-entropy loss
 
 ---
 
@@ -558,9 +558,9 @@ Binary classification using:
 
 Continuous prediction using:
 
-• angle embedding
-• expectation-value outputs
-• mean squared error
+- angle embedding
+- expectation-value outputs
+- mean squared error
 
 ---
 
@@ -593,8 +593,8 @@ $$
 
 where:
 
-• $K_\theta$ is the quantum kernel matrix
-• $Y$ is the label similarity matrix
+- $K_\theta$ is the quantum kernel matrix
+- $Y$ is the label similarity matrix
 
 ---
 
@@ -610,18 +610,18 @@ $$
 
 where:
 
-• $d$ is distance between learned embeddings  
-• $y \in \{0,1\}$ indicates whether samples share a class  
-• $m$ is a separation margin  
+- $d$ is distance between learned embeddings  
+- $y \in \{0,1\}$ indicates whether samples share a class  
+- $m$ is a separation margin  
 
 The learned embedding is used for classification via nearest-centroid prediction in feature space.
 
 Supports:
 
-• trainable data re-uploading embeddings  
-• stochastic pair sampling  
-• deterministic optimisation via fixed seeds  
-• consistent evaluation pipeline with other models
+- trainable data re-uploading embeddings  
+- stochastic pair sampling  
+- deterministic optimisation via fixed seeds  
+- consistent evaluation pipeline with other models
 
 ---
 

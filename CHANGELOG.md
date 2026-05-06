@@ -4,12 +4,13 @@
 
 ### Added
 
-- Added a GitHub Pages workflow for publishing the Markdown documentation site
+- Added a GitHub Pages workflow for publishing a custom static documentation site
+- Added a Pages site generator and stylesheet matched to the root portfolio site
 - Added README and usage-documentation links to the published Pages site
 
 ### Maintenance
 
-- Ignored local MkDocs build output directories (`_site/` and `site_docs/`)
+- Ignored local static-site build output directories (`_site/` and `site_docs/`)
 - Configured pytest to include the repository root on the import path for local test runs
 
 ---

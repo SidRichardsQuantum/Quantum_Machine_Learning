@@ -4,10 +4,10 @@ This note describes the quantum autoencoder workflow implemented in `qml.autoenc
 
 The current implementation is intentionally compact and package-oriented:
 
-• structured four-qubit input state families  
-• a trainable encoder/decoder ansatz  
-• latent and trash subsystem separation  
-• compression and reconstruction fidelity reporting  
+- structured four-qubit input state families  
+- a trainable encoder/decoder ansatz  
+- latent and trash subsystem separation  
+- compression and reconstruction fidelity reporting  
 
 ---
 
@@ -89,8 +89,8 @@ after the encoder and comparing the resulting state to the original state.
 
 This yields two complementary metrics:
 
-• compression fidelity on the trash subsystem  
-• reconstruction fidelity on the full state  
+- compression fidelity on the trash subsystem  
+- reconstruction fidelity on the full state  
 
 ---
 
@@ -110,15 +110,15 @@ result = run_quantum_autoencoder(
 
 Outputs include:
 
-• train/test compression fidelity  
-• train/test reconstruction fidelity  
-• learned ansatz parameters  
-• loss history  
+- train/test compression fidelity  
+- train/test reconstruction fidelity  
+- learned ansatz parameters  
+- loss history  
 
 When `save=True`, the workflow writes JSON results and generated figures to:
 
-• `results/autoencoder/`
-• `images/autoencoder/`
+- `results/autoencoder/`
+- `images/autoencoder/`
 
 ---
 
@@ -126,9 +126,9 @@ When `save=True`, the workflow writes JSON results and generated figures to:
 
 The current implementation provides several synthetic state families:
 
-• `correlated`
-• `entangled`
-• `hybrid`
+- `correlated`
+- `entangled`
+- `hybrid`
 
 These are designed to provide structured low-dimensional families that are
 meaningful compression targets for a small autoencoder.

@@ -6,10 +6,10 @@ All notebooks in this repository act as **thin clients** of these APIs.
 
 The design goal is:
 
-• reusable workflows  
-• deterministic experiments  
-• consistent outputs  
-• minimal configuration  
+- reusable workflows  
+- deterministic experiments  
+- consistent outputs  
+- minimal configuration  
 
 ---
 
@@ -106,8 +106,8 @@ pytest
 Tests marked with `@pytest.mark.slow` are used for heavier CLI and determinism
 checks. CI mirrors this split:
 
-• fast tests run across the Python version matrix  
-• the full suite runs on Python 3.12  
+- fast tests run across the Python version matrix  
+- the full suite runs on Python 3.12  
 
 Linting remains separate:
 
@@ -515,8 +515,8 @@ result = run_quantum_metric_learner(
 
 The model learns an embedding geometry such that:
 
-• samples from the same class are mapped closer together  
-• samples from different classes are separated by a margin  
+- samples from the same class are mapped closer together  
+- samples from different classes are separated by a margin  
 
 Classification is performed using nearest-centroid prediction in the learned embedding space.
 
@@ -793,10 +793,10 @@ seed
 
 Reproducibility applies to:
 
-• dataset generation
-• parameter initialisation
-• optimisation trajectories
-• finite-shot sampling
+- dataset generation
+- parameter initialisation
+- optimisation trajectories
+- finite-shot sampling
 
 Outputs can optionally be saved:
 
@@ -821,10 +821,10 @@ rather than defining circuits inline.
 
 This ensures:
 
-• consistent behaviour
-• reproducible outputs
-• shared infrastructure
-• minimal duplication
+- consistent behaviour
+- reproducible outputs
+- shared infrastructure
+- minimal duplication
 
 ---
 

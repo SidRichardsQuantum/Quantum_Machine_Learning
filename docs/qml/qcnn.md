@@ -4,10 +4,10 @@ This note describes the QCNN classifier implemented in `qml.qcnn`.
 
 The current implementation is intentionally compact and package-oriented:
 
-• four-qubit trainable input embedding  
-• shared local convolution-style blocks  
-• pooling-style entangling reductions  
-• final single-qubit readout for binary classification  
+- four-qubit trainable input embedding  
+- shared local convolution-style blocks  
+- pooling-style entangling reductions  
+- final single-qubit readout for binary classification  
 
 ---
 
@@ -45,11 +45,11 @@ $$
 
 The components are:
 
-• `U_emb`: trainable feature embedding using data-dependent single-qubit rotations  
-• `U_conv,1`: first-stage shared two-qubit convolution blocks on neighbouring pairs  
-• `U_pool`: pooling-style entangling reductions  
-• `U_conv,2`: second-stage convolution on the reduced representation  
-• `U_dense`: final single-qubit rotations before readout  
+- `U_emb`: trainable feature embedding using data-dependent single-qubit rotations  
+- `U_conv,1`: first-stage shared two-qubit convolution blocks on neighbouring pairs  
+- `U_pool`: pooling-style entangling reductions  
+- `U_conv,2`: second-stage convolution on the reduced representation  
+- `U_dense`: final single-qubit rotations before readout  
 
 ---
 
@@ -88,16 +88,16 @@ result = run_qcnn(
 
 Outputs include:
 
-• flattened trainable parameters  
-• structured QCNN parameter blocks  
-• training and test accuracy  
-• optimisation loss history  
-• predicted probabilities on train and test splits  
+- flattened trainable parameters  
+- structured QCNN parameter blocks  
+- training and test accuracy  
+- optimisation loss history  
+- predicted probabilities on train and test splits  
 
 When `save=True`, the workflow writes JSON results and generated figures to:
 
-• `results/qcnn/`
-• `images/qcnn/`
+- `results/qcnn/`
+- `images/qcnn/`
 
 ---
 
@@ -105,13 +105,13 @@ When `save=True`, the workflow writes JSON results and generated figures to:
 
 Compared with the existing VQC workflow:
 
-• VQC uses a repeated global ansatz template  
-• QCNN uses an explicitly hierarchical convolution/pooling structure  
+- VQC uses a repeated global ansatz template  
+- QCNN uses an explicitly hierarchical convolution/pooling structure  
 
 Compared with quantum kernels:
 
-• QCNN learns a direct discriminative classifier  
-• kernel workflows learn similarity structure and rely on a classical SVM readout  
+- QCNN learns a direct discriminative classifier  
+- kernel workflows learn similarity structure and rely on a classical SVM readout  
 
 ---
 
@@ -119,9 +119,9 @@ Compared with quantum kernels:
 
 QCNN is useful when:
 
-• you want a more structured architecture than a flat variational circuit  
-• local hierarchical feature extraction is a better inductive bias  
-• you want a classifier that differs materially from the existing VQC workflow  
+- you want a more structured architecture than a flat variational circuit  
+- local hierarchical feature extraction is a better inductive bias  
+- you want a classifier that differs materially from the existing VQC workflow  
 
 ---
 

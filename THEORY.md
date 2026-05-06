@@ -6,11 +6,11 @@ The focus is on **supervised learning** using hybrid quantum–classical models.
 
 Workflows include:
 
-• variational quantum classifiers  
-• variational quantum regressors  
-• quantum kernel methods  
-• trainable quantum kernels  
-• quantum metric learning  
+- variational quantum classifiers  
+- variational quantum regressors  
+- quantum kernel methods  
+- trainable quantum kernels  
+- quantum metric learning  
 
 All models rely on parameterised quantum circuits evaluated within classical optimisation loops.
 
@@ -95,9 +95,9 @@ $$
 
 where:
 
-• $x \in \mathbb{R}^d$ is a classical input vector  
-• $\theta$ are trainable circuit parameters  
-• $f_\theta$ is computed using a quantum circuit  
+- $x \in \mathbb{R}^d$ is a classical input vector  
+- $\theta$ are trainable circuit parameters  
+- $f_\theta$ is computed using a quantum circuit  
 
 Typical workflow:
 
@@ -198,9 +198,9 @@ $$
 
 where:
 
-• $M$ is an observable  
-• $U(x)$ encodes data  
-• $U(\theta)$ contains trainable parameters  
+- $M$ is an observable  
+- $U(x)$ encodes data  
+- $U(\theta)$ contains trainable parameters  
 
 ---
 
@@ -231,10 +231,10 @@ $$
 
 Properties:
 
-• shallow circuit depth  
-• hardware compatible  
-• expressive but trainable  
-• widely used baseline  
+- shallow circuit depth  
+- hardware compatible  
+- expressive but trainable  
+- widely used baseline  
 
 ---
 
@@ -486,8 +486,8 @@ $$
 
 where:
 
-• $\alpha_i$ are learned coefficients  
-• $b$ is a bias term  
+- $\alpha_i$ are learned coefficients  
+- $b$ is a bias term  
 
 Training solves a convex optimisation problem.
 
@@ -519,8 +519,8 @@ $$
 
 Trainable kernels optimise similarity between:
 
-• kernel matrix $K_\theta$  
-• label similarity matrix $Y$
+- kernel matrix $K_\theta$  
+- label similarity matrix $Y$
 
 Label similarity:
 
@@ -569,9 +569,9 @@ degrees of freedom.
 
 A QCNN alternates:
 
-• convolution-style local two-qubit blocks  
-• pooling-style entangling reductions  
-• a final readout on a reduced register  
+- convolution-style local two-qubit blocks  
+- pooling-style entangling reductions  
+- a final readout on a reduced register  
 
 In the implementation used here, the classifier applies a trainable embedding
 on four qubits, followed by shared convolution blocks on neighbouring pairs,
@@ -673,8 +673,8 @@ $$
 
 Training encourages:
 
-• small distances for same-class pairs  
-• large distances for different-class pairs  
+- small distances for same-class pairs  
+- large distances for different-class pairs  
 
 ---
 
@@ -704,8 +704,8 @@ $$
 
 where:
 
-• $m$ is a margin hyperparameter  
-• $d_{ij}$ is Euclidean distance in embedding space  
+- $m$ is a margin hyperparameter  
+- $d_{ij}$ is Euclidean distance in embedding space  
 
 The margin encourages separation between classes.
 
@@ -765,8 +765,8 @@ $$
 
 Metric learning therefore separates:
 
-• representation learning (quantum)
-• classification rule (classical)
+- representation learning (quantum)
+- classification rule (classical)
 
 ---
 
@@ -796,10 +796,10 @@ Metric learning optimises geometry of the feature space.
 
 Advantages:
 
-• decouples representation learning from classifier choice  
-• allows classical classifiers to operate on quantum features  
-• supports few-shot learning scenarios  
-• provides interpretable embedding structure  
+- decouples representation learning from classifier choice  
+- allows classical classifiers to operate on quantum features  
+- supports few-shot learning scenarios  
+- provides interpretable embedding structure  
 
 ---
 
@@ -807,10 +807,10 @@ Advantages:
 
 Embedding expressivity depends on:
 
-• number of qubits  
-• circuit depth  
-• entanglement structure  
-• number of re-uploading layers  
+- number of qubits  
+- circuit depth  
+- entanglement structure  
+- number of re-uploading layers  
 
 As circuit depth increases, the embedding may represent more complex similarity structure.
 
@@ -836,16 +836,16 @@ learn parameters inside the feature map rather than classifier weights.
 
 Expressivity depends on:
 
-• embedding structure  
-• circuit depth  
-• entanglement pattern  
-• number of qubits  
+- embedding structure  
+- circuit depth  
+- entanglement pattern  
+- number of qubits  
 
 Tradeoffs:
 
-• deeper circuits increase expressivity  
-• deeper circuits increase noise sensitivity  
-• more qubits increase dimensional capacity  
+- deeper circuits increase expressivity  
+- deeper circuits increase noise sensitivity  
+- more qubits increase dimensional capacity  
 
 ---
 
@@ -865,15 +865,15 @@ Common structure across models:
 
 Finite-shot sampling introduces:
 
-• variance in expectation values  
-• stochastic gradients  
-• sensitivity to circuit depth  
+- variance in expectation values  
+- stochastic gradients  
+- sensitivity to circuit depth  
 
 Noise-aware evaluation allows study of:
 
-• robustness of variational models  
-• stability of kernel matrices  
-• sensitivity of optimisation  
+- robustness of variational models  
+- stability of kernel matrices  
+- sensitivity of optimisation  
 
 Finite-shot execution approximates behaviour of real quantum hardware.
 
@@ -893,8 +893,8 @@ $$
 
 where:
 
-• $\mathcal{H}_A$ is the retained latent subsystem  
-• $\mathcal{H}_B$ is the trash subsystem  
+- $\mathcal{H}_A$ is the retained latent subsystem  
+- $\mathcal{H}_B$ is the trash subsystem  
 
 The encoder aims to transform the state so that the trash subsystem is close to
 a fixed reference state, typically $|0\rangle^{\otimes k}$.
@@ -942,8 +942,8 @@ $$
 
 The implementation reports both:
 
-• compression fidelity on the trash subsystem  
-• reconstruction fidelity on the full state  
+- compression fidelity on the trash subsystem  
+- reconstruction fidelity on the full state  
 
 ---
 
