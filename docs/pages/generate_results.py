@@ -45,11 +45,15 @@ def short_commit() -> str:
 
 
 def package_version() -> str:
+    pyproject = ROOT / "pyproject.toml"
+    if pyproject.exists():
+        data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+        return str(data["project"]["version"])
+
     try:
         return version("qml-pennylane")
     except PackageNotFoundError:
-        data = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-        return str(data["project"]["version"])
+        return "unknown"
 
 
 def final_value(values: list[float] | tuple[float, ...]) -> float:

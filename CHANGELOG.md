@@ -1,24 +1,6 @@
 # CHANGELOG.md
 
-## Unreleased
-
-### Added
-
-- Added a GitHub Pages workflow for publishing a custom static documentation site
-- Added a Pages site generator and stylesheet matched to the root portfolio site
-- Added generated `RESULTS.md` reference outputs and a Results web page
-- Added generated result images to `RESULTS.md` and the Results web page
-- Added README and usage-documentation links to the published Pages site
-
-### Maintenance
-
-- Ignored local static-site build output directories (`_site/` and `site_docs/`)
-- Configured pytest to include the repository root on the import path for local test runs
-- Regenerate reference results during the Pages workflow before building the site
-
----
-
-## [0.1.12] - 10-04-2026
+## [0.1.12] - 06-05-2026
 
 ### Added
 
@@ -26,6 +8,19 @@
 - Added `autoencoder` CLI support via `python -m qml autoencoder`
 - Added smoke, artifact, CLI, and import coverage for the quantum autoencoder
 - Added autoencoder documentation and example notebook support
+- Added a GitHub Pages workflow for publishing a custom static documentation site
+- Added a Pages site generator and stylesheet matched to the root portfolio site
+- Added generated `RESULTS.md` reference outputs and a Results web page
+- Added generated result images to `RESULTS.md` and the Results web page
+- Added a Pages workflow status badge to `README.md`
+- Added documentation for the Pages tooling in `docs/pages/README.md`
+- Added README and usage-documentation links to the published Pages site
+
+### Maintenance
+
+- Ignored local static-site build output directories (`_site/` and `site_docs/`)
+- Configured pytest to include the repository root on the import path for local test runs
+- Regenerate reference results during the Pages workflow before building the site
 
 ### Summary
 

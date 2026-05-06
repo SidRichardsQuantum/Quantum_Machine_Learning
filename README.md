@@ -14,6 +14,10 @@
 <img src="https://img.shields.io/github/actions/workflow/status/SidRichardsQuantum/Quantum_Machine_Learning/tests.yml?branch=main&label=tests&style=flat-square" alt="Tests">
 </a>
 
+<a href="https://github.com/SidRichardsQuantum/Quantum_Machine_Learning/actions/workflows/pages.yml">
+<img src="https://img.shields.io/github/actions/workflow/status/SidRichardsQuantum/Quantum_Machine_Learning/pages.yml?branch=main&label=pages&style=flat-square" alt="Pages">
+</a>
+
 <a href="https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/">
 <img src="https://img.shields.io/badge/docs-GitHub%20Pages-2ea44f?style=flat-square&logo=githubpages" alt="Documentation">
 </a>

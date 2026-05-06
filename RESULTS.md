@@ -9,10 +9,10 @@ page quickly. They are reproducible smoke-scale examples, not quantum-advantage 
 
 ## Environment
 
-- Generated: 2026-05-06 10:27:16 UTC
-- Git commit: `4778657`
+- Generated: 2026-05-06 10:49:05 UTC
+- Git commit: `11ae768`
 - Python: `3.12.1`
-- Package version: `0.1.11`
+- Package version: `0.1.12`
 - PennyLane: `0.44.1`
 - Matplotlib backend: `Agg`
 - Default execution: analytic `default.qubit` unless a shot count is listed
@@ -21,13 +21,13 @@ page quickly. They are reproducible smoke-scale examples, not quantum-advantage 
 
 | Workflow | Primary metric | Value | Runtime |
 | --- | --- | ---: | ---: |
-| Variational quantum classifier | `train_accuracy` | 0.4595 | 27.32 s |
-| Variational quantum regression | `train_mse` | 0.9098 | 3.48 s |
-| Quantum convolutional neural network | `train_accuracy` | 0.7000 | 110.75 s |
-| Quantum autoencoder | `test_compression_fidelity` | 0.7014 | 3.30 s |
-| Quantum kernel classifier | `train_accuracy` | 0.8519 | 3.01 s |
-| Trainable quantum kernel | `train_accuracy` | 0.7333 | 25.89 s |
-| Quantum metric learning | `train_accuracy` | 0.5946 | 3.90 s |
+| Variational quantum classifier | `train_accuracy` | 0.4595 | 27.65 s |
+| Variational quantum regression | `train_mse` | 0.9098 | 3.45 s |
+| Quantum convolutional neural network | `train_accuracy` | 0.7000 | 112.32 s |
+| Quantum autoencoder | `test_compression_fidelity` | 0.7014 | 3.64 s |
+| Quantum kernel classifier | `train_accuracy` | 0.8519 | 3.32 s |
+| Trainable quantum kernel | `train_accuracy` | 0.7333 | 25.27 s |
+| Quantum metric learning | `train_accuracy` | 0.5946 | 3.91 s |
 
 ## Variational quantum classifier
 
@@ -40,7 +40,7 @@ Configuration:
 | `train_accuracy` | 0.4595 |
 | `test_accuracy` | 0.6154 |
 | `final_loss` | 1.4790 |
-| `runtime_seconds` | 27.32 |
+| `runtime_seconds` | 27.65 |
 
 Images:
 
@@ -59,7 +59,7 @@ Configuration:
 | `train_mse` | 0.9098 |
 | `test_mse` | 0.3316 |
 | `final_loss` | 0.9841 |
-| `runtime_seconds` | 3.48 |
+| `runtime_seconds` | 3.45 |
 
 Images:
 
@@ -78,7 +78,7 @@ Configuration:
 | `train_accuracy` | 0.7000 |
 | `test_accuracy` | 0.9000 |
 | `final_loss` | 0.5754 |
-| `runtime_seconds` | 110.75 |
+| `runtime_seconds` | 112.32 |
 
 Images:
 
@@ -97,7 +97,7 @@ Configuration:
 | `test_compression_fidelity` | 0.7014 |
 | `test_reconstruction_fidelity` | 1.0000 |
 | `final_loss` | 0.3676 |
-| `runtime_seconds` | 3.30 |
+| `runtime_seconds` | 3.64 |
 
 Images:
 
@@ -113,7 +113,7 @@ Configuration:
 | --- | ---: |
 | `train_accuracy` | 0.8519 |
 | `test_accuracy` | 0.8889 |
-| `runtime_seconds` | 3.01 |
+| `runtime_seconds` | 3.32 |
 
 Images:
 
@@ -133,7 +133,7 @@ Configuration:
 | `test_accuracy` | 0.8000 |
 | `final_alignment` | 0.1755 |
 | `final_loss` | -0.1755 |
-| `runtime_seconds` | 25.89 |
+| `runtime_seconds` | 25.27 |
 
 Images:
 
@@ -154,7 +154,7 @@ Configuration:
 | `train_accuracy` | 0.5946 |
 | `test_accuracy` | 0.6923 |
 | `final_loss` | 0.1152 |
-| `runtime_seconds` | 3.90 |
+| `runtime_seconds` | 3.91 |
 
 Images:
 
