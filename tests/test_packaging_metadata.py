@@ -1,7 +1,11 @@
 from __future__ import annotations
 
-import tomllib
 from pathlib import Path
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10
+    import tomli as tomllib
 
 
 def test_package_uses_src_layout_and_console_script() -> None:

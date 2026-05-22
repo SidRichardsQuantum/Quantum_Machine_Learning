@@ -1,5 +1,24 @@
 # CHANGELOG.md
 
+## [0.2.1] - 22-05-2026
+
+### Fixed
+
+- Fixed packaging metadata tests on Python 3.10 by falling back from the
+  standard-library `tomllib` module to `tomli`.
+
+### Maintenance
+
+- Added the conditional development dependency `tomli>=2; python_version < '3.11'`.
+- Marked the finite-shot trainable-kernel dataset smoke test as slow so
+  `pytest -m "not slow"` remains focused on the fast CI subset.
+
+### Validation
+
+- Verified `pytest -m "not slow"` passes with 58 tests selected and 4 slow tests deselected.
+
+---
+
 ## [0.2.0] - 21-05-2026
 
 ### Added

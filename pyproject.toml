@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qml-pennylane"
-version = "0.2.0"
+version = "0.2.1"
 description = "Modular PennyLane-based quantum machine learning suite for classification, regression, and quantum kernel methods."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -47,6 +47,7 @@ dev = [
     "nbformat",
     "markdown",
     "pymdown-extensions",
+    "tomli>=2; python_version < '3.11'",
     "build",
     "twine",
     "jupytext",

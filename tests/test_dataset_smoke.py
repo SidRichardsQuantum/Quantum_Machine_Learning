@@ -1,3 +1,5 @@
+import pytest
+
 from qml.classifiers import run_vqc
 from qml.kernel_methods import run_quantum_kernel_classifier
 from qml.regression import run_vqr
@@ -36,6 +38,7 @@ def test_quantum_kernel_xor_smoke():
     assert "test_accuracy" in result
 
 
+@pytest.mark.slow
 def test_trainable_kernel_blobs_smoke():
     result = run_trainable_quantum_kernel_classifier(
         dataset="blobs",
