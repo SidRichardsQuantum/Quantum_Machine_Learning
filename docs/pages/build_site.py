@@ -28,6 +28,24 @@ DOCS = [
         "results.html",
         "Deterministic reference outputs from API workflows.",
     ),
+    (
+        "Tutorial Results",
+        ROOT / "RESULTS_TUTORIALS.md",
+        "results-tutorials.html",
+        "Tables and plots extracted from executed tutorial notebooks.",
+    ),
+    (
+        "Real Example Results",
+        ROOT / "RESULTS_REAL_EXAMPLES.md",
+        "results-real-examples.html",
+        "Tables and plots extracted from executed real-example notebooks.",
+    ),
+    (
+        "Archive Results",
+        ROOT / "RESULTS_ARCHIVE.md",
+        "results-archive.html",
+        "Tables and plots extracted from archived notebooks.",
+    ),
     ("Changelog", ROOT / "CHANGELOG.md", "changelog.html", "Release notes and project history."),
     (
         "Variational Quantum Classifier",
@@ -296,7 +314,7 @@ def home() -> str:
 
 def documentation_page(label: str, source: Path) -> str:
     doc_nav = "".join(f'<a href="{output}">{html.escape(name)}</a>' for name, _, output, _ in DOCS)
-    current = label if label in {"Usage", "Theory", "Results"} else None
+    current = "Results" if "Results" in label else label if label in {"Usage", "Theory"} else None
     body = f"""
       <section class="section doc-layout">
         <aside class="doc-sidebar" aria-label="Documentation navigation">

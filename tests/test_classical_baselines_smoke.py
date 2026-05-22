@@ -18,10 +18,11 @@ def test_run_logistic_classifier_smoke():
         noise=0.1,
         test_size=0.25,
         seed=0,
+        dataset="circles",
     )
 
     assert result["model"] == "logistic_regression"
-    assert result["dataset"] == "moons"
+    assert result["dataset"] == "circles"
     assert math.isfinite(result["train_accuracy"])
     assert math.isfinite(result["test_accuracy"])
     assert 0.0 <= result["train_accuracy"] <= 1.0
@@ -73,10 +74,11 @@ def test_run_ridge_regression_smoke():
         test_size=0.25,
         seed=0,
         alpha=1.0,
+        dataset="sine",
     )
 
     assert result["model"] == "ridge_regression"
-    assert result["dataset"] == "regression"
+    assert result["dataset"] == "sine"
     assert math.isfinite(result["train_mse"])
     assert math.isfinite(result["test_mse"])
     assert math.isfinite(result["train_mae"])
@@ -98,10 +100,11 @@ def test_run_mlp_regressor_smoke():
             seed=0,
             hidden_layer_sizes=(8,),
             max_iter=50,
+            dataset="polynomial",
         )
 
     assert result["model"] == "mlp_regressor"
-    assert result["dataset"] == "regression"
+    assert result["dataset"] == "polynomial"
     assert math.isfinite(result["train_mse"])
     assert math.isfinite(result["test_mse"])
     assert math.isfinite(result["train_mae"])

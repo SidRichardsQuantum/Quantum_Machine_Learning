@@ -10,6 +10,7 @@ def test_imports_smoke():
     import qml.losses
     import qml.metrics
     import qml.qcnn
+    import qml.reporting
     import qml.training
     import qml.utils
     import qml.visualize

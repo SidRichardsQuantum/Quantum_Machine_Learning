@@ -222,8 +222,8 @@ Classical baselines help contextualise quantum model performance:
 Comparisons are demonstrated in the notebooks:
 
 ```
-classical_vs_quantum_classifier.ipynb
-classical_vs_quantum_regression.ipynb
+notebooks/tutorials/01-classical-vs-quantum-classifier.ipynb
+notebooks/tutorials/02-classical-vs-quantum-regressor.ipynb
 ```
 
 ---

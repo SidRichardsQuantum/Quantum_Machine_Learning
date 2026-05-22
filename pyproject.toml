@@ -1,17 +1,18 @@
 [build-system]
-requires = ["setuptools>=61", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "qml-pennylane"
-version = "0.1.12"
+version = "0.2.0"
 description = "Modular PennyLane-based quantum machine learning suite for classification, regression, and quantum kernel methods."
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
     { name = "Sid Richards" }
 ]
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 
 dependencies = [
     "pennylane>=0.34",
@@ -21,11 +22,15 @@ dependencies = [
 ]
 
 classifiers = [
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent",
 ]
+
+[project.scripts]
+qml-pennylane = "qml.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/SidRichardsQuantum/Quantum_Machine_Learning"
@@ -38,18 +43,22 @@ dev = [
     "black",
     "ruff",
     "ipykernel",
+    "nbconvert",
+    "nbformat",
+    "markdown",
+    "pymdown-extensions",
     "build",
     "twine",
     "jupytext",
 ]
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["src"]
 include = ["qml*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["."]
+pythonpath = ["src"]
 addopts = "-q"
 markers = [
     "slow: slower end-to-end tests kept in the full test pass",
@@ -58,10 +67,10 @@ markers = [
 [tool.ruff]
 line-length = 100
 exclude = [
-    "notebooks/archive",
+    "notebooks",
 ]
 
 [tool.black]
 line-length = 100
 target-version = ["py310"]
-extend-exclude = "notebooks/archive"
+extend-exclude = "notebooks"

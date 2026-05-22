@@ -1,19 +1,22 @@
 # Results
 
 These reference results are generated from the public package APIs used by the notebooks.
-The notebooks remain thin clients; the API path is used here because it is deterministic,
-CI-friendly, and avoids committing executed notebook outputs.
+Notebook-derived result pages are generated separately from executed notebook outputs:
+
+- [Tutorial notebook results](results-tutorials.html)
+- [Real example notebook results](results-real-examples.html)
+- [Archived notebook results](results-archive.html)
 
 The configurations are intentionally small so the GitHub Pages workflow can refresh the
 page quickly. They are reproducible smoke-scale examples, not quantum-advantage claims.
 
 ## Environment
 
-- Generated: 2026-05-06 10:49:05 UTC
-- Git commit: `11ae768`
+- Generated: 2026-05-22 00:44:44 UTC
+- Git commit: `9496565`
 - Python: `3.12.1`
-- Package version: `0.1.12`
-- PennyLane: `0.44.1`
+- Package version: `0.2.0`
+- PennyLane: `0.45.0`
 - Matplotlib backend: `Agg`
 - Default execution: analytic `default.qubit` unless a shot count is listed
 
@@ -21,13 +24,13 @@ page quickly. They are reproducible smoke-scale examples, not quantum-advantage 
 
 | Workflow | Primary metric | Value | Runtime |
 | --- | --- | ---: | ---: |
-| Variational quantum classifier | `train_accuracy` | 0.4595 | 27.65 s |
-| Variational quantum regression | `train_mse` | 0.9098 | 3.45 s |
-| Quantum convolutional neural network | `train_accuracy` | 0.7000 | 112.32 s |
-| Quantum autoencoder | `test_compression_fidelity` | 0.7014 | 3.64 s |
-| Quantum kernel classifier | `train_accuracy` | 0.8519 | 3.32 s |
-| Trainable quantum kernel | `train_accuracy` | 0.7333 | 25.27 s |
-| Quantum metric learning | `train_accuracy` | 0.5946 | 3.91 s |
+| Variational quantum classifier | `train_accuracy` | 0.4595 | 27.20 s |
+| Variational quantum regression | `train_mse` | 0.9098 | 3.66 s |
+| Quantum convolutional neural network | `train_accuracy` | 0.8333 | 144.44 s |
+| Quantum autoencoder | `test_compression_fidelity` | 0.7014 | 3.33 s |
+| Quantum kernel classifier | `train_accuracy` | 0.8519 | 2.00 s |
+| Trainable quantum kernel | `train_accuracy` | 0.7333 | 24.68 s |
+| Quantum metric learning | `train_accuracy` | 0.5946 | 4.05 s |
 
 ## Variational quantum classifier
 
@@ -40,7 +43,7 @@ Configuration:
 | `train_accuracy` | 0.4595 |
 | `test_accuracy` | 0.6154 |
 | `final_loss` | 1.4790 |
-| `runtime_seconds` | 27.65 |
+| `runtime_seconds` | 27.20 |
 
 Images:
 
@@ -59,7 +62,7 @@ Configuration:
 | `train_mse` | 0.9098 |
 | `test_mse` | 0.3316 |
 | `final_loss` | 0.9841 |
-| `runtime_seconds` | 3.45 |
+| `runtime_seconds` | 3.66 |
 
 Images:
 
@@ -75,10 +78,10 @@ Configuration:
 
 | Metric | Value |
 | --- | ---: |
-| `train_accuracy` | 0.7000 |
+| `train_accuracy` | 0.8333 |
 | `test_accuracy` | 0.9000 |
-| `final_loss` | 0.5754 |
-| `runtime_seconds` | 112.32 |
+| `final_loss` | 0.4556 |
+| `runtime_seconds` | 144.44 |
 
 Images:
 
@@ -95,9 +98,9 @@ Configuration:
 | Metric | Value |
 | --- | ---: |
 | `test_compression_fidelity` | 0.7014 |
-| `test_reconstruction_fidelity` | 1.0000 |
+| `test_reconstruction_fidelity` | 0.7014 |
 | `final_loss` | 0.3676 |
-| `runtime_seconds` | 3.64 |
+| `runtime_seconds` | 3.33 |
 
 Images:
 
@@ -113,7 +116,7 @@ Configuration:
 | --- | ---: |
 | `train_accuracy` | 0.8519 |
 | `test_accuracy` | 0.8889 |
-| `runtime_seconds` | 3.32 |
+| `runtime_seconds` | 2.00 |
 
 Images:
 
@@ -133,7 +136,7 @@ Configuration:
 | `test_accuracy` | 0.8000 |
 | `final_alignment` | 0.1755 |
 | `final_loss` | -0.1755 |
-| `runtime_seconds` | 25.27 |
+| `runtime_seconds` | 24.68 |
 
 Images:
 
@@ -154,7 +157,7 @@ Configuration:
 | `train_accuracy` | 0.5946 |
 | `test_accuracy` | 0.6923 |
 | `final_loss` | 0.1152 |
-| `runtime_seconds` | 3.91 |
+| `runtime_seconds` | 4.05 |
 
 Images:
 
@@ -163,7 +166,7 @@ Images:
 
 ## Reproduce
 
-Regenerate this file from the repository root:
+Regenerate this file and notebook-result pages from the repository root:
 
 ```bash
 python docs/pages/generate_results.py

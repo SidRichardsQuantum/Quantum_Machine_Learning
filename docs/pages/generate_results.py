@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import math
 import os
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -14,12 +16,43 @@ from pathlib import Path
 from time import perf_counter
 from typing import Any
 
+import nbformat
+
 os.environ.setdefault("MPLBACKEND", "Agg")
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 RESULT_ASSETS = ROOT / "docs/pages/assets/reference-results"
+NOTEBOOK_ASSETS = ROOT / "docs/pages/assets/notebook-results"
+NOTEBOOK_RESULTS = {
+    "tutorial": {
+        "title": "Tutorial Notebook Results",
+        "description": (
+            "Executed outputs from the tutorial notebooks in `notebooks/tutorials/`. "
+            "These pages are generated from notebook outputs, including text tables and plots."
+        ),
+        "directory": ROOT / "notebooks/tutorials",
+        "output": ROOT / "RESULTS_TUTORIALS.md",
+    },
+    "real_examples": {
+        "title": "Real Example Notebook Results",
+        "description": (
+            "Executed outputs from the domain-oriented notebooks in `notebooks/real_examples/`. "
+            "These examples use small reproducible physics, mathematics, or dynamical-system tasks."
+        ),
+        "directory": ROOT / "notebooks/real_examples",
+        "output": ROOT / "RESULTS_REAL_EXAMPLES.md",
+    },
+    "archive": {
+        "title": "Archived Notebook Results",
+        "description": (
+            "Executed outputs from archived notebooks retained for historical reference."
+        ),
+        "directory": ROOT / "notebooks/archive",
+        "output": ROOT / "RESULTS_ARCHIVE.md",
+    },
+}
 
 import pennylane as pennylane  # noqa: E402
 
@@ -68,6 +101,10 @@ def fmt(value: Any, digits: int = 4) -> str:
             return "nan"
         return f"{value:.{digits}f}"
     return str(value)
+
+
+def slugify(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
 
 
 def row(
@@ -353,6 +390,196 @@ def image_gallery(run: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def notebook_title(path: Path, notebook) -> str:
+    for cell in notebook.cells:
+        if cell.cell_type != "markdown":
+            continue
+        for line in cell.source.splitlines():
+            if line.startswith("# "):
+                return line.removeprefix("# ").strip()
+    return path.stem.replace("-", " ").title()
+
+
+def strip_ansi(text: str) -> str:
+    return re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", text)
+
+
+def is_relevant_stream(text: str) -> bool:
+    if "+-" in text and "|" in text:
+        return True
+    keywords = (
+        "Validation",
+        "Dataset",
+        "Results",
+        "Summary",
+        "Train accuracy",
+        "Test accuracy",
+        "Passed:",
+        "Interpretation",
+        "Sample ",
+    )
+    return any(keyword in text for keyword in keywords)
+
+
+def notebook_stream_blocks(notebook) -> list[str]:
+    blocks: list[str] = []
+    for cell in notebook.cells:
+        if cell.cell_type != "code":
+            continue
+        parts = []
+        for output in cell.get("outputs", []):
+            output_type = output.get("output_type")
+            if output_type == "stream":
+                text = output.get("text", "")
+                if isinstance(text, list):
+                    text = "".join(text)
+            elif output_type in {"execute_result", "display_data"}:
+                data = output.get("data", {})
+                text = data.get("text/plain", "")
+                if isinstance(text, list):
+                    text = "".join(text)
+                if text.startswith("<Figure"):
+                    continue
+            else:
+                continue
+            text = strip_ansi(text).strip()
+            if text and (is_relevant_stream(text) or len(text) <= 2000):
+                parts.append(text)
+        if parts:
+            blocks.append("\n".join(parts))
+    return blocks
+
+
+def write_notebook_images(path: Path, notebook, group: str) -> list[Path]:
+    output_dir = NOTEBOOK_ASSETS / group / path.stem
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    images = []
+    index = 1
+    for cell in notebook.cells:
+        if cell.cell_type != "code":
+            continue
+        for output in cell.get("outputs", []):
+            data = output.get("data", {})
+            encoded = data.get("image/png")
+            if not encoded:
+                continue
+            if isinstance(encoded, list):
+                encoded = "".join(encoded)
+            image_path = output_dir / f"figure-{index:02d}.png"
+            image_path.write_bytes(base64.b64decode(encoded))
+            images.append(image_path.relative_to(ROOT))
+            index += 1
+    return images
+
+
+def collect_notebook_result(path: Path, group: str) -> dict[str, Any]:
+    notebook = nbformat.read(path, as_version=4)
+    return {
+        "title": notebook_title(path, notebook),
+        "path": path.relative_to(ROOT),
+        "streams": notebook_stream_blocks(notebook),
+        "images": write_notebook_images(path, notebook, group),
+    }
+
+
+def execute_notebooks(paths: list[Path]) -> None:
+    if not paths:
+        return
+    env = os.environ.copy()
+    env.setdefault("MPLBACKEND", "Agg")
+    env.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
+    env.setdefault("JUPYTER_CONFIG_DIR", "/tmp/jupyter_config")
+    env.setdefault("JUPYTER_DATA_DIR", "/tmp/jupyter_data")
+    env.setdefault("JUPYTER_RUNTIME_DIR", "/tmp/jupyter_runtime")
+    cmd = [
+        sys.executable,
+        "-m",
+        "jupyter",
+        "nbconvert",
+        "--execute",
+        "--inplace",
+        *(str(path.relative_to(ROOT)) for path in paths),
+    ]
+    subprocess.run(cmd, cwd=ROOT, env=env, check=True)
+
+
+def collect_notebook_group(group: str, *, execute: bool) -> list[dict[str, Any]]:
+    config = NOTEBOOK_RESULTS[group]
+    paths = sorted(config["directory"].glob("*.ipynb"))
+    if execute:
+        execute_notebooks(paths)
+    return [collect_notebook_result(path, group) for path in paths]
+
+
+def render_notebook_results(group: str, results: list[dict[str, Any]]) -> str:
+    config = NOTEBOOK_RESULTS[group]
+    generated_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
+    summary = [
+        "| Notebook | Text result blocks | Plots |",
+        "| --- | ---: | ---: |",
+        *[
+            f"| [{result['path'].as_posix()}](#{slugify(result['title'])}) | "
+            f"{len(result['streams'])} | {len(result['images'])} |"
+            for result in results
+        ],
+    ]
+
+    sections = []
+    for result in results:
+        image_lines = []
+        for image in result["images"]:
+            title = image.stem.replace("-", " ")
+            image_lines.append(f"![{title}]({image.as_posix()})")
+
+        stream_lines = []
+        for index, block in enumerate(result["streams"], start=1):
+            stream_lines.append(f"Result block {index}:\n\n```text\n{block}\n```")
+
+        sections.append(f"""## {result["title"]}
+
+Notebook: `{result["path"].as_posix()}`
+
+{chr(10).join(stream_lines) if stream_lines else "_No text result blocks were found._"}
+
+{chr(10).join(image_lines) if image_lines else "_No plots were found._"}
+""")
+
+    return f"""# {config["title"]}
+
+{config["description"]}
+
+## Environment
+
+- Generated: {generated_at}
+- Git commit: `{short_commit()}`
+- Python: `{platform.python_version()}`
+- Package version: `{package_version()}`
+- Matplotlib backend: `{os.environ.get("MPLBACKEND", "Agg")}`
+
+## Summary
+
+{chr(10).join(summary)}
+
+{chr(10).join(sections)}
+## Reproduce
+
+Regenerate notebook result pages from existing executed notebook outputs:
+
+```bash
+python docs/pages/generate_results.py --skip-api-results
+```
+
+Execute notebooks first, then regenerate result pages:
+
+```bash
+python docs/pages/generate_results.py --skip-api-results --execute-notebooks
+```
+"""
+
+
 def render_results(runs: list[dict[str, Any]]) -> str:
     generated_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
     summary_rows = [
@@ -381,8 +608,11 @@ Configuration:
     return f"""# Results
 
 These reference results are generated from the public package APIs used by the notebooks.
-The notebooks remain thin clients; the API path is used here because it is deterministic,
-CI-friendly, and avoids committing executed notebook outputs.
+Notebook-derived result pages are generated separately from executed notebook outputs:
+
+- [Tutorial notebook results](results-tutorials.html)
+- [Real example notebook results](results-real-examples.html)
+- [Archived notebook results](results-archive.html)
 
 The configurations are intentionally small so the GitHub Pages workflow can refresh the
 page quickly. They are reproducible smoke-scale examples, not quantum-advantage claims.
@@ -404,7 +634,7 @@ page quickly. They are reproducible smoke-scale examples, not quantum-advantage 
 {chr(10).join(sections)}
 ## Reproduce
 
-Regenerate this file from the repository root:
+Regenerate this file and notebook-result pages from the repository root:
 
 ```bash
 python docs/pages/generate_results.py
@@ -415,6 +645,16 @@ Generated images are written under `docs/pages/assets/reference-results/` and em
 """
 
 
+def write_notebook_result_pages(*, execute: bool) -> None:
+    if NOTEBOOK_ASSETS.exists():
+        shutil.rmtree(NOTEBOOK_ASSETS)
+    NOTEBOOK_ASSETS.mkdir(parents=True, exist_ok=True)
+
+    for group, config in NOTEBOOK_RESULTS.items():
+        results = collect_notebook_group(group, execute=execute)
+        config["output"].write_text(render_notebook_results(group, results), encoding="utf-8")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate deterministic QML reference results.")
     parser.add_argument(
@@ -423,10 +663,29 @@ def main() -> None:
         default=ROOT / "RESULTS.md",
         help="Markdown file to write.",
     )
+    parser.add_argument(
+        "--skip-notebook-results",
+        action="store_true",
+        help="Do not generate RESULTS_TUTORIALS.md, RESULTS_REAL_EXAMPLES.md, or RESULTS_ARCHIVE.md.",
+    )
+    parser.add_argument(
+        "--execute-notebooks",
+        action="store_true",
+        help="Execute notebooks before extracting notebook result pages.",
+    )
+    parser.add_argument(
+        "--skip-api-results",
+        action="store_true",
+        help="Only generate notebook result pages.",
+    )
     args = parser.parse_args()
 
-    runs = run_reference_results()
-    args.output.write_text(render_results(runs), encoding="utf-8")
+    if not args.skip_api_results:
+        runs = run_reference_results()
+        args.output.write_text(render_results(runs), encoding="utf-8")
+
+    if not args.skip_notebook_results:
+        write_notebook_result_pages(execute=args.execute_notebooks)
 
 
 if __name__ == "__main__":

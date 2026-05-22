@@ -34,11 +34,19 @@ def test_run_qcnn_smoke():
     assert isinstance(result["conv1_params"], np.ndarray)
     assert result["conv1_params"].shape == (2, 6)
 
+    assert isinstance(result["pool1_params"], np.ndarray)
+    assert result["pool1_params"].shape == (2, 2)
+
     assert isinstance(result["conv2_params"], np.ndarray)
     assert result["conv2_params"].shape == (1, 6)
 
+    assert isinstance(result["pool2_params"], np.ndarray)
+    assert result["pool2_params"].shape == (1, 2)
+
     assert isinstance(result["dense_params"], np.ndarray)
     assert result["dense_params"].shape == (2,)
+
+    assert result["active_wires_by_stage"] == [[0, 1, 2, 3], [1, 3], [3]]
 
     assert result["y_test"].shape == result["y_test_pred"].shape
     assert result["test_probabilities"].shape == result["y_test"].shape

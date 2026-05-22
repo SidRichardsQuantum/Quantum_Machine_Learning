@@ -33,6 +33,8 @@ def test_run_quantum_autoencoder_smoke():
     assert 0.0 <= result["test_compression_fidelity"] <= 1.0
     assert 0.0 <= result["train_reconstruction_fidelity"] <= 1.0
     assert 0.0 <= result["test_reconstruction_fidelity"] <= 1.0
+    assert result["reconstruction_method"] == "trash_zero_postselection_tied_decoder"
+    assert not np.allclose(result["train_reconstruction_scores"], 1.0)
 
 
 def test_run_quantum_autoencoder_save_outputs(tmp_path: Path):

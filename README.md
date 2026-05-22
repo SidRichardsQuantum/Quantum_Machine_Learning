@@ -45,18 +45,25 @@ Modular **PennyLane-based quantum machine learning library** implementing reusab
 - Quantum convolutional neural networks (QCNN)  
 - Quantum autoencoders  
 - Quantum kernel methods  
+- Dataset-agnostic estimator APIs for user-supplied arrays
+- Quantum kernel classification and regression
 - Trainable quantum kernels (kernel-target alignment)  
+- Multi-output variational regression and multiclass classification
+- Time-series windowing utilities
+- Human-readable reporting tables for notebooks and CLIs
 - Quantum metric learning (trainable embedding geometry)  
 - Classical baseline models  
 - Deterministic benchmark utilities  
 
 The repository follows a **package-first design**:
 
-- algorithms implemented in `qml/`  
+- algorithms implemented in `src/qml/`  
 - notebooks act as thin clients  
 - experiments produce reproducible outputs  
 - consistent plotting and result structures  
 - deterministic execution via explicit seeds  
+- implementation contracts document the circuit/model family, objective, and
+  metric semantics for each advertised algorithm
 
 ---
 
@@ -70,6 +77,7 @@ The repository follows a **package-first design**:
   - [Quantum convolutional neural network](#quantum-convolutional-neural-network)
   - [Quantum autoencoder](#quantum-autoencoder)
   - [Quantum kernel classifier](#quantum-kernel-classifier)
+  - [Dataset-agnostic estimators](#dataset-agnostic-estimators)
   - [Trainable quantum kernel](#trainable-quantum-kernel-kernel-target-alignment)
   - [Quantum metric learning](#quantum-metric-learning)
 
@@ -207,6 +215,60 @@ from qml.kernel_methods import run_quantum_kernel_classifier
 result = run_quantum_kernel_classifier(
     n_samples=200,
     plot=True,
+)
+```
+
+---
+
+### Dataset-agnostic estimators
+
+Use these APIs when you already have application data, for example features
+from a physics simulator, sensor pipeline, spectrum, graph descriptor, or
+time-series window.
+
+```python
+import numpy as np
+
+from qml import (
+    QuantumClassifier,
+    QuantumKernel,
+    QuantumKernelClassifier,
+    QuantumKernelRegressor,
+    QuantumRegressor,
+    make_sequence_windows,
+)
+
+# X and y can come from any domain-specific simulator or data source.
+X = np.asarray([[0.0, 0.1], [0.2, 0.0], [1.0, 0.9], [0.8, 1.0]])
+y_class = np.asarray([0, 0, 1, 1])
+y_reg = np.asarray([0.1, 0.2, 0.9, 0.8])
+
+kernel = QuantumKernel(seed=0)
+clf = QuantumKernelClassifier(kernel).fit(X, y_class)
+reg = QuantumKernelRegressor(kernel, alpha=1e-3).fit(X, y_reg)
+
+vqc = QuantumClassifier(n_layers=1, steps=10, seed=0).fit(X, y_class)
+vqr = QuantumRegressor(n_layers=1, steps=10, seed=0).fit(X, y_reg)
+
+series_X, series_y = make_sequence_windows(np.arange(10), window_size=3)
+```
+
+These estimators keep the package general: the package handles circuits,
+kernels, training, and metrics, while users supply domain-specific features and
+targets.
+
+---
+
+### Human-readable tables
+
+Use reporting helpers for compact notebook or CLI output:
+
+```python
+from qml.reporting import print_table
+
+print_table(
+    [("Quantum MAE", 0.086147), ("Baseline MAE", 0.020856)],
+    title="Results",
 )
 ```
 
@@ -395,14 +457,22 @@ CLI outputs include:
 
 ## Results
 
-Reference results are generated from the public APIs used by the notebooks:
+Reference results and notebook result pages are generated from one script:
 
 ```bash
 python docs/pages/generate_results.py
 ```
 
-The generated summary is written to **RESULTS.md** and included in the GitHub Pages site.
-These are smoke-scale deterministic outputs, not claims of quantum advantage.
+The generated outputs are:
+
+- **RESULTS.md** — smoke-scale API reference results
+- **RESULTS_TUTORIALS.md** — tables and plots extracted from tutorial notebooks
+- **RESULTS_REAL_EXAMPLES.md** — tables and plots extracted from real-example notebooks
+- **RESULTS_ARCHIVE.md** — tables and plots extracted from archived notebooks
+
+Pass `--execute-notebooks` to rerun notebooks before extracting notebook outputs. The
+GitHub Pages workflow uses this mode so the published result pages stay aligned with
+the notebooks. These are reproducible reference outputs, not quantum-advantage claims.
 
 ---
 
@@ -417,6 +487,9 @@ Core documentation:
 - **THEORY.md** — mathematical background
 - **USAGE.md** — API examples
 - **RESULTS.md** — generated deterministic reference outputs
+- **RESULTS_TUTORIALS.md** — generated tutorial notebook outputs
+- **RESULTS_REAL_EXAMPLES.md** — generated real-example notebook outputs
+- **RESULTS_ARCHIVE.md** — generated archived notebook outputs
 
 Algorithm notes:
 
@@ -427,22 +500,28 @@ Algorithm notes:
 - docs/qml/quantum_kernels.md
 - docs/qml/metric_learning.md
 
-Example notebooks:
+Tutorial notebooks:
 
-- quantum_variational_classifier.ipynb
-- quantum_regressor.ipynb
-- quantum_convolutional_neural_network.ipynb
-- quantum_autoencoder.ipynb
-- quantum_kernel_classifier.ipynb
-- quantum_metric_learning.ipynb
-- classical_vs_quantum_classifier.ipynb
+- notebooks/tutorials/01-classical-vs-quantum-classifier.ipynb
+- notebooks/tutorials/02-classical-vs-quantum-regressor.ipynb
+- notebooks/tutorials/03-variational-quantum-classifier.ipynb
+- notebooks/tutorials/04-variational-quantum-regressor.ipynb
+- notebooks/tutorials/05-quantum-kernel-classifier.ipynb
+- notebooks/tutorials/06-quantum-kernel-estimators.ipynb
+- notebooks/tutorials/07-variational-quantum-estimators.ipynb
+- notebooks/tutorials/08-sequence-window-quantum-forecasting.ipynb
+- notebooks/tutorials/09-quantum-metric-learning.ipynb
+- notebooks/tutorials/10-quantum-convolutional-neural-network.ipynb
+- notebooks/tutorials/11-quantum-autoencoder.ipynb
 
 ---
 
 ## Repository structure
 
 ```
-qml/
+src/
+
+  qml/
 
     ansatz.py
         parameterised circuit templates
@@ -471,6 +550,18 @@ qml/
     metric_learning.py
         contrastive quantum embedding optimisation
 
+    estimators.py
+        dataset-agnostic variational estimator APIs
+
+    kernels.py
+        reusable quantum kernel estimator APIs
+
+    preprocessing.py
+        sequence windowing and preprocessing helpers
+
+    reporting.py
+        human-readable result tables for notebooks and CLIs
+
     classical_baselines.py
         logistic, ridge, svm, mlp
 
@@ -498,7 +589,14 @@ qml/
 
 notebooks/
 
-    examples implemented as thin package clients
+    tutorials/
+        algorithm and implementation walkthroughs
+
+    real_examples/
+        small reproducible domain examples
+
+    archive/
+        retained historical notebooks
 
 
 tests/
@@ -528,7 +626,7 @@ images/
 
 ### Package-first architecture
 
-Core implementations live in:
+Core implementations live in `src/qml/` and are imported as:
 
 ```
 qml.*

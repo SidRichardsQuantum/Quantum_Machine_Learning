@@ -19,8 +19,11 @@ def test_classification_benchmark_runs():
             },
         },
         save=False,
+        dataset="circles",
     )
     assert "summary" in result
+    assert result["dataset"] == "circles"
+    assert {run["dataset"] for run in result["runs"]} == {"circles"}
 
 
 def test_regression_benchmark_runs():
@@ -35,5 +38,8 @@ def test_regression_benchmark_runs():
             },
         },
         save=False,
+        dataset="sine",
     )
     assert "summary" in result
+    assert result["dataset"] == "sine"
+    assert {run["dataset"] for run in result["runs"]} == {"sine"}

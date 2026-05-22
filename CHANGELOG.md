@@ -1,5 +1,82 @@
 # CHANGELOG.md
 
+## [0.2.0] - 21-05-2026
+
+### Added
+
+- Added implementation contracts documenting the model family, objective, metric
+  semantics, and behavioral checks expected for each advertised algorithm.
+- Added dataset-agnostic estimator APIs:
+  - `qml.estimators.QuantumClassifier`
+  - `qml.estimators.QuantumRegressor`
+  - `qml.kernels.QuantumKernel`
+  - `qml.kernels.QuantumKernelClassifier`
+  - `qml.kernels.QuantumKernelRegressor`
+  - `qml.preprocessing.make_sequence_windows`
+- Added `qml.reporting` helpers for human-readable notebook and CLI tables:
+  - `format_table(...)`
+  - `print_table(...)`
+  - `print_section(...)`
+- Added tutorial notebooks for the new estimator and preprocessing APIs:
+  - `notebooks/tutorials/06-quantum-kernel-estimators.ipynb`
+  - `notebooks/tutorials/07-variational-quantum-estimators.ipynb`
+  - `notebooks/tutorials/08-sequence-window-quantum-forecasting.ipynb`
+- Added real-example notebooks for small reproducible physics and dynamical-system tasks:
+  - `notebooks/real_examples/01-rabi-oscillation-parameter-inference.ipynb`
+  - `notebooks/real_examples/02-ising-correlation-temperature-classifier.ipynb`
+  - `notebooks/real_examples/03-lorenz-regime-classifier.ipynb`
+  - `notebooks/real_examples/04-condensed-matter-tfim-phase-classifier.ipynb`
+  - `notebooks/real_examples/05-pendulum-trajectory-surrogate.ipynb`
+  - `notebooks/real_examples/06-damped-oscillator-parameter-inference.ipynb`
+- Added `notebooks/README.md` to document tutorial, real-example, and archived notebooks.
+- Added generated notebook result pages:
+  - `RESULTS_TUTORIALS.md`
+  - `RESULTS_REAL_EXAMPLES.md`
+  - `RESULTS_ARCHIVE.md`
+
+### Changed
+
+- Moved importable package code from root-level `qml/` to `src/qml/`.
+- Updated packaging and local test configuration for the `src/` layout.
+- Reworked the QCNN workflow into a defensible four-qubit QCNN with trainable
+  convolution blocks, trainable pooling blocks, and active-wire reduction from
+  four to two to one wire.
+- Consolidated the quantum-kernel classifier workflow onto the reusable
+  `qml.kernels.QuantumKernel` implementation.
+- Added sklearn-style `get_params` and `set_params` methods to variational and
+  quantum-kernel estimators.
+- Updated classical baselines and benchmark helpers so selected datasets are
+  propagated consistently across quantum and classical models.
+- Moved algorithm walkthrough notebooks into `notebooks/tutorials/`.
+- Renamed notebooks to numbered kebab-case names for stable file-browser ordering.
+- Converted repeated notebook `print_section` helper code to use `qml.reporting.print_section`.
+- Updated notebook bootstrap cells so tutorials and real examples run from the repository root,
+  `notebooks/`, or their own subdirectories.
+- Updated Pages workflow triggers so documentation is rebuilt when `src/**` changes.
+- Updated Pages result generation to execute notebooks and publish tutorial, real-example,
+  and archive result pages with extracted tables and plots.
+- Excluded notebooks from Ruff and Black because executable notebook bootstrap cells intentionally
+  adjust import paths before importing project modules.
+
+### Fixed
+
+- Corrected `qml.io_utils` repository-root detection after the `src/` layout migration.
+- Updated markdown references to the renamed tutorial notebook paths.
+- Corrected quantum-autoencoder reconstruction fidelity so it is evaluated after
+  compression loss via trash-zero postselection and tied decoding, rather than by
+  applying an encoder immediately followed by its inverse.
+
+### Validation
+
+- Executed all tutorial notebooks from `notebooks/tutorials/`.
+- Executed the affected real-example notebooks after adopting `qml.reporting`.
+- Verified package imports, reporting helpers, estimator APIs, and notebook parsing.
+- Added behavioral test coverage for autoencoder reconstruction, QCNN pooling
+  structure, analytic kernel positive semidefiniteness, estimator parameter
+  APIs, and benchmark dataset consistency.
+
+---
+
 ## [0.1.12] - 06-05-2026
 
 ### Added
@@ -45,7 +122,7 @@ New core QML capability:
 - Added QCNN benchmark support in classification benchmarks
 - Added QCNN smoke, CLI, benchmark, and import coverage
 - Added QCNN documentation across README, usage docs, theory notes, and a dedicated algorithm page
-- Added QCNN example notebook: `notebooks/quantum_convolutional_neural_network.ipynb`
+- Added QCNN example notebook: `notebooks/tutorials/10-quantum-convolutional-neural-network.ipynb`
 
 ### Summary
 
@@ -98,7 +175,7 @@ python -m qml metric-learning --samples 200 --layers 2 --steps 50 --plot
 - Notebook:
 
 ```
-notebooks/quantum_metric_learning.ipynb
+notebooks/tutorials/09-quantum-metric-learning.ipynb
 ```
 
 - Documentation:
