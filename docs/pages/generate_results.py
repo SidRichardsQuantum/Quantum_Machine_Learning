@@ -44,14 +44,6 @@ NOTEBOOK_RESULTS = {
         "directory": ROOT / "notebooks/real_examples",
         "output": ROOT / "RESULTS_REAL_EXAMPLES.md",
     },
-    "archive": {
-        "title": "Archived Notebook Results",
-        "description": (
-            "Executed outputs from archived notebooks retained for historical reference."
-        ),
-        "directory": ROOT / "notebooks/archive",
-        "output": ROOT / "RESULTS_ARCHIVE.md",
-    },
 }
 
 import pennylane as pennylane  # noqa: E402
@@ -612,7 +604,6 @@ Notebook-derived result pages are generated separately from executed notebook ou
 
 - [Tutorial notebook results](results-tutorials.html)
 - [Real example notebook results](results-real-examples.html)
-- [Archived notebook results](results-archive.html)
 
 The configurations are intentionally small so the GitHub Pages workflow can refresh the
 page quickly. They are reproducible smoke-scale examples, not quantum-advantage claims.
@@ -666,7 +657,7 @@ def main() -> None:
     parser.add_argument(
         "--skip-notebook-results",
         action="store_true",
-        help="Do not generate RESULTS_TUTORIALS.md, RESULTS_REAL_EXAMPLES.md, or RESULTS_ARCHIVE.md.",
+        help="Do not generate RESULTS_TUTORIALS.md or RESULTS_REAL_EXAMPLES.md.",
     )
     parser.add_argument(
         "--execute-notebooks",

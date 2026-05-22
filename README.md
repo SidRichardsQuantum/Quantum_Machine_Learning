@@ -473,7 +473,6 @@ The generated outputs are:
 - **RESULTS.md** — smoke-scale API reference results
 - **RESULTS_TUTORIALS.md** — tables and plots extracted from tutorial notebooks
 - **RESULTS_REAL_EXAMPLES.md** — tables and plots extracted from real-example notebooks
-- **RESULTS_ARCHIVE.md** — tables and plots extracted from archived notebooks
 
 Pass `--execute-notebooks` to rerun notebooks before extracting notebook outputs. The
 GitHub Pages workflow uses this mode so the published result pages stay aligned with
@@ -495,7 +494,6 @@ Core documentation:
 - **RESULTS.md** — generated deterministic reference outputs
 - **RESULTS_TUTORIALS.md** — generated tutorial notebook outputs
 - **RESULTS_REAL_EXAMPLES.md** — generated real-example notebook outputs
-- **RESULTS_ARCHIVE.md** — generated archived notebook outputs
 
 Algorithm notes:
 
@@ -601,9 +599,6 @@ notebooks/
 
     real_examples/
         small reproducible domain examples
-
-    archive/
-        retained historical notebooks
 
 
 tests/

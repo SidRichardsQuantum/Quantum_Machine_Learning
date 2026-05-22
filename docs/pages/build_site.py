@@ -46,12 +46,6 @@ DOCS = [
         "results-real-examples.html",
         "Tables and plots extracted from executed real-example notebooks.",
     ),
-    (
-        "Archive Results",
-        ROOT / "RESULTS_ARCHIVE.md",
-        "results-archive.html",
-        "Tables and plots extracted from archived notebooks.",
-    ),
     ("Changelog", ROOT / "CHANGELOG.md", "changelog.html", "Release notes and project history."),
     (
         "Variational Quantum Classifier",

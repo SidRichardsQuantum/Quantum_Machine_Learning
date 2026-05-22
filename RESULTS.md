@@ -5,7 +5,6 @@ Notebook-derived result pages are generated separately from executed notebook ou
 
 - [Tutorial notebook results](results-tutorials.html)
 - [Real example notebook results](results-real-examples.html)
-- [Archived notebook results](results-archive.html)
 
 The configurations are intentionally small so the GitHub Pages workflow can refresh the
 page quickly. They are reproducible smoke-scale examples, not quantum-advantage claims.

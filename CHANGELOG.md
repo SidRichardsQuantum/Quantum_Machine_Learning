@@ -1,5 +1,31 @@
 # CHANGELOG.md
 
+## [0.2.3] - 22-05-2026
+
+### Changed
+
+- Added rendered diagnostic plot outputs across the tutorial notebooks so the
+  generated tutorial result page now includes dataset, loss, prediction,
+  kernel-matrix, embedding, and forecasting figures where relevant.
+- Expanded the quantum metric-learning tutorial with loss-history and
+  dataset-comparison plots.
+- Removed the archived QAOA notebook and dropped the `notebooks/archive/`
+  workflow from generated result pages and GitHub Pages navigation.
+- Bumped package metadata to `0.2.3`.
+
+### Removed
+
+- Removed `notebooks/archive/01-qaoa-max-cut.ipynb`.
+- Removed `RESULTS_ARCHIVE.md` and the extracted archive plot assets.
+
+### Validation
+
+- Executed all tutorial notebooks from `notebooks/tutorials/`.
+- Regenerated `RESULTS_TUTORIALS.md` and extracted tutorial plot assets.
+- Verified generated Pages site builds from the project virtualenv.
+
+---
+
 ## [0.2.2] - 22-05-2026
 
 ### Added
@@ -83,11 +109,10 @@
   - `notebooks/real_examples/04-condensed-matter-tfim-phase-classifier.ipynb`
   - `notebooks/real_examples/05-pendulum-trajectory-surrogate.ipynb`
   - `notebooks/real_examples/06-damped-oscillator-parameter-inference.ipynb`
-- Added `notebooks/README.md` to document tutorial, real-example, and archived notebooks.
+- Added `notebooks/README.md` to document tutorial and real-example notebooks.
 - Added generated notebook result pages:
   - `RESULTS_TUTORIALS.md`
   - `RESULTS_REAL_EXAMPLES.md`
-  - `RESULTS_ARCHIVE.md`
 
 ### Changed
 
@@ -108,8 +133,8 @@
 - Updated notebook bootstrap cells so tutorials and real examples run from the repository root,
   `notebooks/`, or their own subdirectories.
 - Updated Pages workflow triggers so documentation is rebuilt when `src/**` changes.
-- Updated Pages result generation to execute notebooks and publish tutorial, real-example,
-  and archive result pages with extracted tables and plots.
+- Updated Pages result generation to execute notebooks and publish tutorial and real-example
+  result pages with extracted tables and plots.
 - Excluded notebooks from Ruff and Black because executable notebook bootstrap cells intentionally
   adjust import paths before importing project modules.
 

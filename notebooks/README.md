@@ -8,7 +8,7 @@ subdirectories.
 
 These are tutorial-style walkthroughs of the package algorithms and reusable
 implementations. They live in `notebooks/tutorials/` so they are separate from
-domain real examples and archived experiments.
+domain real examples.
 
 | Notebook | Purpose |
 | --- | --- |
@@ -44,15 +44,6 @@ human-readable tables.
 | `real_examples/04-condensed-matter-tfim-phase-classifier.ipynb` | Classify finite-size transverse-field Ising model samples as ferromagnetic or paramagnetic from correlation features. | Angle embedding, PennyLane quantum fidelity kernel, package accuracy metric. |
 | `real_examples/05-pendulum-trajectory-surrogate.ipynb` | Learn a small-angle pendulum trajectory surrogate from initial state and time. | Package angle embedding, hardware-efficient ansatz, optimizer, training loop, and regression metrics. |
 | `real_examples/06-damped-oscillator-parameter-inference.ipynb` | Recover a damped oscillator damping coefficient from sparse displacement measurements. | Package angle embedding, hardware-efficient ansatz, optimizer, training loop, and regression metrics. |
-
-## Archived notebooks
-
-Archived notebooks are retained for historical examples that are not part of
-the current tutorial or real-example progression.
-
-| Notebook | Purpose |
-| --- | --- |
-| `archive/01-qaoa-max-cut.ipynb` | Demonstrate QAOA on a small Max-Cut instance. |
 
 ## Application notebook ideas
 
