@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from statistics import mean, pstdev
+from time import perf_counter
 from typing import Any
 
 from qml.classical_baselines import (
@@ -69,6 +70,35 @@ def _mean_std(values: list[float]) -> dict[str, float]:
     return {
         "mean": float(mean(values)),
         "std": float(pstdev(values)),
+    }
+
+
+def _best_model_by_summary_metric(
+    summary: dict[str, dict[str, Any]],
+    metric: str,
+    *,
+    higher_is_better: bool,
+) -> dict[str, Any]:
+    """
+    Return the best model according to one aggregated summary metric.
+    """
+    if not summary:
+        return {"model": None, "metric": metric, "value": float("nan")}
+
+    candidates = [
+        (model_name, float(model_summary[metric]["mean"]))
+        for model_name, model_summary in summary.items()
+    ]
+    best_name, best_value = (
+        max(candidates, key=lambda item: item[1])
+        if higher_is_better
+        else min(candidates, key=lambda item: item[1])
+    )
+    return {
+        "model": best_name,
+        "metric": metric,
+        "value": best_value,
+        "higher_is_better": higher_is_better,
     }
 
 
@@ -262,14 +292,18 @@ def compare_classification_models(
         runner = _CLASSIFICATION_MODELS[model_name]
         train_accuracies: list[float] = []
         test_accuracies: list[float] = []
+        final_losses: list[float] = []
+        runtime_values: list[float] = []
 
         for seed in seeds:
+            start = perf_counter()
             result = _run_classification_model(
                 model_name=model_name,
                 runner=runner,
                 common_kwargs={**common_kwargs, "seed": seed},
                 model_kwargs=model_kwargs,
             )
+            runtime_seconds = perf_counter() - start
 
             if isinstance(result, dict):
                 train_accuracy = float(result["train_accuracy"])
@@ -280,6 +314,7 @@ def compare_classification_models(
 
             train_accuracies.append(train_accuracy)
             test_accuracies.append(test_accuracy)
+            runtime_values.append(runtime_seconds)
 
             run_record = {
                 "model": model_name,
@@ -287,25 +322,45 @@ def compare_classification_models(
                 "dataset": dataset,
                 "train_accuracy": train_accuracy,
                 "test_accuracy": test_accuracy,
+                "generalization_gap": train_accuracy - test_accuracy,
+                "runtime_seconds": runtime_seconds,
             }
 
             if isinstance(result, dict):
                 if "final_loss" in result:
-                    run_record["final_loss"] = float(result["final_loss"])
+                    final_loss = float(result["final_loss"])
+                    run_record["final_loss"] = final_loss
+                    final_losses.append(final_loss)
 
                 if "final_alignment" in result:
                     run_record["final_alignment"] = float(result["final_alignment"])
             else:
                 if hasattr(result, "loss_history") and result.loss_history:
-                    run_record["final_loss"] = float(result.loss_history[-1])
+                    final_loss = float(result.loss_history[-1])
+                    run_record["final_loss"] = final_loss
+                    final_losses.append(final_loss)
 
             runs.append(run_record)
 
         model_summary = {
             "train_accuracy": _mean_std(train_accuracies),
             "test_accuracy": _mean_std(test_accuracies),
+            "generalization_gap": _mean_std(
+                [
+                    train_accuracy - test_accuracy
+                    for train_accuracy, test_accuracy in zip(
+                        train_accuracies,
+                        test_accuracies,
+                        strict=True,
+                    )
+                ]
+            ),
+            "runtime_seconds": _mean_std(runtime_values),
             "n_runs": len(seeds),
         }
+
+        if final_losses:
+            model_summary["final_loss"] = _mean_std(final_losses)
 
         alignment_values = [
             float(run["final_alignment"])
@@ -327,6 +382,11 @@ def compare_classification_models(
         "dataset": dataset,
         "runs": runs,
         "summary": summary,
+        "best_model": _best_model_by_summary_metric(
+            summary,
+            "test_accuracy",
+            higher_is_better=True,
+        ),
     }
 
     if save:
@@ -397,14 +457,18 @@ def compare_regression_models(
         test_mse_values: list[float] = []
         train_mae_values: list[float] = []
         test_mae_values: list[float] = []
+        final_losses: list[float] = []
+        runtime_values: list[float] = []
 
         for seed in seeds:
+            start = perf_counter()
             result = _run_regression_model(
                 model_name=model_name,
                 runner=runner,
                 common_kwargs={**common_kwargs, "seed": seed},
                 model_kwargs=model_kwargs,
             )
+            runtime_seconds = perf_counter() - start
 
             train_mse = float(result["train_mse"])
             test_mse = float(result["test_mse"])
@@ -415,6 +479,7 @@ def compare_regression_models(
             test_mse_values.append(test_mse)
             train_mae_values.append(train_mae)
             test_mae_values.append(test_mae)
+            runtime_values.append(runtime_seconds)
 
             run_record = {
                 "model": model_name,
@@ -424,20 +489,39 @@ def compare_regression_models(
                 "test_mse": test_mse,
                 "train_mae": train_mae,
                 "test_mae": test_mae,
+                "generalization_gap": test_mse - train_mse,
+                "runtime_seconds": runtime_seconds,
             }
 
             if "final_loss" in result:
-                run_record["final_loss"] = float(result["final_loss"])
+                final_loss = float(result["final_loss"])
+                run_record["final_loss"] = final_loss
+                final_losses.append(final_loss)
 
             runs.append(run_record)
 
-        summary[model_name] = {
+        model_summary = {
             "train_mse": _mean_std(train_mse_values),
             "test_mse": _mean_std(test_mse_values),
             "train_mae": _mean_std(train_mae_values),
             "test_mae": _mean_std(test_mae_values),
+            "generalization_gap": _mean_std(
+                [
+                    test_mse - train_mse
+                    for train_mse, test_mse in zip(
+                        train_mse_values,
+                        test_mse_values,
+                        strict=True,
+                    )
+                ]
+            ),
+            "runtime_seconds": _mean_std(runtime_values),
             "n_runs": len(seeds),
         }
+        if final_losses:
+            model_summary["final_loss"] = _mean_std(final_losses)
+
+        summary[model_name] = model_summary
 
     benchmark = {
         "benchmark_type": "regression",
@@ -449,6 +533,11 @@ def compare_regression_models(
         "dataset": dataset,
         "runs": runs,
         "summary": summary,
+        "best_model": _best_model_by_summary_metric(
+            summary,
+            "test_mse",
+            higher_is_better=False,
+        ),
     }
 
     if save:

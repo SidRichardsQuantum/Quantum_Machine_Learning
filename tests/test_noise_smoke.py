@@ -3,6 +3,18 @@ import pytest
 from qml.benchmarks import compare_classification_models, compare_regression_models
 
 
+def _without_runtime(value):
+    if isinstance(value, dict):
+        return {
+            key: _without_runtime(item) for key, item in value.items() if key != "runtime_seconds"
+        }
+
+    if isinstance(value, list):
+        return [_without_runtime(item) for item in value]
+
+    return value
+
+
 def test_classification_benchmark_accepts_noise_aware_model_kwargs():
     result = compare_classification_models(
         models=["vqc", "kernel"],
@@ -58,8 +70,10 @@ def test_classification_benchmark_finite_shot_runs_are_deterministic_for_fixed_s
     result_1 = compare_classification_models(**kwargs)
     result_2 = compare_classification_models(**kwargs)
 
-    assert result_1["runs"] == result_2["runs"]
-    assert result_1["summary"] == result_2["summary"]
+    assert result_1["runs"][0]["runtime_seconds"] >= 0.0
+    assert result_2["runs"][0]["runtime_seconds"] >= 0.0
+    assert _without_runtime(result_1["runs"]) == _without_runtime(result_2["runs"])
+    assert _without_runtime(result_1["summary"]) == _without_runtime(result_2["summary"])
 
 
 def test_regression_benchmark_accepts_noise_aware_model_kwargs():
@@ -112,5 +126,7 @@ def test_regression_benchmark_finite_shot_runs_are_deterministic_for_fixed_seed(
     result_1 = compare_regression_models(**kwargs)
     result_2 = compare_regression_models(**kwargs)
 
-    assert result_1["runs"] == result_2["runs"]
-    assert result_1["summary"] == result_2["summary"]
+    assert result_1["runs"][0]["runtime_seconds"] >= 0.0
+    assert result_2["runs"][0]["runtime_seconds"] >= 0.0
+    assert _without_runtime(result_1["runs"]) == _without_runtime(result_2["runs"])
+    assert _without_runtime(result_1["summary"]) == _without_runtime(result_2["summary"])

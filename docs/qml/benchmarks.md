@@ -1,12 +1,15 @@
 # Benchmark Utilities
 
-The `qml.benchmarks` module provides helpers for comparing quantum and classical models across multiple random seeds.
+The `qml.benchmarks` module provides helpers for comparing quantum and
+classical models across multiple random seeds under the same dataset settings.
 
 Benchmarking enables:
 
 - reproducible evaluation of model performance
 - comparison between quantum and classical approaches
 - estimation of performance variability due to stochastic training effects
+- runtime tracking for smoke-scale comparisons
+- train/test gap tracking for basic overfitting checks
 - consistent experiment logging
 
 Both **classification** and **regression** workflows are supported.
@@ -15,20 +18,24 @@ Both **classification** and **regression** workflows are supported.
 
 ## Overview
 
-Benchmark functions run multiple training jobs using different random seeds and aggregate performance metrics.
+Benchmark functions run multiple training jobs using different random seeds and
+aggregate performance metrics. They are intended for reproducible comparisons,
+not claims of quantum advantage.
 
 Typical workflow:
 
 1. choose models to compare
 2. run multiple seeds
-3. compute mean and standard deviation of metrics
+3. compute mean and standard deviation of metrics, runtime, and train/test gap
 4. optionally save results
 
 Example metrics include:
 
 - classification accuracy
 - regression MSE / MAE
-- final loss values
+- final loss values when the model exposes them
+- runtime in seconds
+- train/test generalization gap
 - variability across seeds
 
 Results are returned as structured dictionaries and can optionally be saved to JSON.
@@ -44,6 +51,8 @@ Supported models:
 - `vqc`
 - `qcnn`
 - `quantum_kernel`
+- `trainable_quantum_kernel`
+- `quantum_metric_learning`
 - `logistic_regression`
 - `svm_classifier`
 - `mlp_classifier`
@@ -54,7 +63,7 @@ Example:
 from qml.benchmarks import compare_classification_models
 
 result = compare_classification_models(
-    models=["vqc", "qcnn", "quantum_kernel", "svm_classifier"],
+    models=["vqc", "quantum_kernel", "svm_classifier", "logistic_regression"],
     seeds=[0, 1, 2, 3],
     n_samples=200,
     noise=0.1,
@@ -72,8 +81,16 @@ Returned structure:
         "vqc": {
             "train_accuracy": {"mean": ..., "std": ...},
             "test_accuracy": {"mean": ..., "std": ...},
+            "generalization_gap": {"mean": ..., "std": ...},
+            "runtime_seconds": {"mean": ..., "std": ...},
             "n_runs": 4
         }
+    },
+    "best_model": {
+        "model": "svm_classifier",
+        "metric": "test_accuracy",
+        "value": ...,
+        "higher_is_better": True
     }
 }
 ```
@@ -86,9 +103,21 @@ Each run record includes:
     "seed": 0,
     "train_accuracy": ...,
     "test_accuracy": ...,
+    "generalization_gap": ...,
+    "runtime_seconds": ...,
     "final_loss": ...
 }
 ```
+
+For classification, `generalization_gap` is computed as:
+
+```text
+train_accuracy - test_accuracy
+```
+
+A large positive value can indicate overfitting. A negative value can happen on
+small splits and should be interpreted across multiple seeds rather than from a
+single run.
 
 ---
 
@@ -126,8 +155,16 @@ Returned structure:
             "test_mse": {"mean": ..., "std": ...},
             "train_mae": {"mean": ..., "std": ...},
             "test_mae": {"mean": ..., "std": ...},
+            "generalization_gap": {"mean": ..., "std": ...},
+            "runtime_seconds": {"mean": ..., "std": ...},
             "n_runs": 3
         }
+    },
+    "best_model": {
+        "model": "ridge_regression",
+        "metric": "test_mse",
+        "value": ...,
+        "higher_is_better": False
     }
 }
 ```
@@ -142,9 +179,19 @@ Each run record includes:
     "test_mse": ...,
     "train_mae": ...,
     "test_mae": ...,
+    "generalization_gap": ...,
+    "runtime_seconds": ...,
     "final_loss": ...
 }
 ```
+
+For regression, `generalization_gap` is computed as:
+
+```text
+test_mse - train_mse
+```
+
+Positive values indicate worse test error than train error.
 
 ---
 
@@ -172,6 +219,10 @@ Default settings:
 - noise: 0.1
 - test split: 0.25
 - seed: 123
+
+For release-quality comparisons, prefer explicit seed lists and include at
+least one classical baseline in the model list. Small default runs are useful
+for smoke checks, but they are not enough to evaluate model quality.
 
 ---
 
@@ -202,6 +253,9 @@ Saved JSON includes:
 
 - individual run records
 - aggregated metrics
+- runtime summaries
+- train/test generalization-gap summaries
+- best model according to the primary test metric
 - dataset configuration
 
 This allows reproducibility and later analysis.
@@ -218,6 +272,8 @@ Classification:
 vqc
 qcnn
 quantum_kernel
+trainable_quantum_kernel
+quantum_metric_learning
 logistic_regression
 svm_classifier
 mlp_classifier
@@ -265,6 +321,14 @@ $$
 
 These values are computed for each metric.
 
+The `best_model` field is selected from the aggregated test metric:
+
+- classification: highest mean `test_accuracy`
+- regression: lowest mean `test_mse`
+
+Use it as a convenience summary only. Always inspect the full run records,
+standard deviations, and runtime before drawing conclusions.
+
 ---
 
 ## Relationship to Other Modules
@@ -276,6 +340,8 @@ Classification:
 - `qml.classifiers.run_vqc`
 - `qml.qcnn.run_qcnn`
 - `qml.kernel_methods.run_quantum_kernel_classifier`
+- `qml.trainable_kernels.run_trainable_quantum_kernel_classifier`
+- `qml.metric_learning.run_quantum_metric_learner`
 - `qml.classical_baselines.run_logistic_classifier`
 - `qml.classical_baselines.run_svm_classifier`
 - `qml.classical_baselines.run_mlp_classifier`
@@ -290,10 +356,13 @@ Datasets are generated using shared utilities from:
 
 ```
 qml.data
-qml.datasets
 ```
 
 ensuring consistent experimental conditions across models.
+
+Metric-learning benchmarks use the same classification dataset name, sample
+count, split, and seed, but ignore the synthetic dataset `noise` parameter
+because the metric-learning workflow does not expose that setting.
 
 ---
 
@@ -313,3 +382,18 @@ Typical workflow:
 2. run benchmark across seeds
 3. analyse aggregated metrics
 4. refine model configuration
+
+## Interpretation Checklist
+
+Before publishing a benchmark table, record:
+
+- model list and model-specific kwargs
+- dataset name, sample count, split, noise level, and seed list
+- analytic or finite-shot execution settings
+- package version and Python/PennyLane versions
+- classical baselines included in the comparison
+- mean and standard deviation across seeds
+- runtime and train/test gap
+
+Benchmarks in this package are designed to make comparisons reproducible and
+auditable. They do not establish quantum advantage by themselves.

@@ -29,6 +29,12 @@ DOCS = [
         "Deterministic reference outputs from API workflows.",
     ),
     (
+        "API Reference",
+        ROOT / "docs/qml/api_reference.md",
+        "api-reference.html",
+        "Stable public imports, workflow functions, estimators, benchmarks, and helpers.",
+    ),
+    (
         "Tutorial Results",
         ROOT / "RESULTS_TUTORIALS.md",
         "results-tutorials.html",
@@ -158,6 +164,7 @@ def nav(current: str | None) -> str:
     links = [
         ("Home", "index.html"),
         ("Usage", "usage.html"),
+        ("API", "api-reference.html"),
         ("Theory", "theory.html"),
         ("Results", "results.html"),
         ("Algorithms", "index.html#algorithms"),

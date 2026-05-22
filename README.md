@@ -402,6 +402,11 @@ result = compare_classification_models(
 ```
 
 Result structure remains consistent across models.
+Benchmark summaries include aggregate train/test metrics, runtime summaries,
+generalization-gap summaries, and a `best_model` convenience field based on the
+primary test metric. Use these summaries with classical baselines and multiple
+seeds; the smoke-scale defaults are for reproducibility checks, not
+quantum-advantage claims.
 
 ---
 
@@ -486,6 +491,7 @@ Core documentation:
 
 - **THEORY.md** — mathematical background
 - **USAGE.md** — API examples
+- **docs/qml/api_reference.md** — public imports, workflows, estimators, benchmarks, and helpers
 - **RESULTS.md** — generated deterministic reference outputs
 - **RESULTS_TUTORIALS.md** — generated tutorial notebook outputs
 - **RESULTS_REAL_EXAMPLES.md** — generated real-example notebook outputs
@@ -493,6 +499,7 @@ Core documentation:
 
 Algorithm notes:
 
+- docs/qml/api_reference.md
 - docs/qml/variational_quantum_classifier.md
 - docs/qml/variational_regression.md
 - docs/qml/qcnn.md

@@ -746,6 +746,14 @@ result = compare_classification_models(
 ```
 
 Benchmark results remain consistent in structure across models.
+Each result includes individual run records, aggregate metric summaries,
+runtime summaries, generalization-gap summaries, and a `best_model` convenience
+field. For classification, the best model is selected by highest mean
+`test_accuracy`; for regression, it is selected by lowest mean `test_mse`.
+
+Use explicit seed lists and at least one classical baseline for any benchmark
+table you plan to publish. The default configurations are smoke-scale
+reproducibility checks, not evidence of quantum advantage.
 
 ---
 

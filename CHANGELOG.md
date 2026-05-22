@@ -1,5 +1,41 @@
 # CHANGELOG.md
 
+## [0.2.2] - 22-05-2026
+
+### Added
+
+- Added `docs/qml/api_reference.md` as a compact public API reference for
+  top-level imports, workflow functions, estimator APIs, benchmark helpers,
+  classical baselines, reporting helpers, and version access.
+- Added benchmark runtime tracking to classification and regression benchmark
+  run records and aggregate summaries.
+- Added benchmark train/test generalization-gap tracking:
+  - classification gap is `train_accuracy - test_accuracy`
+  - regression gap is `test_mse - train_mse`
+- Added a `best_model` summary field to benchmark outputs:
+  - classification selects the highest mean `test_accuracy`
+  - regression selects the lowest mean `test_mse`
+
+### Changed
+
+- Updated benchmark documentation to match the current model registry,
+  including trainable quantum kernels and quantum metric learning.
+- Expanded benchmark guidance to require classical baselines, explicit seed
+  lists, runtime reporting, train/test gap reporting, and clear non-advantage
+  framing for release-quality comparisons.
+- Wired the API reference into the generated GitHub Pages site and primary
+  navigation.
+- Updated `README.md` and `USAGE.md` to describe the stronger benchmark output
+  contract and interpretation limits.
+- Bumped package metadata to `0.2.2`.
+
+### Validation
+
+- Added benchmark smoke-test assertions for runtime summaries,
+  generalization-gap summaries, and `best_model` metadata.
+
+---
+
 ## [0.2.1] - 22-05-2026
 
 ### Fixed
