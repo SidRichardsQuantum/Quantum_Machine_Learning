@@ -1,9 +1,25 @@
 # CHANGELOG.md
 
-## [0.2.5] - Unreleased
+## [0.2.6] - Unreleased
+
+### Added
+
+- Added benchmark coverage for newer quantum models:
+  - `quantum_reservoir`
+  - `quantum_kernel_regressor`
+  - `trainable_quantum_kernel_regressor`
+  - `quantum_gaussian_process_regressor`
+  - `quantum_reservoir_regressor`
+- Added a `benchmark finite-shots` CLI preset for analytic versus finite-shot
+  comparisons across classification and regression workflows.
+- Added benchmark notebook result-page generation through `RESULTS_BENCHMARKS.md`
+  and the generated Pages site.
+- Added [ROADMAP.md](ROADMAP.md)
 
 ### Changed
 
+- Expanded the finite-shot benchmark notebook to compare analytic, 64-shot,
+  128-shot, and 512-shot execution with metric deltas versus analytic baselines.
 - Added local pre-commit quality hooks for Ruff, formatting, YAML, TOML, and
   whitespace checks.
 - Refactored shared classical-baseline fitting, result assembly, naming, and

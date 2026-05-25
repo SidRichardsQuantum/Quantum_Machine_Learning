@@ -44,6 +44,16 @@ NOTEBOOK_RESULTS = {
         "directory": ROOT / "notebooks/real_examples",
         "output": ROOT / "RESULTS_REAL_EXAMPLES.md",
     },
+    "benchmarks": {
+        "title": "Benchmark Notebook Results",
+        "description": (
+            "Executed outputs from benchmark notebooks in `notebooks/benchmarks/`. "
+            "These compare QML workflows with classical baselines using deterministic seeds, "
+            "confidence intervals, paired deltas, runtime summaries, and finite-shot sweeps."
+        ),
+        "directory": ROOT / "notebooks/benchmarks",
+        "output": ROOT / "RESULTS_BENCHMARKS.md",
+    },
 }
 
 import pennylane as pennylane  # noqa: E402
@@ -638,6 +648,7 @@ Notebook-derived result pages are generated separately from executed notebook ou
 
 - [Tutorial notebook results](results-tutorials.html)
 - [Real example notebook results](results-real-examples.html)
+- [Benchmark notebook results](results-benchmarks.html)
 
 The configurations are intentionally small so the GitHub Pages workflow can refresh the
 page quickly. They are reproducible smoke-scale examples, not quantum-advantage claims.

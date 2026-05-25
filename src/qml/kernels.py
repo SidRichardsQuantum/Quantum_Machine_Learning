@@ -431,8 +431,19 @@ class QuantumGaussianProcessRegressor:
         self.y_mean_ = float(y.mean()) if self.normalize_y else 0.0
         y_centered = y - self.y_mean_
         k_train = self.kernel.evaluate(x)
-        regularized = k_train + self.alpha * np.eye(k_train.shape[0])
-        self.cholesky_ = np.linalg.cholesky(regularized)
+        eye = np.eye(k_train.shape[0])
+        jitter = float(self.alpha)
+        for _ in range(6):
+            regularized = k_train + jitter * eye
+            try:
+                self.cholesky_ = np.linalg.cholesky(regularized)
+                self.effective_alpha_ = jitter
+                break
+            except np.linalg.LinAlgError:
+                jitter = max(1e-8, jitter * 10.0)
+        else:
+            self.cholesky_ = np.linalg.cholesky(k_train + jitter * eye)
+            self.effective_alpha_ = jitter
         tmp = np.linalg.solve(self.cholesky_, y_centered)
         self.dual_coef_ = np.linalg.solve(self.cholesky_.T, tmp)
         self.x_train_ = x

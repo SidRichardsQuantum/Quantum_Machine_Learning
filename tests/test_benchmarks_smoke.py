@@ -117,3 +117,72 @@ def test_regression_benchmark_runs_new_classical_models_and_dataset():
     assert result["dataset"] == "friedman"
     assert result["tune_classical"] is True
     assert all(run["tuning"]["enabled"] is True for run in result["runs"])
+
+
+def test_classification_benchmark_runs_quantum_reservoir():
+    result = compare_classification_models(
+        models=["quantum_reservoir", "logistic_regression"],
+        seeds=[0],
+        n_samples=24,
+        dataset="moons",
+        model_kwargs={"quantum_reservoir": {"n_layers": 1}},
+    )
+
+    assert result["models"] == ["quantum_reservoir", "logistic_regression"]
+    assert result["paired_vs_best_classical"]["reference_model"] == "logistic_regression"
+    reservoir_run = next(run for run in result["runs"] if run["model"] == "quantum_reservoir")
+    assert reservoir_run["timing"]["fit_seconds"] >= 0.0
+    assert reservoir_run["timing"]["predict_seconds"] >= 0.0
+
+
+def test_regression_benchmark_runs_new_quantum_regressors():
+    result = compare_regression_models(
+        models=[
+            "quantum_kernel_regressor",
+            "quantum_gaussian_process_regressor",
+            "quantum_reservoir_regressor",
+            "ridge_regression",
+        ],
+        seeds=[0],
+        n_samples=18,
+        dataset="sine",
+        model_kwargs={
+            "quantum_reservoir_regressor": {"n_layers": 1},
+        },
+    )
+
+    assert result["models"] == [
+        "quantum_kernel_regressor",
+        "quantum_gaussian_process_regressor",
+        "quantum_reservoir_regressor",
+        "ridge_regression",
+    ]
+    assert result["paired_vs_best_classical"]["reference_model"] == "ridge_regression"
+    for run in result["runs"]:
+        assert "train_mse" in run
+        assert "test_mse" in run
+        assert "runtime_seconds" in run
+        assert "total_seconds" in run["timing"]
+
+
+def test_regression_benchmark_runs_trainable_quantum_kernel_regressor():
+    result = compare_regression_models(
+        models=["trainable_quantum_kernel_regressor", "ridge_regression"],
+        seeds=[0],
+        n_samples=12,
+        dataset="sine",
+        model_kwargs={
+            "trainable_quantum_kernel_regressor": {
+                "embedding": "angle",
+                "embedding_layers": 1,
+                "steps": 0,
+            },
+        },
+    )
+
+    run = next(
+        run for run in result["runs"] if run["model"] == "trainable_quantum_kernel_regressor"
+    )
+    assert "final_loss" in run
+    assert "train_mse" in run
+    assert "test_mse" in run

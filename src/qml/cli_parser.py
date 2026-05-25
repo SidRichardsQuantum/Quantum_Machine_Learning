@@ -5,6 +5,12 @@ from __future__ import annotations
 import argparse
 
 
+def _shot_value(value: str) -> int | None:
+    if value.lower() in {"none", "analytic"}:
+        return None
+    return int(value)
+
+
 def _add_common_dataset_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--samples", type=int, default=200, help="Number of samples.")
     parser.add_argument("--noise", type=float, default=0.1, help="Dataset noise level.")
@@ -89,7 +95,7 @@ def _build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         "--dataset",
         type=str,
         default="moons",
-        choices=["moons", "circles", "blobs", "xor"],
+        choices=["moons", "circles", "blobs", "xor", "linear", "breast_cancer", "wine"],
         help="Classification dataset.",
     )
 
@@ -428,7 +434,7 @@ def _build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         "--dataset",
         type=str,
         default="linear",
-        choices=["linear", "sine", "polynomial"],
+        choices=["linear", "sine", "polynomial", "friedman", "diabetes"],
         help="Regression dataset.",
     )
     regression_benchmark_parser.add_argument(
@@ -439,6 +445,63 @@ def _build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         help="Random seeds.",
     )
     _add_common_benchmark_args(regression_benchmark_parser)
+
+    finite_shot_benchmark_parser = benchmark_subparsers.add_parser(
+        "finite-shots",
+        help="Benchmark analytic versus finite-shot execution.",
+    )
+    finite_shot_benchmark_parser.add_argument(
+        "--classification-models",
+        nargs="+",
+        default=["vqc", "quantum_kernel", "quantum_reservoir", "svm_classifier"],
+        help="Classification model names to include.",
+    )
+    finite_shot_benchmark_parser.add_argument(
+        "--regression-models",
+        nargs="+",
+        default=[
+            "vqr",
+            "quantum_kernel_regressor",
+            "quantum_reservoir_regressor",
+            "ridge_regression",
+        ],
+        help="Regression model names to include.",
+    )
+    finite_shot_benchmark_parser.add_argument(
+        "--classification-dataset",
+        type=str,
+        default="moons",
+        choices=["moons", "circles", "blobs", "xor", "linear", "breast_cancer", "wine"],
+        help="Classification dataset.",
+    )
+    finite_shot_benchmark_parser.add_argument(
+        "--regression-dataset",
+        type=str,
+        default="sine",
+        choices=["linear", "sine", "polynomial", "friedman", "diabetes"],
+        help="Regression dataset.",
+    )
+    finite_shot_benchmark_parser.add_argument(
+        "--seeds",
+        type=int,
+        nargs="+",
+        default=[123],
+        help="Random seeds.",
+    )
+    finite_shot_benchmark_parser.add_argument(
+        "--shots",
+        type=_shot_value,
+        nargs="+",
+        default=[None, 64, 128, 512],
+        help="Shot counts to compare. Use 'analytic' or 'none' for analytic execution.",
+    )
+    finite_shot_benchmark_parser.add_argument(
+        "--steps",
+        type=int,
+        default=8,
+        help="Small optimizer step count for trainable quantum models.",
+    )
+    _add_common_benchmark_args(finite_shot_benchmark_parser)
 
     parser.add_argument("--optimizer", type=str, default="adam")
     parser.add_argument("--early-stopping-patience", type=int, default=None)

@@ -37,15 +37,240 @@ from qml.classical_baselines import (
     run_svm_classifier,
 )
 from qml.classifiers import run_vqc
+from qml.data import make_classification_dataset, make_regression_dataset
 from qml.io_utils import results_path, save_json
+from qml.kernels import (
+    QuantumGaussianProcessRegressor,
+    QuantumKernel,
+    QuantumKernelRegressor,
+)
 from qml.kernel_methods import run_quantum_kernel_classifier
+from qml.metrics import accuracy_score, mean_absolute_error, mean_squared_error
 from qml.metric_learning import run_quantum_metric_learner
 from qml.qcnn import run_qcnn
 from qml.regression import run_vqr
+from qml.reservoir import (
+    QuantumReservoirClassifier,
+    QuantumReservoirFeatures,
+    QuantumReservoirRegressor,
+)
 from qml.trainable_kernels import run_trainable_quantum_kernel_classifier
+from qml.trainable_kernels import run_trainable_quantum_kernel_regressor
 
 ClassificationRunner = Callable[..., dict[str, Any]]
 RegressionRunner = Callable[..., dict[str, Any]]
+
+
+def _run_quantum_reservoir_classifier(
+    n_samples: int = 200,
+    noise: float = 0.1,
+    test_size: float = 0.25,
+    seed: int = 123,
+    dataset: str = "moons",
+    n_layers: int = 2,
+    shots: int | None = None,
+    input_scale: float = 1.0,
+    weight_scale: float = 1.0,
+    c: float = 1.0,
+    max_iter: int = 1000,
+    plot: bool = False,
+    save: bool = False,
+    **logistic_kwargs,
+) -> dict[str, Any]:
+    data = make_classification_dataset(
+        dataset=dataset,
+        n_samples=n_samples,
+        noise=noise,
+        test_size=test_size,
+        seed=seed,
+    )
+    model = QuantumReservoirClassifier(
+        reservoir=QuantumReservoirFeatures(
+            n_layers=n_layers,
+            seed=seed,
+            shots=shots,
+            input_scale=input_scale,
+            weight_scale=weight_scale,
+        ),
+        c=c,
+        seed=seed,
+        max_iter=max_iter,
+        **logistic_kwargs,
+    )
+    fit_start = perf_counter()
+    model.fit(data["x_train"], data["y_train"])
+    fit_seconds = perf_counter() - fit_start
+    predict_start = perf_counter()
+    y_train_pred = model.predict(data["x_train"])
+    y_test_pred = model.predict(data["x_test"])
+    predict_seconds = perf_counter() - predict_start
+    return {
+        "model": "quantum_reservoir_classifier",
+        "dataset": dataset,
+        "seed": seed,
+        "train_accuracy": accuracy_score(data["y_train"], y_train_pred),
+        "test_accuracy": accuracy_score(data["y_test"], y_test_pred),
+        "timing": {
+            "fit_seconds": fit_seconds,
+            "predict_seconds": predict_seconds,
+            "total_seconds": fit_seconds + predict_seconds,
+        },
+    }
+
+
+def _run_quantum_kernel_regressor(
+    n_samples: int = 200,
+    noise: float = 0.1,
+    test_size: float = 0.25,
+    seed: int = 123,
+    dataset: str = "sine",
+    embedding: str = "angle",
+    shots: int | None = None,
+    alpha: float = 1.0,
+    plot: bool = False,
+    save: bool = False,
+    **kernel_ridge_kwargs,
+) -> dict[str, Any]:
+    data = make_regression_dataset(
+        n_samples=n_samples,
+        noise=noise,
+        test_size=test_size,
+        seed=seed,
+        dataset=dataset,
+    )
+    model = QuantumKernelRegressor(
+        kernel=QuantumKernel(embedding=embedding, shots=shots, seed=seed),
+        alpha=alpha,
+        seed=seed,
+        **kernel_ridge_kwargs,
+    )
+    fit_start = perf_counter()
+    model.fit(data["x_train"], data["y_train"])
+    fit_seconds = perf_counter() - fit_start
+    predict_start = perf_counter()
+    y_train_pred = model.predict(data["x_train"])
+    y_test_pred = model.predict(data["x_test"])
+    predict_seconds = perf_counter() - predict_start
+    return {
+        "model": "quantum_kernel_regressor",
+        "dataset": dataset,
+        "seed": seed,
+        "train_mse": mean_squared_error(data["y_train"], y_train_pred),
+        "test_mse": mean_squared_error(data["y_test"], y_test_pred),
+        "train_mae": mean_absolute_error(data["y_train"], y_train_pred),
+        "test_mae": mean_absolute_error(data["y_test"], y_test_pred),
+        "timing": {
+            "fit_seconds": fit_seconds,
+            "predict_seconds": predict_seconds,
+            "total_seconds": fit_seconds + predict_seconds,
+        },
+    }
+
+
+def _run_quantum_gaussian_process_regressor(
+    n_samples: int = 200,
+    noise: float = 0.1,
+    test_size: float = 0.25,
+    seed: int = 123,
+    dataset: str = "sine",
+    embedding: str = "angle",
+    shots: int | None = None,
+    alpha: float = 1e-6,
+    normalize_y: bool = True,
+    plot: bool = False,
+    save: bool = False,
+) -> dict[str, Any]:
+    data = make_regression_dataset(
+        n_samples=n_samples,
+        noise=noise,
+        test_size=test_size,
+        seed=seed,
+        dataset=dataset,
+    )
+    model = QuantumGaussianProcessRegressor(
+        kernel=QuantumKernel(embedding=embedding, shots=shots, seed=seed),
+        alpha=alpha,
+        normalize_y=normalize_y,
+        seed=seed,
+    )
+    fit_start = perf_counter()
+    model.fit(data["x_train"], data["y_train"])
+    fit_seconds = perf_counter() - fit_start
+    predict_start = perf_counter()
+    y_train_pred = model.predict(data["x_train"])
+    y_test_pred = model.predict(data["x_test"])
+    predict_seconds = perf_counter() - predict_start
+    return {
+        "model": "quantum_gaussian_process_regressor",
+        "dataset": dataset,
+        "seed": seed,
+        "train_mse": mean_squared_error(data["y_train"], y_train_pred),
+        "test_mse": mean_squared_error(data["y_test"], y_test_pred),
+        "train_mae": mean_absolute_error(data["y_train"], y_train_pred),
+        "test_mae": mean_absolute_error(data["y_test"], y_test_pred),
+        "timing": {
+            "fit_seconds": fit_seconds,
+            "predict_seconds": predict_seconds,
+            "total_seconds": fit_seconds + predict_seconds,
+        },
+    }
+
+
+def _run_quantum_reservoir_regressor(
+    n_samples: int = 200,
+    noise: float = 0.1,
+    test_size: float = 0.25,
+    seed: int = 123,
+    dataset: str = "sine",
+    n_layers: int = 2,
+    shots: int | None = None,
+    input_scale: float = 1.0,
+    weight_scale: float = 1.0,
+    alpha: float = 1.0,
+    plot: bool = False,
+    save: bool = False,
+    **ridge_kwargs,
+) -> dict[str, Any]:
+    data = make_regression_dataset(
+        n_samples=n_samples,
+        noise=noise,
+        test_size=test_size,
+        seed=seed,
+        dataset=dataset,
+    )
+    model = QuantumReservoirRegressor(
+        reservoir=QuantumReservoirFeatures(
+            n_layers=n_layers,
+            seed=seed,
+            shots=shots,
+            input_scale=input_scale,
+            weight_scale=weight_scale,
+        ),
+        alpha=alpha,
+        seed=seed,
+        **ridge_kwargs,
+    )
+    fit_start = perf_counter()
+    model.fit(data["x_train"], data["y_train"])
+    fit_seconds = perf_counter() - fit_start
+    predict_start = perf_counter()
+    y_train_pred = model.predict(data["x_train"])
+    y_test_pred = model.predict(data["x_test"])
+    predict_seconds = perf_counter() - predict_start
+    return {
+        "model": "quantum_reservoir_regressor",
+        "dataset": dataset,
+        "seed": seed,
+        "train_mse": mean_squared_error(data["y_train"], y_train_pred),
+        "test_mse": mean_squared_error(data["y_test"], y_test_pred),
+        "train_mae": mean_absolute_error(data["y_train"], y_train_pred),
+        "test_mae": mean_absolute_error(data["y_test"], y_test_pred),
+        "timing": {
+            "fit_seconds": fit_seconds,
+            "predict_seconds": predict_seconds,
+            "total_seconds": fit_seconds + predict_seconds,
+        },
+    }
 
 
 _CLASSIFICATION_MODELS: dict[str, ClassificationRunner] = {
@@ -54,6 +279,7 @@ _CLASSIFICATION_MODELS: dict[str, ClassificationRunner] = {
     "quantum_kernel": run_quantum_kernel_classifier,
     "trainable_quantum_kernel": run_trainable_quantum_kernel_classifier,
     "quantum_metric_learning": run_quantum_metric_learner,
+    "quantum_reservoir": _run_quantum_reservoir_classifier,
     "logistic_regression": run_logistic_classifier,
     "svm_classifier": run_svm_classifier,
     "mlp_classifier": run_mlp_classifier,
@@ -65,6 +291,10 @@ _CLASSIFICATION_MODELS: dict[str, ClassificationRunner] = {
 
 _REGRESSION_MODELS: dict[str, RegressionRunner] = {
     "vqr": run_vqr,
+    "quantum_kernel_regressor": _run_quantum_kernel_regressor,
+    "trainable_quantum_kernel_regressor": run_trainable_quantum_kernel_regressor,
+    "quantum_gaussian_process_regressor": _run_quantum_gaussian_process_regressor,
+    "quantum_reservoir_regressor": _run_quantum_reservoir_regressor,
     "ridge_regression": run_ridge_regression,
     "mlp_regressor": run_mlp_regressor,
     "kernel_ridge_regression": run_kernel_ridge_regression,
@@ -106,6 +336,18 @@ _MODEL_NAME_ALIASES: dict[str, str] = {
     "trainable-kernel": "trainable_quantum_kernel",
     "metric_learning": "quantum_metric_learning",
     "metric-learning": "quantum_metric_learning",
+    "reservoir": "quantum_reservoir",
+    "reservoir_classifier": "quantum_reservoir",
+    "reservoir-classifier": "quantum_reservoir",
+    "quantum_kernel_regression": "quantum_kernel_regressor",
+    "kernel_regressor": "quantum_kernel_regressor",
+    "kernel-regressor": "quantum_kernel_regressor",
+    "trainable_kernel_regressor": "trainable_quantum_kernel_regressor",
+    "trainable-kernel-regressor": "trainable_quantum_kernel_regressor",
+    "quantum_gpr": "quantum_gaussian_process_regressor",
+    "gpr_quantum": "quantum_gaussian_process_regressor",
+    "reservoir_regressor": "quantum_reservoir_regressor",
+    "reservoir-regressor": "quantum_reservoir_regressor",
     "rf_classifier": "random_forest_classifier",
     "gb_classifier": "gradient_boosting_classifier",
     "gpc": "gaussian_process_classifier",
@@ -352,6 +594,9 @@ def _run_regression_model(
         common_kwargs=common_kwargs,
         model_kwargs=model_kwargs,
     )
+    if model_name == "trainable_quantum_kernel_regressor":
+        kwargs.pop("plot", None)
+        kwargs.pop("save", None)
     return runner(**kwargs)
 
 

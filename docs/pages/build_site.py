@@ -21,6 +21,12 @@ DOCS = [
         "usage.html",
         "API, CLI, benchmarking, and reproducibility guide.",
     ),
+    (
+        "Roadmap",
+        ROOT / "ROADMAP.md",
+        "roadmap.html",
+        "Package, notebook, benchmark, and release roadmap.",
+    ),
     ("Theory", ROOT / "THEORY.md", "theory.html", "Mathematical background for the workflows."),
     (
         "Results",
@@ -45,6 +51,12 @@ DOCS = [
         ROOT / "RESULTS_REAL_EXAMPLES.md",
         "results-real-examples.html",
         "Tables and plots extracted from executed real-example notebooks.",
+    ),
+    (
+        "Benchmark Results",
+        ROOT / "RESULTS_BENCHMARKS.md",
+        "results-benchmarks.html",
+        "Tables and plots extracted from executed benchmark notebooks.",
     ),
     ("Changelog", ROOT / "CHANGELOG.md", "changelog.html", "Release notes and project history."),
     (

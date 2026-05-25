@@ -4,27 +4,33 @@ Executed outputs from the domain-oriented notebooks in `notebooks/real_examples/
 
 ## Environment
 
-- Generated: 2026-05-25 03:43:26 UTC
-- Git commit: `9672523`
+- Generated: 2026-05-25 13:31:10 UTC
+- Git commit: `b47696a`
 - Python: `3.12.1`
-- Package version: `0.2.4`
+- Package version: `0.2.6`
 - Matplotlib backend: `Agg`
 
 ## Summary
 
 | Notebook | Text result blocks | Plots |
 | --- | ---: | ---: |
-| [notebooks/real_examples/01-rabi-oscillation-parameter-inference.ipynb](#quantum-dynamics-rabi-oscillation-parameter-inference) | 3 | 1 |
-| [notebooks/real_examples/02-ising-correlation-temperature-classifier.ipynb](#statistical-physics-ising-temperature-classification) | 3 | 1 |
-| [notebooks/real_examples/03-lorenz-regime-classifier.ipynb](#nonlinear-dynamics-lorenz-regime-classification) | 3 | 1 |
-| [notebooks/real_examples/04-condensed-matter-tfim-phase-classifier.ipynb](#condensed-matter-tfim-phase-classification) | 3 | 1 |
-| [notebooks/real_examples/05-pendulum-trajectory-surrogate.ipynb](#dynamical-systems-pendulum-trajectory-surrogate) | 3 | 1 |
-| [notebooks/real_examples/06-damped-oscillator-parameter-inference.ipynb](#inverse-problems-damped-oscillator-parameter-inference) | 3 | 1 |
-| [notebooks/real_examples/07-tfim-hamiltonian-parameter-inference.ipynb](#condensed-matter-tfim-hamiltonian-parameter-inference) | 3 | 1 |
-| [notebooks/real_examples/08-quantum-kernel-phase-discovery.ipynb](#condensed-matter-quantum-kernel-phase-discovery) | 3 | 1 |
-| [notebooks/real_examples/09-potential-energy-curve-interpolation.ipynb](#molecular-physics-potential-energy-curve-interpolation) | 3 | 1 |
-| [notebooks/real_examples/10-lorenz-quantum-reservoir-regime-classifier.ipynb](#dynamical-systems-lorenz-quantum-reservoir-regime-classification) | 3 | 1 |
-| [notebooks/real_examples/11-noisy-oscillator-quantum-reservoir-inference.ipynb](#dynamical-systems-noisy-oscillator-quantum-reservoir-inference) | 3 | 1 |
+| [notebooks/real_examples/01-rabi-oscillation-parameter-inference.ipynb](#quantum-dynamics-rabi-oscillation-parameter-inference) | 3 | 2 |
+| [notebooks/real_examples/02-ising-correlation-temperature-classifier.ipynb](#statistical-physics-ising-temperature-classification) | 3 | 2 |
+| [notebooks/real_examples/03-lorenz-regime-classifier.ipynb](#nonlinear-dynamics-lorenz-regime-classification) | 3 | 2 |
+| [notebooks/real_examples/04-condensed-matter-tfim-phase-classifier.ipynb](#condensed-matter-tfim-phase-classification) | 3 | 2 |
+| [notebooks/real_examples/05-pendulum-trajectory-surrogate.ipynb](#dynamical-systems-pendulum-trajectory-surrogate) | 3 | 2 |
+| [notebooks/real_examples/06-damped-oscillator-parameter-inference.ipynb](#inverse-problems-damped-oscillator-parameter-inference) | 3 | 2 |
+| [notebooks/real_examples/07-tfim-hamiltonian-parameter-inference.ipynb](#condensed-matter-tfim-hamiltonian-parameter-inference) | 3 | 2 |
+| [notebooks/real_examples/08-quantum-kernel-phase-discovery.ipynb](#condensed-matter-quantum-kernel-phase-discovery) | 3 | 2 |
+| [notebooks/real_examples/09-potential-energy-curve-interpolation.ipynb](#molecular-physics-potential-energy-curve-interpolation) | 3 | 2 |
+| [notebooks/real_examples/10-lorenz-quantum-reservoir-regime-classifier.ipynb](#dynamical-systems-lorenz-quantum-reservoir-regime-classification) | 3 | 2 |
+| [notebooks/real_examples/11-noisy-oscillator-quantum-reservoir-inference.ipynb](#dynamical-systems-noisy-oscillator-quantum-reservoir-inference) | 3 | 2 |
+| [notebooks/real_examples/12-heat-equation-diffusivity-inference.ipynb](#mathematical-physics-heat-equation-diffusivity-inference) | 3 | 2 |
+| [notebooks/real_examples/13-kepler-orbit-regime-classifier.ipynb](#celestial-mechanics-kepler-orbit-regime-classification) | 3 | 2 |
+| [notebooks/real_examples/14-vibrating-membrane-eigenfrequency-surrogate.ipynb](#mathematical-physics-vibrating-membrane-eigenfrequency-surrogate) | 3 | 2 |
+| [notebooks/real_examples/15-arrhenius-reaction-activation-energy-inference.ipynb](#chemical-physics-arrhenius-activation-energy-inference) | 3 | 2 |
+| [notebooks/real_examples/16-wave-equation-boundary-condition-classifier.ipynb](#mathematical-physics-wave-equation-boundary-condition-classification) | 3 | 2 |
+| [notebooks/real_examples/17-optical-diffraction-anomaly-detection.ipynb](#optics-diffraction-pattern-anomaly-classification) | 3 | 2 |
 
 ## Quantum Dynamics: Rabi Oscillation Parameter Inference
 
@@ -101,6 +107,7 @@ Passed: True
 ```
 
 ![figure 01](docs/pages/assets/notebook-results/real_examples/01-rabi-oscillation-parameter-inference/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/01-rabi-oscillation-parameter-inference/figure-02.png)
 
 ## Statistical Physics: Ising Temperature Classification
 
@@ -171,6 +178,7 @@ Passed: True
 ```
 
 ![figure 01](docs/pages/assets/notebook-results/real_examples/02-ising-correlation-temperature-classifier/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/02-ising-correlation-temperature-classifier/figure-02.png)
 
 ## Nonlinear Dynamics: Lorenz Regime Classification
 
@@ -240,6 +248,7 @@ Passed: True
 ```
 
 ![figure 01](docs/pages/assets/notebook-results/real_examples/03-lorenz-regime-classifier/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/03-lorenz-regime-classifier/figure-02.png)
 
 ## Condensed Matter: TFIM Phase Classification
 
@@ -307,6 +316,7 @@ Passed: True
 ```
 
 ![figure 01](docs/pages/assets/notebook-results/real_examples/04-condensed-matter-tfim-phase-classifier/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/04-condensed-matter-tfim-phase-classifier/figure-02.png)
 
 ## Dynamical Systems: Pendulum Trajectory Surrogate
 
@@ -383,6 +393,7 @@ Passed: True
 ```
 
 ![figure 01](docs/pages/assets/notebook-results/real_examples/05-pendulum-trajectory-surrogate/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/05-pendulum-trajectory-surrogate/figure-02.png)
 
 ## Inverse Problems: Damped Oscillator Parameter Inference
 
@@ -456,6 +467,7 @@ Passed: True
 ```
 
 ![figure 01](docs/pages/assets/notebook-results/real_examples/06-damped-oscillator-parameter-inference/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/06-damped-oscillator-parameter-inference/figure-02.png)
 
 ## Condensed Matter: TFIM Hamiltonian Parameter Inference
 
@@ -531,6 +543,7 @@ Passed
 ```
 
 ![figure 01](docs/pages/assets/notebook-results/real_examples/07-tfim-hamiltonian-parameter-inference/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/07-tfim-hamiltonian-parameter-inference/figure-02.png)
 
 ## Condensed Matter: Quantum Kernel Phase Discovery
 
@@ -606,6 +619,7 @@ Passed
 ```
 
 ![figure 01](docs/pages/assets/notebook-results/real_examples/08-quantum-kernel-phase-discovery/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/08-quantum-kernel-phase-discovery/figure-02.png)
 
 ## Molecular Physics: Potential Energy Curve Interpolation
 
@@ -680,6 +694,7 @@ Passed
 ```
 
 ![figure 01](docs/pages/assets/notebook-results/real_examples/09-potential-energy-curve-interpolation/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/09-potential-energy-curve-interpolation/figure-02.png)
 
 ## Dynamical Systems: Lorenz Quantum Reservoir Regime Classification
 
@@ -753,6 +768,7 @@ Passed
 ```
 
 ![figure 01](docs/pages/assets/notebook-results/real_examples/10-lorenz-quantum-reservoir-regime-classifier/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/10-lorenz-quantum-reservoir-regime-classifier/figure-02.png)
 
 ## Dynamical Systems: Noisy Oscillator Quantum Reservoir Inference
 
@@ -826,6 +842,457 @@ Passed
 ```
 
 ![figure 01](docs/pages/assets/notebook-results/real_examples/11-noisy-oscillator-quantum-reservoir-inference/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/11-noisy-oscillator-quantum-reservoir-inference/figure-02.png)
+
+## Mathematical Physics: Heat Equation Diffusivity Inference
+
+Notebook: `notebooks/real_examples/12-heat-equation-diffusivity-inference.ipynb`
+
+Result block 1:
+
+```text
+Dataset
++----------+---------------------------------------------------------+
+| Metric   | Value                                                   |
++----------+---------------------------------------------------------+
+| Problem  | heat equation diffusivity inference                     |
+| Samples  | 42                                                      |
+| Features | [T(x=0.15), T(x=0.32), T(x=0.50), T(x=0.68), T(x=0.85)] |
+| Target   | thermal diffusivity alpha                               |
++----------+---------------------------------------------------------+
+```
+Result block 2:
+
+```text
+Results
++--------------------------+------------+
+| Metric                   | Value      |
++--------------------------+------------+
+| Quantum GPR alpha MAE    | 0.00397051 |
+| Quantum kernel alpha MAE | 0.0035871  |
+| Ridge alpha MAE          | 0.00231943 |
++--------------------------+------------+
+```
+Result block 3:
+
+```text
+Validation
+Dataset
++---------------+-------------------------------------+
+| Metric        | Value                               |
++---------------+-------------------------------------+
+| problem       | heat_equation_diffusivity_inference |
+| n_train       | 29                                  |
+| n_test        | 13                                  |
+| feature_count | 5                                   |
++---------------+-------------------------------------+
+
+Results
++--------------------------+-------------+
+| Metric                   | Value       |
++--------------------------+-------------+
+| quantum_gpr_alpha_mae    | 0.00397051  |
+| quantum_kernel_alpha_mae | 0.0035871   |
+| ridge_alpha_mae          | 0.00231943  |
+| quantum_gpr_alpha_mse    | 3.74068e-05 |
++--------------------------+-------------+
+
+Sample predictions
++--------------+-------------------+----------------------+
+| actual_alpha | quantum_gpr_alpha | quantum_kernel_alpha |
++--------------+-------------------+----------------------+
+| 0.140964     | 0.143786          | 0.141828             |
+| 0.0818125    | 0.0805856         | 0.081059             |
+| 0.0623477    | 0.0652269         | 0.0651202            |
+| 0.0632763    | 0.0645743         | 0.0634716            |
+| 0.0408202    | 0.0472838         | 0.0445351            |
++--------------+-------------------+----------------------+
+
+Passed
++--------+-------+
+| Metric | Value |
++--------+-------+
+| passed | True  |
++--------+-------+
+```
+
+![figure 01](docs/pages/assets/notebook-results/real_examples/12-heat-equation-diffusivity-inference/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/12-heat-equation-diffusivity-inference/figure-02.png)
+
+## Celestial Mechanics: Kepler Orbit Regime Classification
+
+Notebook: `notebooks/real_examples/13-kepler-orbit-regime-classifier.ipynb`
+
+Result block 1:
+
+```text
+Dataset
++----------+--------------------------------------------------------------------------------------------+
+| Metric   | Value                                                                                      |
++----------+--------------------------------------------------------------------------------------------+
+| Problem  | Kepler orbit eccentricity regime classification                                            |
+| Samples  | 44                                                                                         |
+| Features | [r(theta=0.00), r(theta=1.05), r(theta=2.09), r(theta=3.14), r(theta=4.19), r(theta=5.24)] |
+| Classes  | {0: 'low eccentricity', 1: 'high eccentricity'}                                            |
++----------+--------------------------------------------------------------------------------------------+
+```
+Result block 2:
+
+```text
+Results
++----------------------------+----------+
+| Metric                     | Value    |
++----------------------------+----------+
+| Quantum kernel accuracy    | 1        |
+| Quantum reservoir accuracy | 0.857143 |
+| Logistic accuracy          | 1        |
++----------------------------+----------+
+```
+Result block 3:
+
+```text
+Validation
+Dataset
++---------------+------------------------------------+
+| Metric        | Value                              |
++---------------+------------------------------------+
+| problem       | kepler_orbit_regime_classification |
+| n_train       | 30                                 |
+| n_test        | 14                                 |
+| feature_count | 6                                  |
++---------------+------------------------------------+
+
+Results
++----------------------------+----------+
+| Metric                     | Value    |
++----------------------------+----------+
+| quantum_kernel_accuracy    | 1        |
+| quantum_reservoir_accuracy | 0.857143 |
+| logistic_accuracy          | 1        |
++----------------------------+----------+
+
+Sample predictions
++--------------+---------------+-----------------------+
+| eccentricity | actual_regime | quantum_kernel_regime |
++--------------+---------------+-----------------------+
+| 0.672496     | 1             | 1                     |
+| 0.209142     | 0             | 0                     |
+| 0.806813     | 1             | 1                     |
+| 0.624022     | 1             | 1                     |
+| 0.0893147    | 0             | 0                     |
++--------------+---------------+-----------------------+
+
+Passed
++--------+-------+
+| Metric | Value |
++--------+-------+
+| passed | True  |
++--------+-------+
+```
+
+![figure 01](docs/pages/assets/notebook-results/real_examples/13-kepler-orbit-regime-classifier/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/13-kepler-orbit-regime-classifier/figure-02.png)
+
+## Mathematical Physics: Vibrating Membrane Eigenfrequency Surrogate
+
+Notebook: `notebooks/real_examples/14-vibrating-membrane-eigenfrequency-surrogate.ipynb`
+
+Result block 1:
+
+```text
+Dataset
++----------+------------------------------------------------+
+| Metric   | Value                                          |
++----------+------------------------------------------------+
+| Problem  | rectangular membrane eigenfrequency surrogate  |
+| Samples  | 24                                             |
+| Features | [length_x, length_y, wave_speed, aspect_ratio] |
+| Target   | fundamental frequency                          |
++----------+------------------------------------------------+
+```
+Result block 2:
+
+```text
+Results
++----------------------------------------+-----------+
+| Metric                                 | Value     |
++----------------------------------------+-----------+
+| Quantum kernel frequency MAE           | 0.0662286 |
+| Trainable quantum kernel frequency MAE | 0.0524166 |
+| Ridge frequency MAE                    | 0.033425  |
++----------------------------------------+-----------+
+```
+Result block 3:
+
+```text
+Validation
+Dataset
++---------------+---------------------------------------------+
+| Metric        | Value                                       |
++---------------+---------------------------------------------+
+| problem       | vibrating_membrane_eigenfrequency_surrogate |
+| n_train       | 16                                          |
+| n_test        | 8                                           |
+| feature_count | 4                                           |
++---------------+---------------------------------------------+
+
+Results
++----------------------------------------+------------+
+| Metric                                 | Value      |
++----------------------------------------+------------+
+| quantum_kernel_frequency_mae           | 0.0662286  |
+| trainable_quantum_kernel_frequency_mae | 0.0524166  |
+| ridge_frequency_mae                    | 0.033425   |
+| quantum_kernel_frequency_mse           | 0.00699331 |
++----------------------------------------+------------+
+
+Sample predictions
++------------------+--------------------------+---------------------+
+| actual_frequency | quantum_kernel_frequency | trainable_frequency |
++------------------+--------------------------+---------------------+
+| 0.390723         | 0.430414                 | 0.31475             |
+| 0.627319         | 0.633867                 | 0.647667            |
+| 0.458232         | 0.525136                 | 0.418127            |
+| 0.641746         | 0.584093                 | 0.630248            |
+| 0.402231         | 0.494952                 | 0.342284            |
++------------------+--------------------------+---------------------+
+
+Passed
++--------+-------+
+| Metric | Value |
++--------+-------+
+| passed | True  |
++--------+-------+
+```
+
+![figure 01](docs/pages/assets/notebook-results/real_examples/14-vibrating-membrane-eigenfrequency-surrogate/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/14-vibrating-membrane-eigenfrequency-surrogate/figure-02.png)
+
+## Chemical Physics: Arrhenius Activation Energy Inference
+
+Notebook: `notebooks/real_examples/15-arrhenius-reaction-activation-energy-inference.ipynb`
+
+Result block 1:
+
+```text
+Dataset
++----------+--------------------------------------------------------------+
+| Metric   | Value                                                        |
++----------+--------------------------------------------------------------+
+| Problem  | Arrhenius activation energy inference                        |
+| Samples  | 38                                                           |
+| Features | [C(T=295 K), C(T=315 K), C(T=335 K), C(T=355 K), C(T=375 K)] |
+| Target   | activation energy Ea                                         |
++----------+--------------------------------------------------------------+
+```
+Result block 2:
+
+```text
+Results
++-----------------------+----------+
+| Metric                | Value    |
++-----------------------+----------+
+| Quantum GPR Ea MAE    | 0.416631 |
+| Quantum kernel Ea MAE | 0.424169 |
+| Ridge Ea MAE          | 0.793175 |
++-----------------------+----------+
+```
+Result block 3:
+
+```text
+Validation
+Dataset
++---------------+---------------------------------------+
+| Metric        | Value                                 |
++---------------+---------------------------------------+
+| problem       | arrhenius_activation_energy_inference |
+| n_train       | 26                                    |
+| n_test        | 12                                    |
+| feature_count | 5                                     |
++---------------+---------------------------------------+
+
+Results
++--------------------------------------+----------+
+| Metric                               | Value    |
++--------------------------------------+----------+
+| quantum_gpr_activation_energy_mae    | 0.416631 |
+| quantum_kernel_activation_energy_mae | 0.424169 |
+| ridge_activation_energy_mae          | 0.793175 |
+| quantum_gpr_activation_energy_mse    | 0.637986 |
++--------------------------------------+----------+
+
+Sample predictions
++--------------------------+--------------------+-----------------------+
+| actual_activation_energy | quantum_gpr_energy | quantum_kernel_energy |
++--------------------------+--------------------+-----------------------+
+| 17.2036                  | 17.3653            | 17.3632               |
+| 10.1722                  | 10.0827            | 10.0883               |
+| 11.5282                  | 11.494             | 11.4831               |
+| 16.5089                  | 16.7723            | 16.7452               |
+| 7.94759                  | 10.5749            | 10.7777               |
++--------------------------+--------------------+-----------------------+
+
+Passed
++--------+-------+
+| Metric | Value |
++--------+-------+
+| passed | True  |
++--------+-------+
+```
+
+![figure 01](docs/pages/assets/notebook-results/real_examples/15-arrhenius-reaction-activation-energy-inference/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/15-arrhenius-reaction-activation-energy-inference/figure-02.png)
+
+## Mathematical Physics: Wave Equation Boundary Condition Classification
+
+Notebook: `notebooks/real_examples/16-wave-equation-boundary-condition-classifier.ipynb`
+
+Result block 1:
+
+```text
+Dataset
++----------+--------------------------------------------------+
+| Metric   | Value                                            |
++----------+--------------------------------------------------+
+| Problem  | wave equation boundary condition classification  |
+| Samples  | 42                                               |
+| Features | [f1/f1, f2/f1, f3/f1, f4/f1, scaled fundamental] |
+| Classes  | {0: 'fixed-fixed', 1: 'fixed-free'}              |
++----------+--------------------------------------------------+
+```
+Result block 2:
+
+```text
+Results
++----------------------------+----------+
+| Metric                     | Value    |
++----------------------------+----------+
+| Quantum kernel accuracy    | 1        |
+| Quantum reservoir accuracy | 0.846154 |
+| Logistic accuracy          | 1        |
++----------------------------+----------+
+```
+Result block 3:
+
+```text
+Validation
+Dataset
++---------------+-------------------------------------------------+
+| Metric        | Value                                           |
++---------------+-------------------------------------------------+
+| problem       | wave_equation_boundary_condition_classification |
+| n_train       | 29                                              |
+| n_test        | 13                                              |
+| feature_count | 5                                               |
++---------------+-------------------------------------------------+
+
+Results
++----------------------------+----------+
+| Metric                     | Value    |
++----------------------------+----------+
+| quantum_kernel_accuracy    | 1        |
+| quantum_reservoir_accuracy | 0.846154 |
+| logistic_accuracy          | 1        |
++----------------------------+----------+
+
+Sample predictions
++-----------------+-------------------------+--------------------+
+| actual_boundary | quantum_kernel_boundary | reservoir_boundary |
++-----------------+-------------------------+--------------------+
+| 0               | 0                       | 0                  |
+| 0               | 0                       | 0                  |
+| 0               | 0                       | 0                  |
+| 0               | 0                       | 0                  |
+| 0               | 0                       | 0                  |
++-----------------+-------------------------+--------------------+
+
+Passed
++--------+-------+
+| Metric | Value |
++--------+-------+
+| passed | True  |
++--------+-------+
+```
+
+![figure 01](docs/pages/assets/notebook-results/real_examples/16-wave-equation-boundary-condition-classifier/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/16-wave-equation-boundary-condition-classifier/figure-02.png)
+
+## Optics: Diffraction Pattern Anomaly Classification
+
+Notebook: `notebooks/real_examples/17-optical-diffraction-anomaly-detection.ipynb`
+
+Result block 1:
+
+```text
+Dataset
++--------------------+-------------------------------------------------------------------------------------------------------+
+| Metric             | Value                                                                                                 |
++--------------------+-------------------------------------------------------------------------------------------------------+
+| Problem            | optical diffraction anomaly classification                                                            |
+| Nominal profiles   | 24                                                                                                    |
+| Anomalous profiles | 24                                                                                                    |
+| Features           | [I(theta=-3.0), I(theta=-2.0), I(theta=-1.0), I(theta=0.0), I(theta=1.0), I(theta=2.0), I(theta=3.0)] |
+| Classes            | {0: 'nominal', 1: 'anomalous'}                                                                        |
++--------------------+-------------------------------------------------------------------------------------------------------+
+```
+Result block 2:
+
+```text
+Results
++----------------------------+----------+
+| Metric                     | Value    |
++----------------------------+----------+
+| Quantum kernel accuracy    | 1        |
+| Quantum reservoir accuracy | 0.466667 |
+| Logistic accuracy          | 1        |
+| Quantum anomaly recall     | 1        |
++----------------------------+----------+
+```
+Result block 3:
+
+```text
+Validation
+Dataset
++---------------+--------------------------------------------+
+| Metric        | Value                                      |
++---------------+--------------------------------------------+
+| problem       | optical_diffraction_anomaly_classification |
+| n_train       | 33                                         |
+| n_test        | 15                                         |
+| feature_count | 7                                          |
++---------------+--------------------------------------------+
+
+Results
++----------------------------+----------+
+| Metric                     | Value    |
++----------------------------+----------+
+| quantum_kernel_accuracy    | 1        |
+| quantum_reservoir_accuracy | 0.466667 |
+| logistic_accuracy          | 1        |
+| quantum_anomaly_recall     | 1        |
++----------------------------+----------+
+
+Sample predictions
++--------------+---------------------------+----------------------+
+| actual_label | quantum_kernel_prediction | reservoir_prediction |
++--------------+---------------------------+----------------------+
+| 0            | 0                         | 1                    |
+| 1            | 1                         | 1                    |
+| 0            | 0                         | 1                    |
+| 1            | 1                         | 1                    |
+| 0            | 0                         | 1                    |
++--------------+---------------------------+----------------------+
+
+Passed
++--------+-------+
+| Metric | Value |
++--------+-------+
+| passed | True  |
++--------+-------+
+```
+
+![figure 01](docs/pages/assets/notebook-results/real_examples/17-optical-diffraction-anomaly-detection/figure-01.png)
+![figure 02](docs/pages/assets/notebook-results/real_examples/17-optical-diffraction-anomaly-detection/figure-02.png)
 
 ## Reproduce
 

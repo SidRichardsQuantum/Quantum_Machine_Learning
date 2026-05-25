@@ -189,4 +189,33 @@ def test_cli_benchmark_requires_nested_command():
     returncode, stdout, _ = _run_cli_in_process(["benchmark"])
 
     assert returncode == 1
-    assert "Please specify 'classification' or 'regression'" in stdout
+    assert "Please specify 'classification', 'regression', or 'finite-shots'" in stdout
+
+
+def test_cli_finite_shot_benchmark_runs():
+    returncode, stdout, _ = _run_cli_in_process(
+        [
+            "benchmark",
+            "finite-shots",
+            "--classification-models",
+            "quantum_reservoir",
+            "logistic_regression",
+            "--regression-models",
+            "quantum_reservoir_regressor",
+            "ridge_regression",
+            "--samples",
+            "20",
+            "--seeds",
+            "0",
+            "--shots",
+            "analytic",
+            "64",
+        ],
+    )
+
+    assert returncode == 0
+    assert "Benchmark type: finite-shots" in stdout
+    assert "Shots: analytic" in stdout
+    assert "Shots: 64" in stdout
+    assert "quantum_reservoir" in stdout
+    assert "quantum_reservoir_regressor" in stdout

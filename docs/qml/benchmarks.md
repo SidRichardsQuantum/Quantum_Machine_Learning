@@ -28,6 +28,7 @@ Supported models:
 - `quantum_kernel`
 - `trainable_quantum_kernel`
 - `quantum_metric_learning`
+- `quantum_reservoir`
 - `logistic_regression`
 - `svm_classifier`
 - `mlp_classifier`
@@ -84,6 +85,10 @@ train_accuracy - test_accuracy
 Supported models:
 
 - `vqr`
+- `quantum_kernel_regressor`
+- `trainable_quantum_kernel_regressor`
+- `quantum_gaussian_process_regressor`
+- `quantum_reservoir_regressor`
 - `ridge_regression`
 - `mlp_regressor`
 - `kernel_ridge_regression`
@@ -236,6 +241,35 @@ sine
 polynomial
 friedman
 diabetes
+```
+
+---
+
+## CLI Benchmark Presets
+
+Run benchmark summaries directly from the package command:
+
+```bash
+qml-pennylane benchmark classification \
+  --models vqc quantum_kernel quantum_reservoir svm_classifier \
+  --seeds 0 1 2 \
+  --samples 100
+```
+
+```bash
+qml-pennylane benchmark regression \
+  --models vqr quantum_kernel_regressor quantum_reservoir_regressor ridge_regression \
+  --seeds 0 1 2 \
+  --samples 100
+```
+
+Finite-shot sweeps compare analytic execution against selected shot counts:
+
+```bash
+qml-pennylane benchmark finite-shots \
+  --shots analytic 64 128 512 \
+  --seeds 0 1 2 \
+  --samples 70
 ```
 
 The real-data options are projected to two features so they remain compatible

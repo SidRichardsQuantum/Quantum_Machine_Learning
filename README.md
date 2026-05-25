@@ -451,16 +451,22 @@ Run benchmarks:
 
 ```bash
 python -m qml benchmark classification \
-    --models vqc qcnn quantum_kernel svm_classifier random_forest_classifier \
+    --models vqc qcnn quantum_kernel quantum_reservoir svm_classifier random_forest_classifier \
     --seeds 123 456 \
     --tune-classical
 ```
 
 ```bash
 python -m qml benchmark regression \
-    --models vqr ridge_regression kernel_ridge_regression svr_regression \
+    --models vqr quantum_kernel_regressor quantum_reservoir_regressor ridge_regression svr_regression \
     --seeds 123 456 \
     --tune-classical
+```
+
+```bash
+python -m qml benchmark finite-shots \
+    --shots analytic 64 128 512 \
+    --seeds 123 456
 ```
 
 CLI outputs include:
@@ -485,6 +491,7 @@ The generated outputs are:
 - **RESULTS.md** — smoke-scale API reference results
 - **RESULTS_TUTORIALS.md** — tables and plots extracted from tutorial notebooks
 - **RESULTS_REAL_EXAMPLES.md** — tables and plots extracted from real-example notebooks
+- **RESULTS_BENCHMARKS.md** — tables and plots extracted from benchmark notebooks
 
 Pass `--execute-notebooks` to rerun notebooks before extracting notebook outputs. The
 GitHub Pages workflow uses this mode so the published result pages stay aligned with
@@ -502,10 +509,12 @@ Core documentation:
 
 - **THEORY.md** — mathematical background
 - **USAGE.md** — API examples
+- **ROADMAP.md** — package, notebook, benchmark, and release roadmap
 - **docs/qml/api_reference.md** — public imports, workflows, estimators, benchmarks, and helpers
 - **RESULTS.md** — generated deterministic reference outputs
 - **RESULTS_TUTORIALS.md** — generated tutorial notebook outputs
 - **RESULTS_REAL_EXAMPLES.md** — generated real-example notebook outputs
+- **RESULTS_BENCHMARKS.md** — generated benchmark notebook outputs
 
 Algorithm notes:
 
@@ -611,6 +620,9 @@ notebooks/
 
     real_examples/
         small reproducible domain examples
+
+    benchmarks/
+        reproducible model comparisons and finite-shot sweeps
 
 
 tests/

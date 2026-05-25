@@ -12,7 +12,7 @@ style of the root portfolio site at:
 - `build_site.py` builds `_site/` from the repository Markdown files.
 - `generate_results.py` runs deterministic smoke-scale QML workflows and writes `RESULTS.md`.
   It can also execute notebooks and extract their printed tables and plots into
-  `RESULTS_TUTORIALS.md` and `RESULTS_REAL_EXAMPLES.md`.
+  `RESULTS_TUTORIALS.md`, `RESULTS_REAL_EXAMPLES.md`, and `RESULTS_BENCHMARKS.md`.
 - `styles.css` defines the custom portfolio-style visual system for the generated site.
 - `assets/reference-results/` stores generated result plots and JSON artifacts embedded by `RESULTS.md`.
 - `assets/notebook-results/` stores plots extracted from executed notebooks.

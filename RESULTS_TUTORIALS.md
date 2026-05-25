@@ -4,10 +4,10 @@ Executed outputs from the tutorial notebooks in `notebooks/tutorials/`. These pa
 
 ## Environment
 
-- Generated: 2026-05-25 03:43:26 UTC
-- Git commit: `9672523`
+- Generated: 2026-05-25 13:31:10 UTC
+- Git commit: `b47696a`
 - Python: `3.12.1`
-- Package version: `0.2.4`
+- Package version: `0.2.6`
 - Matplotlib backend: `Agg`
 
 ## Summary

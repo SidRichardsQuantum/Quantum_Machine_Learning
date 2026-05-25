@@ -69,6 +69,104 @@ def _run_regression_benchmark_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_finite_shot_benchmark_command(args: argparse.Namespace) -> int:
+    from qml.benchmarks import compare_classification_models, compare_regression_models
+    from qml.io_utils import results_path, save_json
+
+    print("Benchmark type: finite-shots")
+    print(
+        "Shot values:",
+        ", ".join("analytic" if shots is None else str(shots) for shots in args.shots),
+    )
+    results = []
+
+    for shots in args.shots:
+        label = "analytic" if shots is None else str(shots)
+        classification = compare_classification_models(
+            models=args.classification_models,
+            seeds=args.seeds,
+            n_samples=args.samples,
+            noise=args.noise,
+            test_size=args.test_size,
+            dataset=args.classification_dataset,
+            model_kwargs={
+                "vqc": {"n_layers": 1, "steps": args.steps, "shots": shots},
+                "qcnn": {"steps": args.steps, "shots": shots},
+                "quantum_kernel": {"shots": shots},
+                "trainable_quantum_kernel": {
+                    "steps": max(1, args.steps // 2),
+                    "embedding_layers": 1,
+                    "shots_train": shots,
+                    "shots_kernel": shots,
+                },
+                "quantum_reservoir": {"n_layers": 1, "shots": shots},
+            },
+            save=False,
+            tune_classical=args.tune_classical,
+            cv=args.cv,
+        )
+        regression = compare_regression_models(
+            models=args.regression_models,
+            seeds=args.seeds,
+            n_samples=args.samples,
+            noise=args.noise,
+            test_size=args.test_size,
+            dataset=args.regression_dataset,
+            model_kwargs={
+                "vqr": {"n_layers": 1, "steps": args.steps, "shots": shots},
+                "quantum_kernel_regressor": {"shots": shots},
+                "quantum_gaussian_process_regressor": {"shots": shots},
+                "quantum_reservoir_regressor": {"n_layers": 1, "shots": shots},
+                "trainable_quantum_kernel_regressor": {
+                    "steps": max(1, args.steps // 2),
+                    "embedding_layers": 1,
+                    "shots_train": shots,
+                    "shots_kernel": shots,
+                },
+            },
+            save=False,
+            tune_classical=args.tune_classical,
+            cv=args.cv,
+        )
+        results.append(
+            {
+                "shots": label,
+                "classification": classification,
+                "regression": regression,
+            }
+        )
+
+        print()
+        print(f"Shots: {label}")
+        print("  Classification")
+        for model, metrics in classification["summary"].items():
+            test = metrics["test_accuracy"]
+            runtime = metrics["runtime_seconds"]
+            print(
+                f"    {model}: test={test['mean']:.6f} "
+                f"ci95=[{test['ci95_low']:.6f}, {test['ci95_high']:.6f}] "
+                f"runtime={runtime['mean']:.3f}s"
+            )
+
+        print("  Regression")
+        for model, metrics in regression["summary"].items():
+            test = metrics["test_mse"]
+            runtime = metrics["runtime_seconds"]
+            print(
+                f"    {model}: test_mse={test['mean']:.6f} "
+                f"ci95=[{test['ci95_low']:.6f}, {test['ci95_high']:.6f}] "
+                f"runtime={runtime['mean']:.3f}s"
+            )
+
+    if args.save:
+        save_json(
+            {"benchmark_type": "finite-shots", "runs": results},
+            results_path("benchmarks", "finite_shot_benchmark.json"),
+        )
+
+    return 0
+
+
 def _run_vqc_command(args: argparse.Namespace) -> int:
     """
     Run the VQC workflow from parsed CLI arguments.

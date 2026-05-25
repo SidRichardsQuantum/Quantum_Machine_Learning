@@ -5,6 +5,7 @@ from __future__ import annotations
 from qml.cli_commands import (
     _run_autoencoder_command,
     _run_classification_benchmark_command,
+    _run_finite_shot_benchmark_command,
     _run_kernel_command,
     _run_logistic_command,
     _run_metric_learning_command,
@@ -71,7 +72,10 @@ def main(argv: list[str] | None = None, *, prog: str | None = None) -> int:
         if args.benchmark_type == "regression":
             return _run_regression_benchmark_command(args)
 
-        print("Please specify 'classification' or 'regression'")
+        if args.benchmark_type == "finite-shots":
+            return _run_finite_shot_benchmark_command(args)
+
+        print("Please specify 'classification', 'regression', or 'finite-shots'")
         return 1
 
     parser.print_help()

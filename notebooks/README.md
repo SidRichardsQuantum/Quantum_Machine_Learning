@@ -25,6 +25,23 @@ domain real examples.
 | `tutorials/11-quantum-autoencoder.ipynb` | Compress and reconstruct structured quantum states. |
 | `tutorials/12-advanced-quantum-kernel-and-reservoir-models.ipynb` | Use advanced quantum kernel and reservoir estimators on synthetic datasets. |
 
+## Benchmark notebooks
+
+These notebooks live in `notebooks/benchmarks/` and compare package QML
+implementations against classical baselines using deterministic seeds,
+confidence intervals, generalization gaps, and runtime summaries. Defaults are
+kept small so the notebooks are runnable as templates; increase sample counts,
+seeds, training steps, and classical tuning for stronger benchmark runs.
+
+| Notebook | Purpose |
+| --- | --- |
+| `benchmarks/01-classification-model-benchmark.ipynb` | Compare VQC, QCNN, quantum kernels, trainable quantum kernels, and quantum metric learning against classical classifiers. |
+| `benchmarks/02-regression-model-benchmark.ipynb` | Compare VQR against ridge, kernel, tree, neighbour, Gaussian-process, SVM, and MLP regressors. |
+| `benchmarks/03-quantum-kernel-family-benchmark.ipynb` | Focus on quantum kernel and trainable quantum kernel classifiers versus classical kernel-style baselines. |
+| `benchmarks/04-variational-model-capacity-benchmark.ipynb` | Sweep small VQC, QCNN, and VQR capacity settings against simple classical references. |
+| `benchmarks/05-finite-shot-benchmark.ipynb` | Compare analytic and finite-shot execution for supported QML workflows. |
+| `benchmarks/06-real-data-small-sample-benchmark.ipynb` | Benchmark small-feature real datasets exposed by the package against classical baselines. |
+
 ## Real example notebooks
 
 These notebooks use small reproducible physics or maths simulators and then
