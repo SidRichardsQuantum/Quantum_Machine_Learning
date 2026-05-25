@@ -54,7 +54,10 @@ from qml.kernel_methods import run_quantum_kernel_classifier  # noqa: E402
 from qml.metric_learning import run_quantum_metric_learner  # noqa: E402
 from qml.qcnn import run_qcnn  # noqa: E402
 from qml.regression import run_vqr  # noqa: E402
-from qml.trainable_kernels import run_trainable_quantum_kernel_classifier  # noqa: E402
+from qml.trainable_kernels import (  # noqa: E402
+    run_trainable_quantum_kernel_classifier,
+    run_trainable_quantum_kernel_regressor,
+)
 
 
 def short_commit() -> str:
@@ -322,6 +325,37 @@ def run_reference_results() -> list[dict[str, Any]]:
             },
             elapsed,
             run_images("trainable_kernel"),
+        )
+    )
+
+    config = {
+        "dataset": "sine",
+        "n_samples": 20,
+        "noise": 0.1,
+        "seed": 123,
+        "embedding_layers": 1,
+        "steps": 2,
+        "shots_train": None,
+        "shots_kernel": None,
+        "alpha": 1e-3,
+    }
+    result, elapsed = timed_run(
+        "trainable_kernel_regressor",
+        run_trainable_quantum_kernel_regressor,
+        **config,
+    )
+    runs.append(
+        row(
+            "Trainable quantum kernel regressor",
+            config,
+            {
+                "train_mse": result["train_mse"],
+                "test_mse": result["test_mse"],
+                "final_alignment": result["final_alignment"],
+                "final_loss": result["final_loss"],
+            },
+            elapsed,
+            run_images("trainable_kernel_regressor"),
         )
     )
 

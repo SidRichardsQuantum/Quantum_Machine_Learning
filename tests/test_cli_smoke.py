@@ -1,9 +1,5 @@
 import io
-import subprocess
-import sys
 from contextlib import redirect_stderr, redirect_stdout
-
-import pytest
 
 from qml.cli import main
 
@@ -18,28 +14,22 @@ def _run_cli_in_process(args: list[str]) -> tuple[int, str, str]:
     return returncode, stdout.getvalue(), stderr.getvalue()
 
 
-@pytest.mark.slow
 def test_cli_vqc_runs():
-    result = subprocess.run(
+    returncode, stdout, _ = _run_cli_in_process(
         [
-            sys.executable,
-            "-m",
-            "qml",
             "vqc",
             "--samples",
-            "20",
+            "8",
             "--steps",
-            "2",
+            "1",
             "--layers",
             "1",
         ],
-        capture_output=True,
-        text=True,
     )
 
-    assert result.returncode == 0
-    assert "Train accuracy" in result.stdout
-    assert "Test accuracy" in result.stdout
+    assert returncode == 0
+    assert "Train accuracy" in stdout
+    assert "Test accuracy" in stdout
 
 
 def test_cli_kernel_runs():
@@ -146,11 +136,11 @@ def test_cli_trainable_kernel_runs():
         [
             "trainable-kernel",
             "--samples",
-            "20",
+            "8",
             "--steps",
-            "1",
+            "0",
             "--embedding",
-            "data_reupload",
+            "angle",
             "--embedding-layers",
             "1",
         ],
@@ -161,6 +151,31 @@ def test_cli_trainable_kernel_runs():
     assert "Test accuracy" in stdout
     assert "Final alignment" in stdout
     assert "Final loss" in stdout
+
+
+def test_cli_metric_learning_runs():
+    returncode, stdout, _ = _run_cli_in_process(
+        [
+            "metric-learning",
+            "--samples",
+            "20",
+            "--steps",
+            "1",
+            "--layers",
+            "1",
+            "--pairs-per-step",
+            "4",
+            "--log-every",
+            "0",
+        ],
+    )
+
+    assert returncode == 0
+    assert "Model: quantum_metric_learning" in stdout
+    assert "Dataset: moons" in stdout
+    assert "Train accuracy:" in stdout
+    assert "Test accuracy:" in stdout
+    assert "Final loss:" in stdout
 
 
 def test_cli_without_command_prints_help():

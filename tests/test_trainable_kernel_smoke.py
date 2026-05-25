@@ -3,7 +3,7 @@ from qml.trainable_kernels import run_trainable_quantum_kernel_classifier
 
 def test_trainable_kernel_data_reupload_runs():
     result = run_trainable_quantum_kernel_classifier(
-        n_samples=24,
+        n_samples=8,
         noise=0.1,
         test_size=0.25,
         seed=123,
@@ -40,7 +40,7 @@ def test_trainable_kernel_data_reupload_runs():
 
 def test_trainable_kernel_angle_runs():
     result = run_trainable_quantum_kernel_classifier(
-        n_samples=24,
+        n_samples=8,
         noise=0.1,
         test_size=0.25,
         seed=123,

@@ -4,10 +4,10 @@ Executed outputs from the tutorial notebooks in `notebooks/tutorials/`. These pa
 
 ## Environment
 
-- Generated: 2026-05-22 05:40:05 UTC
-- Git commit: `a29a07a`
+- Generated: 2026-05-25 03:43:26 UTC
+- Git commit: `9672523`
 - Python: `3.12.1`
-- Package version: `0.2.3`
+- Package version: `0.2.4`
 - Matplotlib backend: `Agg`
 
 ## Summary
@@ -25,6 +25,7 @@ Executed outputs from the tutorial notebooks in `notebooks/tutorials/`. These pa
 | [notebooks/tutorials/09-quantum-metric-learning.ipynb](#quantum-metric-learning) | 4 | 5 |
 | [notebooks/tutorials/10-quantum-convolutional-neural-network.ipynb](#quantum-convolutional-neural-network) | 4 | 3 |
 | [notebooks/tutorials/11-quantum-autoencoder.ipynb](#quantum-autoencoder) | 3 | 1 |
+| [notebooks/tutorials/12-advanced-quantum-kernel-and-reservoir-models.ipynb](#advanced-quantum-kernel-and-reservoir-models) | 6 | 1 |
 
 ## Classical vs Quantum Classifiers
 
@@ -716,6 +717,112 @@ hybrid
 ```
 
 ![figure 01](docs/pages/assets/notebook-results/tutorial/11-quantum-autoencoder/figure-01.png)
+
+## Advanced Quantum Kernel and Reservoir Models
+
+Notebook: `notebooks/tutorials/12-advanced-quantum-kernel-and-reservoir-models.ipynb`
+
+Result block 1:
+
+```text
+Classification dataset
++-------------+--------------------+
+| Metric      | Value              |
++-------------+--------------------+
+| dataset     | two Gaussian blobs |
+| train_shape | [29, 2]            |
+| test_shape  | [13, 2]            |
+| classes     | [0, 1]             |
++-------------+--------------------+
+```
+Result block 2:
+
+```text
+Unsupervised kernel models
++------------------------------------+----------+
+| Metric                             | Value    |
++------------------------------------+----------+
+| kpca_component_count               | 2        |
+| one_class_accuracy_against_class_1 | 0.846154 |
+| first_eigenvalue                   | 11.1637  |
++------------------------------------+----------+
+```
+Result block 3:
+
+```text
+Reservoir classifier
++----------------------------+-------+
+| Metric                     | Value |
++----------------------------+-------+
+| quantum_reservoir_accuracy | 1     |
++----------------------------+-------+
+```
+Result block 4:
+
+```text
+Regression dataset
++-------------+-----------------------------+
+| Metric      | Value                       |
++-------------+-----------------------------+
+| dataset     | synthetic linear regression |
+| train_shape | [25, 2]                     |
+| test_shape  | [11, 2]                     |
++-------------+-----------------------------+
+```
+Result block 5:
+
+```text
+Regression models
++----------------------------+----------+
+| Metric                     | Value    |
++----------------------------+----------+
+| trainable_kernel_mse       | 0.145834 |
+| quantum_gpr_mse            | 1.59169  |
+| quantum_reservoir_mse      | 0.642639 |
+| trainable_kernel_alignment | 0.28523  |
+| quantum_gpr_mean_std       | 0.031456 |
++----------------------------+----------+
+```
+Result block 6:
+
+```text
+Validation
+Classification
++----------------------------+-------+
+| Metric                     | Value |
++----------------------------+-------+
+| quantum_reservoir_accuracy | 1     |
++----------------------------+-------+
+
+Unsupervised
++------------------------------------+----------+
+| Metric                             | Value    |
++------------------------------------+----------+
+| kpca_component_count               | 2        |
+| one_class_accuracy_against_class_1 | 0.846154 |
+| first_eigenvalue                   | 11.1637  |
++------------------------------------+----------+
+
+Regression
++----------------------------+----------+
+| Metric                     | Value    |
++----------------------------+----------+
+| trainable_kernel_mse       | 0.145834 |
+| quantum_gpr_mse            | 1.59169  |
+| quantum_reservoir_mse      | 0.642639 |
+| trainable_kernel_alignment | 0.28523  |
+| quantum_gpr_mean_std       | 0.031456 |
++----------------------------+----------+
+
+Passed
++--------+-------+
+| Metric | Value |
++--------+-------+
+| passed | True  |
++--------+-------+
+```
+
+![figure 01](docs/pages/assets/notebook-results/tutorial/12-advanced-quantum-kernel-and-reservoir-models/figure-01.png)
 
 ## Reproduce
 

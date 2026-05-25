@@ -13,12 +13,14 @@ from typing import Any
 import numpy as np
 import pennylane as qml
 from pennylane import numpy as pnp
+from sklearn.kernel_ridge import KernelRidge
 from sklearn.svm import SVC
 
 from qml.data import make_classification_dataset
+from qml.data import make_regression_dataset
 from qml.embeddings import embedding_parameter_shape, get_embedding
 from qml.io_utils import ensure_dir, images_path, results_path, save_json
-from qml.metrics import accuracy_score
+from qml.metrics import accuracy_score, mean_absolute_error, mean_squared_error
 from qml.optimizers import get_optimizer
 from qml.training import run_training_loop
 from qml.visualize import (
@@ -103,6 +105,209 @@ def _kernel_target_alignment(kernel_matrix, y_pm) -> Any:
     target_norm = qml.math.sqrt(qml.math.sum(target * target) + 1e-12)
 
     return numerator / (kernel_norm * target_norm + 1e-12)
+
+
+def _regression_target_alignment(kernel_matrix, y) -> Any:
+    """Compute normalized alignment against a continuous centered target kernel."""
+    y = y - qml.math.mean(y)
+    target = qml.math.outer(y, y)
+    numerator = qml.math.sum(kernel_matrix * target)
+    kernel_norm = qml.math.sqrt(qml.math.sum(kernel_matrix * kernel_matrix) + 1e-12)
+    target_norm = qml.math.sqrt(qml.math.sum(target * target) + 1e-12)
+    return numerator / (kernel_norm * target_norm + 1e-12)
+
+
+def _as_2d(x) -> np.ndarray:
+    x = np.asarray(x, dtype=float)
+    if x.ndim == 1:
+        x = x.reshape(1, -1)
+    if x.ndim != 2:
+        raise ValueError(f"Expected a 2D array, got shape {x.shape}.")
+    return x
+
+
+class TrainableQuantumKernelRegressor:
+    """
+    Kernel-ridge regressor with a trainable quantum feature map.
+
+    The feature-map parameters are optimized by maximizing normalized alignment
+    between the quantum kernel matrix and the continuous target kernel ``y y^T``.
+    """
+
+    def __init__(
+        self,
+        *,
+        embedding: str = "data_reupload",
+        embedding_layers: int = 2,
+        steps: int = 50,
+        step_size: float = 0.1,
+        optimizer: str = "adam",
+        optimizer_kwargs: dict[str, Any] | None = None,
+        reg_strength: float = 1e-4,
+        alpha: float = 1.0,
+        shots_train: int | None = None,
+        shots_kernel: int | None = None,
+        seed: int = 123,
+    ) -> None:
+        self.embedding = embedding
+        self.embedding_layers = embedding_layers
+        self.steps = steps
+        self.step_size = step_size
+        self.optimizer = optimizer
+        self.optimizer_kwargs = optimizer_kwargs or {}
+        self.reg_strength = reg_strength
+        self.alpha = alpha
+        self.shots_train = shots_train
+        self.shots_kernel = shots_kernel
+        self.seed = seed
+
+    def get_params(self, deep: bool = True) -> dict[str, Any]:
+        return {
+            "embedding": self.embedding,
+            "embedding_layers": self.embedding_layers,
+            "steps": self.steps,
+            "step_size": self.step_size,
+            "optimizer": self.optimizer,
+            "optimizer_kwargs": dict(self.optimizer_kwargs),
+            "reg_strength": self.reg_strength,
+            "alpha": self.alpha,
+            "shots_train": self.shots_train,
+            "shots_kernel": self.shots_kernel,
+            "seed": self.seed,
+        }
+
+    def set_params(self, **params):
+        valid = self.get_params()
+        for key, value in params.items():
+            if key not in valid:
+                raise ValueError(f"Invalid parameter {key!r} for TrainableQuantumKernelRegressor.")
+            setattr(self, key, value)
+        return self
+
+    def _build_kernel_functions(self, n_qubits: int):
+        wires = list(range(n_qubits))
+        embedding_name = self.embedding.strip().lower()
+        embedding_fn = get_embedding(embedding_name)
+        param_shape = embedding_parameter_shape(
+            embedding_name,
+            n_layers=self.embedding_layers,
+            n_qubits=n_qubits,
+        )
+        is_trainable = bool(param_shape)
+        if not is_trainable:
+            if self.steps > 0:
+                raise ValueError(
+                    f"Embedding '{embedding_name}' is not trainable. Set steps=0 or use a "
+                    "trainable embedding."
+                )
+            param_shape = (1,)
+
+        dev_train = qml.device("default.qubit", wires=n_qubits, seed=self.seed)
+        dev_eval = qml.device("default.qubit", wires=n_qubits, seed=self.seed)
+
+        def apply_embedding(x, params) -> None:
+            if is_trainable:
+                embedding_fn(x, params, wires=wires)
+            else:
+                embedding_fn(x, wires=wires)
+
+        @qml.qnode(dev_train, interface="autograd")
+        def kernel_train_base(x1, x2, params):
+            apply_embedding(x1, params)
+            qml.adjoint(apply_embedding)(x2, params)
+            return qml.probs(wires=wires)
+
+        @qml.qnode(dev_eval)
+        def kernel_eval_base(x1, x2, params):
+            apply_embedding(x1, params)
+            qml.adjoint(apply_embedding)(x2, params)
+            return qml.probs(wires=wires)
+
+        kernel_train = (
+            qml.set_shots(kernel_train_base, self.shots_train)
+            if self.shots_train is not None
+            else kernel_train_base
+        )
+        kernel_eval = (
+            qml.set_shots(kernel_eval_base, self.shots_kernel)
+            if self.shots_kernel is not None
+            else kernel_eval_base
+        )
+
+        return embedding_name, param_shape, is_trainable, kernel_train, kernel_eval
+
+    def fit(self, x, y):
+        x = _as_2d(x)
+        y = np.asarray(y, dtype=float).ravel()
+        if y.shape[0] != x.shape[0]:
+            raise ValueError("y length must match the number of samples.")
+
+        (
+            self.embedding_name_,
+            param_shape,
+            is_trainable,
+            kernel_train,
+            kernel_eval,
+        ) = self._build_kernel_functions(x.shape[1])
+
+        def kernel_value_autodiff(x1, x2, params):
+            return kernel_train(x1, x2, params)[0]
+
+        x_q = pnp.array(x, requires_grad=False)
+        y_q = pnp.array(y, requires_grad=False)
+        rng = np.random.default_rng(self.seed)
+        init_params = (
+            0.01 * rng.standard_normal(param_shape) if is_trainable else np.zeros(param_shape)
+        )
+        params = pnp.array(init_params, requires_grad=is_trainable)
+        opt = get_optimizer(self.optimizer, stepsize=self.step_size, **self.optimizer_kwargs)
+
+        def objective(trainable_params):
+            kernel_matrix = _kernel_matrix_autodiff(
+                x_q,
+                lambda xa, xb: kernel_value_autodiff(xa, xb, trainable_params),
+            )
+            alignment = _regression_target_alignment(kernel_matrix, y_q)
+            penalty = self.reg_strength * qml.math.mean(trainable_params * trainable_params)
+            return -alignment + penalty
+
+        def step_fn(current_params):
+            return opt.step_and_cost(objective, current_params)
+
+        if self.steps > 0 and is_trainable:
+            params, self.loss_trace_ = run_training_loop(step_fn, params, self.steps)
+        else:
+            self.loss_trace_ = [float(objective(params))]
+
+        self.trained_params_ = np.asarray(params, dtype=float)
+
+        def kernel_fn(x1, x2) -> float:
+            return float(
+                kernel_eval(
+                    np.asarray(x1, dtype=float), np.asarray(x2, dtype=float), self.trained_params_
+                )[0]
+            )
+
+        self.kernel_matrix_train_ = _compute_kernel_matrix(x, x, kernel_fn)
+        self.alignment_ = float(_regression_target_alignment(self.kernel_matrix_train_, y))
+        self.model_ = KernelRidge(alpha=self.alpha, kernel="precomputed")
+        self.model_.fit(self.kernel_matrix_train_, y)
+        self.x_train_ = x
+        self._kernel_fn_ = kernel_fn
+        return self
+
+    def predict(self, x) -> np.ndarray:
+        if not hasattr(self, "model_"):
+            raise ValueError("TrainableQuantumKernelRegressor must be fitted before prediction.")
+        x = _as_2d(x)
+        k_test = _compute_kernel_matrix(x, self.x_train_, self._kernel_fn_)
+        return np.asarray(self.model_.predict(k_test), dtype=float)
+
+    def score(self, x, y) -> float:
+        return -mean_squared_error(y, self.predict(x))
+
+    def mean_absolute_error(self, x, y) -> float:
+        return mean_absolute_error(y, self.predict(x))
 
 
 def run_trainable_quantum_kernel_classifier(
@@ -456,3 +661,74 @@ def run_trainable_quantum_kernel_classifier(
         save_json(result, _results_file(f"{stem}.json"))
 
     return result
+
+
+def run_trainable_quantum_kernel_regressor(
+    n_samples: int = 200,
+    noise: float = 0.1,
+    test_size: float = 0.25,
+    seed: int = 123,
+    dataset: str = "sine",
+    embedding: str = "data_reupload",
+    embedding_layers: int = 2,
+    steps: int = 50,
+    step_size: float = 0.1,
+    optimizer: str = "adam",
+    optimizer_kwargs: dict[str, Any] | None = None,
+    reg_strength: float = 1e-4,
+    alpha: float = 1.0,
+    shots_train: int | None = None,
+    shots_kernel: int | None = None,
+) -> dict[str, Any]:
+    """
+    Run a trainable quantum kernel regressor on a named regression dataset.
+    """
+    data = make_regression_dataset(
+        n_samples=n_samples,
+        noise=noise,
+        test_size=test_size,
+        seed=seed,
+        dataset=dataset,
+    )
+    model = TrainableQuantumKernelRegressor(
+        embedding=embedding,
+        embedding_layers=embedding_layers,
+        steps=steps,
+        step_size=step_size,
+        optimizer=optimizer,
+        optimizer_kwargs=optimizer_kwargs,
+        reg_strength=reg_strength,
+        alpha=alpha,
+        shots_train=shots_train,
+        shots_kernel=shots_kernel,
+        seed=seed,
+    )
+    model.fit(data["x_train"], data["y_train"])
+    y_train_pred = model.predict(data["x_train"])
+    y_test_pred = model.predict(data["x_test"])
+    return {
+        "model": "trainable_quantum_kernel_regressor",
+        "dataset": dataset,
+        "seed": seed,
+        "n_samples": n_samples,
+        "noise": noise,
+        "test_size": test_size,
+        "embedding": model.embedding_name_,
+        "embedding_layers": embedding_layers,
+        "steps": steps,
+        "loss_trace": model.loss_trace_,
+        "final_loss": float(model.loss_trace_[-1]),
+        "final_alignment": model.alignment_,
+        "trained_params": model.trained_params_,
+        "kernel_matrix_train": model.kernel_matrix_train_,
+        "train_mse": mean_squared_error(data["y_train"], y_train_pred),
+        "test_mse": mean_squared_error(data["y_test"], y_test_pred),
+        "train_mae": mean_absolute_error(data["y_train"], y_train_pred),
+        "test_mae": mean_absolute_error(data["y_test"], y_test_pred),
+        "x_train": data["x_train"],
+        "x_test": data["x_test"],
+        "y_train": data["y_train"],
+        "y_test": data["y_test"],
+        "y_train_pred": y_train_pred,
+        "y_test_pred": y_test_pred,
+    }

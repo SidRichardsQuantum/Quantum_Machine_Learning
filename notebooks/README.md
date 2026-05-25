@@ -23,6 +23,7 @@ domain real examples.
 | `tutorials/09-quantum-metric-learning.ipynb` | Learn a quantum embedding geometry for classification. |
 | `tutorials/10-quantum-convolutional-neural-network.ipynb` | Train a compact quantum convolutional neural network. |
 | `tutorials/11-quantum-autoencoder.ipynb` | Compress and reconstruct structured quantum states. |
+| `tutorials/12-advanced-quantum-kernel-and-reservoir-models.ipynb` | Use advanced quantum kernel and reservoir estimators on synthetic datasets. |
 
 ## Real example notebooks
 
@@ -44,6 +45,11 @@ human-readable tables.
 | `real_examples/04-condensed-matter-tfim-phase-classifier.ipynb` | Classify finite-size transverse-field Ising model samples as ferromagnetic or paramagnetic from correlation features. | Angle embedding, PennyLane quantum fidelity kernel, package accuracy metric. |
 | `real_examples/05-pendulum-trajectory-surrogate.ipynb` | Learn a small-angle pendulum trajectory surrogate from initial state and time. | Package angle embedding, hardware-efficient ansatz, optimizer, training loop, and regression metrics. |
 | `real_examples/06-damped-oscillator-parameter-inference.ipynb` | Recover a damped oscillator damping coefficient from sparse displacement measurements. | Package angle embedding, hardware-efficient ansatz, optimizer, training loop, and regression metrics. |
+| `real_examples/07-tfim-hamiltonian-parameter-inference.ipynb` | Infer a transverse-field Ising Hamiltonian parameter from finite-size ground-state observables. | Trainable quantum kernel regression, quantum Gaussian-process regression, and ridge baseline. |
+| `real_examples/08-quantum-kernel-phase-discovery.ipynb` | Discover and classify TFIM phase structure from correlation features. | Quantum kernel PCA, quantum kernel classification, and quantum one-class anomaly detection. |
+| `real_examples/09-potential-energy-curve-interpolation.ipynb` | Interpolate a sparse molecular-style potential energy curve. | Quantum Gaussian-process regression and quantum kernel ridge regression. |
+| `real_examples/10-lorenz-quantum-reservoir-regime-classifier.ipynb` | Classify Lorenz-system dynamical regimes from short trajectory summaries. | Quantum reservoir classification, quantum kernel PCA, and quantum kernel classification. |
+| `real_examples/11-noisy-oscillator-quantum-reservoir-inference.ipynb` | Infer oscillator damping from sparse noisy displacement traces. | Quantum reservoir regression and quantum Gaussian-process regression. |
 
 ## Application notebook ideas
 

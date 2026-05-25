@@ -75,3 +75,26 @@ def apply_hardware_efficient_ansatz(params, wires: Sequence[int]) -> None:
 
             if n_qubits > 2:
                 qml.CNOT(wires=[wires[-1], wires[0]])
+
+
+def strongly_entangling_parameter_shape(n_layers: int, n_qubits: int) -> tuple[int, int, int]:
+    """
+    Return the parameter shape for PennyLane ``StronglyEntanglingLayers``.
+    """
+    if n_layers <= 0:
+        raise ValueError("n_layers must be positive.")
+    if n_qubits <= 0:
+        raise ValueError("n_qubits must be positive.")
+    return (n_layers, n_qubits, 3)
+
+
+def apply_strongly_entangling_ansatz(params, wires: Sequence[int]) -> None:
+    """
+    Apply PennyLane's strongly entangling layer template with validation.
+    """
+    wires = list(wires)
+    shape = qml.math.shape(params)
+    expected_tail = (len(wires), 3)
+    if len(shape) != 3 or tuple(shape[1:]) != expected_tail:
+        raise ValueError(f"Expected params with shape (n_layers, {len(wires)}, 3), got {shape}.")
+    qml.StronglyEntanglingLayers(params, wires=wires)

@@ -11,10 +11,10 @@ page quickly. They are reproducible smoke-scale examples, not quantum-advantage 
 
 ## Environment
 
-- Generated: 2026-05-22 00:44:44 UTC
-- Git commit: `9496565`
+- Generated: 2026-05-25 02:24:39 UTC
+- Git commit: `9672523`
 - Python: `3.12.1`
-- Package version: `0.2.0`
+- Package version: `0.2.4`
 - PennyLane: `0.45.0`
 - Matplotlib backend: `Agg`
 - Default execution: analytic `default.qubit` unless a shot count is listed
@@ -23,13 +23,14 @@ page quickly. They are reproducible smoke-scale examples, not quantum-advantage 
 
 | Workflow | Primary metric | Value | Runtime |
 | --- | --- | ---: | ---: |
-| Variational quantum classifier | `train_accuracy` | 0.4595 | 27.20 s |
-| Variational quantum regression | `train_mse` | 0.9098 | 3.66 s |
-| Quantum convolutional neural network | `train_accuracy` | 0.8333 | 144.44 s |
-| Quantum autoencoder | `test_compression_fidelity` | 0.7014 | 3.33 s |
-| Quantum kernel classifier | `train_accuracy` | 0.8519 | 2.00 s |
-| Trainable quantum kernel | `train_accuracy` | 0.7333 | 24.68 s |
-| Quantum metric learning | `train_accuracy` | 0.5946 | 4.05 s |
+| Variational quantum classifier | `train_accuracy` | 0.4595 | 27.80 s |
+| Variational quantum regression | `train_mse` | 0.9098 | 3.21 s |
+| Quantum convolutional neural network | `train_accuracy` | 0.8333 | 148.95 s |
+| Quantum autoencoder | `test_compression_fidelity` | 0.7014 | 3.06 s |
+| Quantum kernel classifier | `train_accuracy` | 0.8519 | 2.10 s |
+| Trainable quantum kernel | `train_accuracy` | 0.7333 | 22.82 s |
+| Trainable quantum kernel regressor | `train_mse` | 0.0125 | 9.94 s |
+| Quantum metric learning | `train_accuracy` | 0.5946 | 3.53 s |
 
 ## Variational quantum classifier
 
@@ -42,7 +43,7 @@ Configuration:
 | `train_accuracy` | 0.4595 |
 | `test_accuracy` | 0.6154 |
 | `final_loss` | 1.4790 |
-| `runtime_seconds` | 27.20 |
+| `runtime_seconds` | 27.80 |
 
 Images:
 
@@ -61,7 +62,7 @@ Configuration:
 | `train_mse` | 0.9098 |
 | `test_mse` | 0.3316 |
 | `final_loss` | 0.9841 |
-| `runtime_seconds` | 3.66 |
+| `runtime_seconds` | 3.21 |
 
 Images:
 
@@ -80,7 +81,7 @@ Configuration:
 | `train_accuracy` | 0.8333 |
 | `test_accuracy` | 0.9000 |
 | `final_loss` | 0.4556 |
-| `runtime_seconds` | 144.44 |
+| `runtime_seconds` | 148.95 |
 
 Images:
 
@@ -99,7 +100,7 @@ Configuration:
 | `test_compression_fidelity` | 0.7014 |
 | `test_reconstruction_fidelity` | 0.7014 |
 | `final_loss` | 0.3676 |
-| `runtime_seconds` | 3.33 |
+| `runtime_seconds` | 3.06 |
 
 Images:
 
@@ -115,7 +116,7 @@ Configuration:
 | --- | ---: |
 | `train_accuracy` | 0.8519 |
 | `test_accuracy` | 0.8889 |
-| `runtime_seconds` | 2.00 |
+| `runtime_seconds` | 2.10 |
 
 Images:
 
@@ -135,7 +136,7 @@ Configuration:
 | `test_accuracy` | 0.8000 |
 | `final_alignment` | 0.1755 |
 | `final_loss` | -0.1755 |
-| `runtime_seconds` | 24.68 |
+| `runtime_seconds` | 22.82 |
 
 Images:
 
@@ -144,6 +145,21 @@ Images:
 ![moons trainable kernel embdata reupload layers1 steps2 samples20 noise0p1 seed123 analytic analytic kernel test](docs/pages/assets/reference-results/trainable_kernel/moons_trainable_kernel_embdata_reupload_layers1_steps2_samples20_noise0p1_seed123_analytic_analytic_kernel_test.png)
 ![moons trainable kernel embdata reupload layers1 steps2 samples20 noise0p1 seed123 analytic analytic kernel train](docs/pages/assets/reference-results/trainable_kernel/moons_trainable_kernel_embdata_reupload_layers1_steps2_samples20_noise0p1_seed123_analytic_analytic_kernel_train.png)
 ![moons trainable kernel embdata reupload layers1 steps2 samples20 noise0p1 seed123 analytic analytic loss](docs/pages/assets/reference-results/trainable_kernel/moons_trainable_kernel_embdata_reupload_layers1_steps2_samples20_noise0p1_seed123_analytic_analytic_loss.png)
+
+## Trainable quantum kernel regressor
+
+Configuration:
+
+`dataset=sine`, `n_samples=20`, `noise=0.1000`, `seed=123`, `embedding_layers=1`, `steps=2`, `shots_train=analytic`, `shots_kernel=analytic`, `alpha=0.0010`
+
+| Metric | Value |
+| --- | ---: |
+| `train_mse` | 0.0125 |
+| `test_mse` | 0.4359 |
+| `final_alignment` | 0.4287 |
+| `final_loss` | -0.4287 |
+| `runtime_seconds` | 9.94 |
+
 
 ## Quantum metric learning
 
@@ -156,7 +172,7 @@ Configuration:
 | `train_accuracy` | 0.5946 |
 | `test_accuracy` | 0.6923 |
 | `final_loss` | 0.1152 |
-| `runtime_seconds` | 4.05 |
+| `runtime_seconds` | 3.53 |
 
 Images:
 

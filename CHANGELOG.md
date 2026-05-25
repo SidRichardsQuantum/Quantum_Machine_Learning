@@ -1,5 +1,59 @@
 # CHANGELOG.md
 
+## [0.2.4] - 25-05-2026
+
+### Added
+
+- Added general-purpose advanced quantum-kernel estimators:
+  - `qml.kernels.QuantumKernelPCA`
+  - `qml.kernels.QuantumOneClassClassifier`
+  - `qml.kernels.QuantumGaussianProcessRegressor`
+- Added trainable quantum-kernel regression:
+  - `qml.trainable_kernels.TrainableQuantumKernelRegressor`
+  - `qml.trainable_kernels.run_trainable_quantum_kernel_regressor(...)`
+- Added fixed quantum-reservoir feature models:
+  - `qml.reservoir.QuantumReservoirFeatures`
+  - `qml.reservoir.QuantumReservoirClassifier`
+  - `qml.reservoir.QuantumReservoirRegressor`
+- Added additional reusable feature maps and ansatz helpers:
+  - amplitude embedding
+  - ZZ feature map
+  - IQP feature map
+  - strongly entangling ansatz helper
+- Added tutorial notebook
+  `notebooks/tutorials/12-advanced-quantum-kernel-and-reservoir-models.ipynb`.
+- Added real-example notebooks that keep physics/math simulation code local to
+  `notebooks/real_examples/` while using package-level QML estimators:
+  - `07-tfim-hamiltonian-parameter-inference.ipynb`
+  - `08-quantum-kernel-phase-discovery.ipynb`
+  - `09-potential-energy-curve-interpolation.ipynb`
+  - `10-lorenz-quantum-reservoir-regime-classifier.ipynb`
+  - `11-noisy-oscillator-quantum-reservoir-inference.ipynb`
+- Added documentation pages for advanced kernel models, quantum reservoirs, and
+  reusable embeddings/ansatz helpers.
+
+### Changed
+
+- Expanded the public API reference and implementation contracts for the new
+  estimators, feature maps, and reservoir models.
+- Updated generated tutorial and real-example result pages to include the new
+  tutorial and notebooks.
+- Added trainable quantum-kernel regression to deterministic API reference
+  results.
+- Updated the generated Pages site navigation and algorithm cards for advanced
+  kernel and quantum-reservoir documentation.
+- Bumped package metadata to `0.2.4`.
+
+### Validation
+
+- Executed the new tutorial notebook and the new real-example notebooks.
+- Verified all new notebook validation blocks report `passed: True`.
+- Verified the generated documentation site builds successfully.
+- Verified Ruff passes on the updated package and docs scripts.
+- Verified the full test suite passes with 68 tests.
+
+---
+
 ## [0.2.3] - 22-05-2026
 
 ### Changed

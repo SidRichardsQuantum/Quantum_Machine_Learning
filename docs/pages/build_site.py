@@ -78,6 +78,24 @@ DOCS = [
         "Feature-map kernels and support-vector classification workflows.",
     ),
     (
+        "Advanced Kernel Models",
+        ROOT / "docs/qml/advanced_kernels.md",
+        "advanced-kernels.html",
+        "Kernel PCA, one-class detection, Gaussian processes, and trainable kernel regression.",
+    ),
+    (
+        "Quantum Reservoirs",
+        ROOT / "docs/qml/quantum_reservoirs.md",
+        "quantum-reservoirs.html",
+        "Fixed quantum reservoir feature maps with classical readouts.",
+    ),
+    (
+        "Embeddings",
+        ROOT / "docs/qml/embeddings.md",
+        "embeddings.html",
+        "Reusable feature maps and ansatz helpers.",
+    ),
+    (
         "Metric Learning",
         ROOT / "docs/qml/metric_learning.md",
         "metric-learning.html",
@@ -127,6 +145,18 @@ ALGORITHMS = [
         "Build quantum feature-map kernels for SVM workflows.",
         "quantum-kernels.html",
         ["Kernels", "SVM", "Feature maps"],
+    ),
+    (
+        "Advanced kernel models",
+        "Use quantum kernels for PCA, anomaly detection, Gaussian processes, and trainable regression.",
+        "advanced-kernels.html",
+        ["Kernel PCA", "GPR", "Anomaly detection"],
+    ),
+    (
+        "Quantum reservoir models",
+        "Map inputs through fixed quantum dynamics and train classical readouts.",
+        "quantum-reservoirs.html",
+        ["Reservoir", "Regression", "Classification"],
     ),
     (
         "Quantum metric learning",

@@ -13,8 +13,15 @@ from qml import (
     QuantumClassifier,
     QuantumKernel,
     QuantumKernelClassifier,
+    QuantumGaussianProcessRegressor,
     QuantumKernelRegressor,
+    QuantumKernelPCA,
+    QuantumOneClassClassifier,
+    QuantumReservoirClassifier,
+    QuantumReservoirFeatures,
+    QuantumReservoirRegressor,
     QuantumRegressor,
+    TrainableQuantumKernelRegressor,
     format_table,
     kernel_target_alignment,
     list_supported_optimizers,
@@ -26,6 +33,7 @@ from qml import (
     run_quantum_kernel_classifier,
     run_quantum_metric_learner,
     run_trainable_quantum_kernel_classifier,
+    run_trainable_quantum_kernel_regressor,
     run_vqc,
     run_vqr,
 )
@@ -44,6 +52,7 @@ make the implementation area explicit.
 | `run_quantum_autoencoder(...)` | `qml.autoencoder` | Train and evaluate a quantum autoencoder on structured state families. |
 | `run_quantum_kernel_classifier(...)` | `qml.kernel_methods` | Train an SVM on a PennyLane fidelity kernel. |
 | `run_trainable_quantum_kernel_classifier(...)` | `qml.trainable_kernels` | Optimize kernel-target alignment, then fit an SVM. |
+| `run_trainable_quantum_kernel_regressor(...)` | `qml.trainable_kernels` | Optimize continuous target alignment, then fit kernel-ridge regression. |
 | `run_quantum_metric_learner(...)` | `qml.metric_learning` | Learn a supervised quantum embedding with contrastive loss. |
 
 Workflow functions return dictionaries unless documented otherwise. Metric
@@ -61,10 +70,30 @@ Use these when data already exists outside the package:
 | `QuantumKernel` | `qml.kernels` | Reusable fidelity-kernel object. |
 | `QuantumKernelClassifier` | `qml.kernels` | Kernel SVM wrapper over `QuantumKernel`. |
 | `QuantumKernelRegressor` | `qml.kernels` | Kernel ridge wrapper over `QuantumKernel`. |
+| `QuantumKernelPCA` | `qml.kernels` | Kernel PCA with a quantum fidelity kernel. |
+| `QuantumOneClassClassifier` | `qml.kernels` | One-class anomaly detector with a quantum fidelity kernel. |
+| `QuantumGaussianProcessRegressor` | `qml.kernels` | Gaussian-process regression with a quantum kernel covariance. |
+| `TrainableQuantumKernelRegressor` | `qml.trainable_kernels` | Trainable feature-map kernel regressor for user-supplied arrays. |
+| `QuantumReservoirFeatures` | `qml.reservoir` | Fixed random quantum reservoir feature map. |
+| `QuantumReservoirClassifier` | `qml.reservoir` | Logistic classifier trained on reservoir features. |
+| `QuantumReservoirRegressor` | `qml.reservoir` | Ridge regressor trained on reservoir features. |
 | `make_sequence_windows` | `qml.preprocessing` | Convert a sequence into fixed-width supervised windows. |
 
 The estimator classes expose `fit`, `predict`, `score`, `get_params`, and
 `set_params` where those operations apply.
+
+## Embeddings and Ansatz Helpers
+
+| Function | Module | Purpose |
+| --- | --- | --- |
+| `available_embeddings()` | `qml.embeddings` | List canonical embedding names. |
+| `apply_angle_embedding(...)` | `qml.embeddings` | Angle encoding with one feature per wire. |
+| `apply_amplitude_embedding(...)` | `qml.embeddings` | Amplitude encoding with padding and normalization. |
+| `apply_zz_feature_map(...)` | `qml.embeddings` | Second-order ZZ feature map. |
+| `apply_iqp_feature_map(...)` | `qml.embeddings` | Compact IQP-style feature map. |
+| `apply_data_reuploading_embedding(...)` | `qml.embeddings` | Trainable repeated feature encoding. |
+| `apply_hardware_efficient_ansatz(...)` | `qml.ansatz` | Default variational ansatz. |
+| `apply_strongly_entangling_ansatz(...)` | `qml.ansatz` | PennyLane strongly entangling template wrapper. |
 
 ## Benchmark APIs
 

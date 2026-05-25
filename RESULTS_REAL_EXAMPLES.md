@@ -4,10 +4,10 @@ Executed outputs from the domain-oriented notebooks in `notebooks/real_examples/
 
 ## Environment
 
-- Generated: 2026-05-22 05:40:05 UTC
-- Git commit: `a29a07a`
+- Generated: 2026-05-25 03:43:26 UTC
+- Git commit: `9672523`
 - Python: `3.12.1`
-- Package version: `0.2.3`
+- Package version: `0.2.4`
 - Matplotlib backend: `Agg`
 
 ## Summary
@@ -20,6 +20,11 @@ Executed outputs from the domain-oriented notebooks in `notebooks/real_examples/
 | [notebooks/real_examples/04-condensed-matter-tfim-phase-classifier.ipynb](#condensed-matter-tfim-phase-classification) | 3 | 1 |
 | [notebooks/real_examples/05-pendulum-trajectory-surrogate.ipynb](#dynamical-systems-pendulum-trajectory-surrogate) | 3 | 1 |
 | [notebooks/real_examples/06-damped-oscillator-parameter-inference.ipynb](#inverse-problems-damped-oscillator-parameter-inference) | 3 | 1 |
+| [notebooks/real_examples/07-tfim-hamiltonian-parameter-inference.ipynb](#condensed-matter-tfim-hamiltonian-parameter-inference) | 3 | 1 |
+| [notebooks/real_examples/08-quantum-kernel-phase-discovery.ipynb](#condensed-matter-quantum-kernel-phase-discovery) | 3 | 1 |
+| [notebooks/real_examples/09-potential-energy-curve-interpolation.ipynb](#molecular-physics-potential-energy-curve-interpolation) | 3 | 1 |
+| [notebooks/real_examples/10-lorenz-quantum-reservoir-regime-classifier.ipynb](#dynamical-systems-lorenz-quantum-reservoir-regime-classification) | 3 | 1 |
+| [notebooks/real_examples/11-noisy-oscillator-quantum-reservoir-inference.ipynb](#dynamical-systems-noisy-oscillator-quantum-reservoir-inference) | 3 | 1 |
 
 ## Quantum Dynamics: Rabi Oscillation Parameter Inference
 
@@ -451,6 +456,376 @@ Passed: True
 ```
 
 ![figure 01](docs/pages/assets/notebook-results/real_examples/06-damped-oscillator-parameter-inference/figure-01.png)
+
+## Condensed Matter: TFIM Hamiltonian Parameter Inference
+
+Notebook: `notebooks/real_examples/07-tfim-hamiltonian-parameter-inference.ipynb`
+
+Result block 1:
+
+```text
+Dataset
++----------+---------------------------------+
+| Metric   | Value                           |
++----------+---------------------------------+
+| Problem  | TFIM transverse-field inference |
+| Samples  | 24                              |
+| Features | [<Z>, <X>, <ZZ>, E0/N]          |
+| Target   | transverse field h              |
++----------+---------------------------------+
+```
+Result block 2:
+
+```text
+Results
++-------------------------+-----------+
+| Metric                  | Value     |
++-------------------------+-----------+
+| Trainable kernel h MAE  | 0.0483953 |
+| Quantum GPR h MAE       | 0.147426  |
+| Ridge h MAE             | 0.0103647 |
+| Kernel-target alignment | 0.466965  |
++-------------------------+-----------+
+```
+Result block 3:
+
+```text
+Validation
+Dataset
++---------------+---------------------------------+
+| Metric        | Value                           |
++---------------+---------------------------------+
+| problem       | tfim_transverse_field_inference |
+| n_train       | 16                              |
+| n_test        | 8                               |
+| feature_count | 4                               |
++---------------+---------------------------------+
+
+Results
++-----------------------------+-----------+
+| Metric                      | Value     |
++-----------------------------+-----------+
+| trainable_kernel_h_mae      | 0.0483953 |
+| quantum_gpr_h_mae           | 0.147426  |
+| ridge_h_mae                 | 0.0103647 |
+| trainable_kernel_alignment  | 0.466965  |
+| trainable_kernel_loss_final | -0.466965 |
++-----------------------------+-----------+
+
+Sample predictions
++----------+--------------------+---------------+
+| actual_h | trainable_kernel_h | quantum_gpr_h |
++----------+--------------------+---------------+
+| 1.19783  | 1.17612            | 1.14429       |
+| 0.480435 | 0.488462           | 0.481546      |
+| 1.4587   | 1.45176            | 1.44352       |
+| 1.85     | 1.80081            | 1.61504       |
++----------+--------------------+---------------+
+
+Passed
++--------+-------+
+| Metric | Value |
++--------+-------+
+| passed | True  |
++--------+-------+
+```
+
+![figure 01](docs/pages/assets/notebook-results/real_examples/07-tfim-hamiltonian-parameter-inference/figure-01.png)
+
+## Condensed Matter: Quantum Kernel Phase Discovery
+
+Notebook: `notebooks/real_examples/08-quantum-kernel-phase-discovery.ipynb`
+
+Result block 1:
+
+```text
+Dataset
++----------+-----------------------------------------+
+| Metric   | Value                                   |
++----------+-----------------------------------------+
+| Problem  | TFIM phase discovery/classification     |
+| Samples  | 36                                      |
+| Classes  | {0: 'ferromagnetic', 1: 'paramagnetic'} |
+| Features | [<Z>, <X>, <ZZ>, E0/N]                  |
++----------+-----------------------------------------+
+```
+Result block 2:
+
+```text
+Results
++--------------------------+--------------------+
+| Metric                   | Value              |
++--------------------------+--------------------+
+| Quantum kernel accuracy  | 1                  |
+| One-class phase accuracy | 0.727273           |
+| Logistic accuracy        | 1                  |
+| Kernel PCA eigenvalues   | [4.69121, 3.03512] |
++--------------------------+--------------------+
+```
+Result block 3:
+
+```text
+Validation
+Dataset
++---------------+----------------------+
+| Metric        | Value                |
++---------------+----------------------+
+| problem       | tfim_phase_discovery |
+| n_train       | 25                   |
+| n_test        | 11                   |
+| feature_count | 4                    |
++---------------+----------------------+
+
+Results
++--------------------------+--------------------+
+| Metric                   | Value              |
++--------------------------+--------------------+
+| quantum_kernel_accuracy  | 1                  |
+| one_class_phase_accuracy | 0.727273           |
+| logistic_accuracy        | 1                  |
+| kpca_eigenvalues         | [4.69121, 3.03512] |
++--------------------------+--------------------+
+
+Sample predictions
++----------+--------+--------+-----------+
+| h        | actual | kernel | one_class |
++----------+--------+--------+-----------+
+| 0.709562 | 0      | 0      | 0         |
+| 0.525813 | 0      | 0      | 0         |
+| 0.387803 | 0      | 0      | 1         |
+| 0.707049 | 0      | 0      | 0         |
+| 1.64825  | 1      | 1      | 1         |
++----------+--------+--------+-----------+
+
+Passed
++--------+-------+
+| Metric | Value |
++--------+-------+
+| passed | True  |
++--------+-------+
+```
+
+![figure 01](docs/pages/assets/notebook-results/real_examples/08-quantum-kernel-phase-discovery/figure-01.png)
+
+## Molecular Physics: Potential Energy Curve Interpolation
+
+Notebook: `notebooks/real_examples/09-potential-energy-curve-interpolation.ipynb`
+
+Result block 1:
+
+```text
+Dataset
++-----------------+-------------------------------+
+| Metric          | Value                         |
++-----------------+-------------------------------+
+| Problem         | Morse potential interpolation |
+| Training points | 18                            |
+| Held-out points | 24                            |
+| Features        | [bond length r, r^2]          |
+| Target          | potential energy              |
++-----------------+-------------------------------+
+```
+Result block 2:
+
+```text
+Results
++---------------------------------+-----------+
+| Metric                          | Value     |
++---------------------------------+-----------+
+| Quantum GPR energy MAE          | 0.0221625 |
+| Quantum kernel ridge energy MAE | 0.073289  |
+| Ridge energy MAE                | 0.572759  |
++---------------------------------+-----------+
+```
+Result block 3:
+
+```text
+Validation
+Dataset
++---------+-------------------------------+
+| Metric  | Value                         |
++---------+-------------------------------+
+| problem | morse_potential_interpolation |
+| n_train | 18                            |
+| n_test  | 24                            |
++---------+-------------------------------+
+
+Results
++---------------------------------+-------------+
+| Metric                          | Value       |
++---------------------------------+-------------+
+| quantum_gpr_energy_mae          | 0.0221625   |
+| quantum_kernel_ridge_energy_mae | 0.073289    |
+| ridge_energy_mae                | 0.572759    |
+| quantum_gpr_energy_mse          | 0.000778001 |
++---------------------------------+-------------+
+
+Sample predictions
++----------+---------------+--------------------+
+| r        | actual_energy | quantum_gpr_energy |
++----------+---------------+--------------------+
+| 0.79878  | -0.0330634    | 0.0471411          |
+| 0.896341 | -1.82574      | -1.78565           |
+| 0.945122 | -2.50641      | -2.50454           |
+| 0.993902 | -3.06713      | -3.0818            |
+| 1.09146  | -3.88831      | -3.88523           |
++----------+---------------+--------------------+
+
+Passed
++--------+-------+
+| Metric | Value |
++--------+-------+
+| passed | True  |
++--------+-------+
+```
+
+![figure 01](docs/pages/assets/notebook-results/real_examples/09-potential-energy-curve-interpolation/figure-01.png)
+
+## Dynamical Systems: Lorenz Quantum Reservoir Regime Classification
+
+Notebook: `notebooks/real_examples/10-lorenz-quantum-reservoir-regime-classifier.ipynb`
+
+Result block 1:
+
+```text
+Dataset
++----------+----------------------------------------+
+| Metric   | Value                                  |
++----------+----------------------------------------+
+| Problem  | Lorenz regime classification           |
+| Samples  | 40                                     |
+| Classes  | {0: 'settled/periodic', 1: 'chaotic'}  |
+| Features | [std_x, std_y, std_z, mean_step_speed] |
++----------+----------------------------------------+
+```
+Result block 2:
+
+```text
+Results
++----------------------------+----------+
+| Metric                     | Value    |
++----------------------------+----------+
+| Quantum reservoir accuracy | 0.916667 |
+| Quantum kernel accuracy    | 1        |
+| Logistic accuracy          | 1        |
++----------------------------+----------+
+```
+Result block 3:
+
+```text
+Validation
+Dataset
++---------------+---------------------------------------------+
+| Metric        | Value                                       |
++---------------+---------------------------------------------+
+| problem       | lorenz_regime_classification_with_reservoir |
+| n_train       | 28                                          |
+| n_test        | 12                                          |
+| feature_count | 4                                           |
++---------------+---------------------------------------------+
+
+Results
++----------------------------+----------+
+| Metric                     | Value    |
++----------------------------+----------+
+| quantum_reservoir_accuracy | 0.916667 |
+| quantum_kernel_accuracy    | 1        |
+| logistic_accuracy          | 1        |
++----------------------------+----------+
+
+Sample predictions
++---------+--------+-----------+--------+
+| rho     | actual | reservoir | kernel |
++---------+--------+-----------+--------+
+| 31.3047 | 1      | 1         | 1      |
+| 26.8206 | 1      | 1         | 1      |
+| 16.8081 | 0      | 0         | 0      |
+| 30.7191 | 1      | 0         | 1      |
+| 19.0278 | 0      | 0         | 0      |
++---------+--------+-----------+--------+
+
+Passed
++--------+-------+
+| Metric | Value |
++--------+-------+
+| passed | True  |
++--------+-------+
+```
+
+![figure 01](docs/pages/assets/notebook-results/real_examples/10-lorenz-quantum-reservoir-regime-classifier/figure-01.png)
+
+## Dynamical Systems: Noisy Oscillator Quantum Reservoir Inference
+
+Notebook: `notebooks/real_examples/11-noisy-oscillator-quantum-reservoir-inference.ipynb`
+
+Result block 1:
+
+```text
+Dataset
++----------+------------------------------------------+
+| Metric   | Value                                    |
++----------+------------------------------------------+
+| Problem  | damped oscillator damping inference      |
+| Samples  | 40                                       |
+| Features | [x(t=0.2), x(t=0.7), x(t=1.2), x(t=1.7)] |
+| Target   | damping coefficient gamma                |
++----------+------------------------------------------+
+```
+Result block 2:
+
+```text
+Results
++-----------------------------+-----------+
+| Metric                      | Value     |
++-----------------------------+-----------+
+| Quantum reservoir gamma MAE | 0.112894  |
+| Quantum GPR gamma MAE       | 0.114993  |
+| Ridge gamma MAE             | 0.0389513 |
++-----------------------------+-----------+
+```
+Result block 3:
+
+```text
+Validation
+Dataset
++---------------+---------------------------------------+
+| Metric        | Value                                 |
++---------------+---------------------------------------+
+| problem       | damped_oscillator_reservoir_inference |
+| n_train       | 28                                    |
+| n_test        | 12                                    |
+| feature_count | 4                                     |
++---------------+---------------------------------------+
+
+Results
++-----------------------------+-----------+
+| Metric                      | Value     |
++-----------------------------+-----------+
+| quantum_reservoir_gamma_mae | 0.112894  |
+| quantum_gpr_gamma_mae       | 0.114993  |
+| ridge_gamma_mae             | 0.0389513 |
++-----------------------------+-----------+
+
+Sample predictions
++--------------+-----------------+-----------+
+| actual_gamma | reservoir_gamma | gpr_gamma |
++--------------+-----------------+-----------+
+| 0.087205     | 0.224281        | 0.207131  |
+| 0.312743     | 0.397964        | 0.493448  |
+| 0.289192     | 0.236855        | 0.338626  |
+| 0.102039     | 0.269038        | 0.186091  |
+| 0.266321     | 0.282579        | 0.560718  |
++--------------+-----------------+-----------+
+
+Passed
++--------+-------+
+| Metric | Value |
++--------+-------+
+| passed | True  |
++--------+-------+
+```
+
+![figure 01](docs/pages/assets/notebook-results/real_examples/11-noisy-oscillator-quantum-reservoir-inference/figure-01.png)
 
 ## Reproduce
 

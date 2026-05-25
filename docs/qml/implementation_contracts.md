@@ -19,6 +19,15 @@ computed from the trained model rather than from a shortcut.
 - Trainable quantum kernel classifier: a parameterized quantum feature map is
   trained by maximizing normalized kernel-target alignment before fitting an
   SVM on the learned fidelity kernel.
+- Trainable quantum kernel regressor: a parameterized quantum feature map is
+  trained by maximizing normalized alignment with a continuous target kernel
+  before fitting kernel-ridge regression on the learned fidelity kernel.
+- Quantum reservoir estimators: a fixed random quantum circuit maps inputs to
+  expectation-value features, then a classical ridge or logistic readout is
+  fitted on those features.
+- Quantum kernel PCA, one-class detection, and Gaussian process regression:
+  general classical kernel algorithms consume quantum fidelity kernel matrices
+  without embedding any domain-specific physics assumptions.
 - Quantum convolutional neural network: a four-qubit QCNN with trainable
   convolution blocks, trainable pooling blocks, active-wire reduction from
   four to two to one wire, and a final Pauli-Z classifier readout.

@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import subprocess
-import sys
-
 from qml.metric_learning import run_quantum_metric_learner
 
 
@@ -39,37 +36,3 @@ def test_run_quantum_metric_learner_smoke() -> None:
     assert set(result.train_centroids.keys()) == {0, 1}
     assert result.y_train.shape == (n_train,)
     assert result.y_test.shape == (n_test,)
-
-
-def test_metric_learning_cli_smoke() -> None:
-    """
-    Smoke test for the quantum metric learning CLI.
-    """
-    cmd = [
-        sys.executable,
-        "-m",
-        "qml",
-        "metric-learning",
-        "--samples",
-        "40",
-        "--steps",
-        "3",
-        "--layers",
-        "1",
-        "--log-every",
-        "0",
-    ]
-    completed = subprocess.run(
-        cmd,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-
-    stdout = completed.stdout
-
-    assert "Model: quantum_metric_learning" in stdout
-    assert "Dataset: moons" in stdout
-    assert "Train accuracy:" in stdout
-    assert "Test accuracy:" in stdout
-    assert "Final loss:" in stdout

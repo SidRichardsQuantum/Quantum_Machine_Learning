@@ -52,6 +52,9 @@ Modular **PennyLane-based quantum machine learning library** implementing reusab
 - Time-series windowing utilities
 - Human-readable reporting tables for notebooks and CLIs
 - Quantum metric learning (trainable embedding geometry)  
+- Quantum reservoir feature models
+- Quantum kernel PCA, one-class anomaly detection, and Gaussian process regression
+- Trainable quantum kernel regression
 - Classical baseline models  
 - Deterministic benchmark utilities  
 

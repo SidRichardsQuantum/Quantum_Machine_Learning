@@ -53,6 +53,64 @@ def apply_angle_embedding(x, wires: Sequence[int], rotation: str = "Y") -> None:
     qml.AngleEmbedding(features=x, wires=wires, rotation=rotation)
 
 
+def apply_amplitude_embedding(x, wires: Sequence[int]) -> None:
+    """
+    Apply amplitude embedding with automatic normalization and padding.
+
+    The input length may be smaller than ``2 ** len(wires)``. Longer inputs are
+    rejected because truncation would silently discard information.
+    """
+    wires = list(wires)
+    x = validate_feature_vector(x)
+    max_dim = 2 ** len(wires)
+    if x.shape[0] > max_dim:
+        raise ValueError(
+            f"Amplitude embedding on {len(wires)} wires accepts at most {max_dim} features, "
+            f"got {x.shape[0]}."
+        )
+    qml.AmplitudeEmbedding(features=x, wires=wires, pad_with=0.0, normalize=True)
+
+
+def apply_zz_feature_map(x, wires: Sequence[int]) -> None:
+    """
+    Apply a simple second-order ZZ feature map.
+
+    Single-qubit rotations encode each feature and nearest-neighbor ZZ phases
+    encode pairwise products.
+    """
+    wires = list(wires)
+    x = validate_feature_vector(x, n_features=len(wires))
+
+    for feature, wire in zip(x, wires):
+        qml.Hadamard(wires=wire)
+        qml.RZ(feature, wires=wire)
+
+    for i in range(len(wires) - 1):
+        qml.CNOT(wires=[wires[i], wires[i + 1]])
+        qml.RZ(x[i] * x[i + 1], wires=wires[i + 1])
+        qml.CNOT(wires=[wires[i], wires[i + 1]])
+
+
+def apply_iqp_feature_map(x, wires: Sequence[int]) -> None:
+    """
+    Apply a compact IQP-style feature map.
+    """
+    wires = list(wires)
+    x = validate_feature_vector(x, n_features=len(wires))
+
+    for wire in wires:
+        qml.Hadamard(wires=wire)
+
+    for feature, wire in zip(x, wires):
+        qml.RZ(feature, wires=wire)
+
+    for i in range(len(wires)):
+        j = (i + 1) % len(wires)
+        if i == j:
+            continue
+        qml.IsingZZ(x[i] * x[j], wires=[wires[i], wires[j]])
+
+
 def apply_data_reuploading_embedding(
     x,
     weights,
@@ -107,7 +165,10 @@ def embedding_parameter_shape(name: str, n_layers: int, n_qubits: int) -> tuple[
     """
     key = name.strip().lower()
 
-    if key in {"angle", "angle_embedding"}:
+    if key in {"angle", "angle_embedding", "amplitude", "amplitude_embedding"}:
+        return ()
+
+    if key in {"zz", "zz_feature_map", "iqp", "iqp_feature_map"}:
         return ()
 
     if key in {"data_reupload", "data_reuploading", "data_reuploading_embedding"}:
@@ -140,6 +201,15 @@ def get_embedding(name: str):
     if key in {"angle", "angle_embedding"}:
         return apply_angle_embedding
 
+    if key in {"amplitude", "amplitude_embedding"}:
+        return apply_amplitude_embedding
+
+    if key in {"zz", "zz_feature_map"}:
+        return apply_zz_feature_map
+
+    if key in {"iqp", "iqp_feature_map"}:
+        return apply_iqp_feature_map
+
     if key in {"data_reupload", "data_reuploading", "data_reuploading_embedding"}:
         return apply_data_reuploading_embedding
 
@@ -150,4 +220,4 @@ def available_embeddings() -> list[str]:
     """
     Return the list of canonical embedding names.
     """
-    return ["angle", "data_reupload"]
+    return ["angle", "amplitude", "zz", "iqp", "data_reupload"]

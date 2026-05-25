@@ -13,6 +13,7 @@ from typing import Any
 import numpy as np
 import pennylane as qml
 from sklearn.kernel_ridge import KernelRidge
+from sklearn.svm import OneClassSVM
 from sklearn.svm import SVC
 
 from qml.embeddings import apply_angle_embedding, get_embedding
@@ -262,6 +263,197 @@ class QuantumKernelRegressor:
 
     def mean_absolute_error(self, x, y) -> float:
         return mean_absolute_error(y, self.predict(x))
+
+
+class QuantumKernelPCA:
+    """Kernel PCA using a precomputed quantum fidelity kernel."""
+
+    def __init__(
+        self,
+        kernel: QuantumKernel | None = None,
+        *,
+        n_components: int = 2,
+        seed: int = 123,
+    ) -> None:
+        self.kernel = kernel if kernel is not None else QuantumKernel(seed=seed)
+        self.n_components = n_components
+        self.seed = seed
+
+    def get_params(self, deep: bool = True) -> dict[str, Any]:
+        return {"kernel": self.kernel, "n_components": self.n_components, "seed": self.seed}
+
+    def set_params(self, **params):
+        for key, value in params.items():
+            if key not in self.get_params():
+                raise ValueError(f"Invalid parameter {key!r} for QuantumKernelPCA.")
+            setattr(self, key, value)
+        return self
+
+    def _center_train_kernel(self, k_train: np.ndarray) -> np.ndarray:
+        self.train_row_mean_ = k_train.mean(axis=1)
+        self.train_mean_ = float(k_train.mean())
+        return (
+            k_train
+            - self.train_row_mean_[:, None]
+            - self.train_row_mean_[None, :]
+            + self.train_mean_
+        )
+
+    def fit(self, x, y=None):
+        x = _as_2d(x)
+        if self.n_components <= 0:
+            raise ValueError("n_components must be positive.")
+        if self.n_components > x.shape[0]:
+            raise ValueError("n_components cannot exceed the number of training samples.")
+
+        k_train = self.kernel.evaluate(x)
+        k_centered = self._center_train_kernel(k_train)
+        eigvals, eigvecs = np.linalg.eigh(k_centered)
+        order = np.argsort(eigvals)[::-1]
+        eigvals = np.maximum(eigvals[order], 0.0)
+        eigvecs = eigvecs[:, order]
+
+        positive = eigvals > 1e-12
+        eigvals = eigvals[positive][: self.n_components]
+        eigvecs = eigvecs[:, positive][:, : self.n_components]
+        if eigvals.shape[0] < self.n_components:
+            pad = self.n_components - eigvals.shape[0]
+            eigvals = np.pad(eigvals, (0, pad))
+            eigvecs = np.pad(eigvecs, ((0, 0), (0, pad)))
+
+        self.x_train_ = x
+        self.eigenvalues_ = eigvals
+        self.alphas_ = eigvecs / np.sqrt(np.where(eigvals > 1e-12, eigvals, 1.0))
+        self.embedding_ = k_centered @ self.alphas_
+        return self
+
+    def transform(self, x) -> np.ndarray:
+        if not hasattr(self, "x_train_"):
+            raise ValueError("QuantumKernelPCA must be fitted before transform.")
+        k_test = self.kernel.evaluate(_as_2d(x), self.x_train_)
+        row_mean = k_test.mean(axis=1)
+        k_centered = k_test - row_mean[:, None] - self.train_row_mean_[None, :] + self.train_mean_
+        return k_centered @ self.alphas_
+
+    def fit_transform(self, x, y=None) -> np.ndarray:
+        return self.fit(x).embedding_
+
+
+class QuantumOneClassClassifier:
+    """One-class anomaly detector backed by a precomputed quantum kernel."""
+
+    def __init__(
+        self,
+        kernel: QuantumKernel | None = None,
+        *,
+        nu: float = 0.1,
+        seed: int = 123,
+        **svm_kwargs,
+    ) -> None:
+        self.kernel = kernel if kernel is not None else QuantumKernel(seed=seed)
+        self.nu = nu
+        self.seed = seed
+        self.svm_kwargs = svm_kwargs
+
+    def get_params(self, deep: bool = True) -> dict[str, Any]:
+        return {"kernel": self.kernel, "nu": self.nu, "seed": self.seed, **self.svm_kwargs}
+
+    def set_params(self, **params):
+        for key, value in params.items():
+            if key == "kernel":
+                self.kernel = value
+            elif key == "nu":
+                self.nu = value
+            elif key == "seed":
+                self.seed = value
+            else:
+                self.svm_kwargs[key] = value
+        return self
+
+    def fit(self, x, y=None):
+        x = _as_2d(x)
+        k_train = self.kernel.evaluate(x)
+        self.model_ = OneClassSVM(kernel="precomputed", nu=self.nu, **self.svm_kwargs)
+        self.model_.fit(k_train)
+        self.x_train_ = x
+        return self
+
+    def predict(self, x) -> np.ndarray:
+        if not hasattr(self, "model_"):
+            raise ValueError("QuantumOneClassClassifier must be fitted before prediction.")
+        k_test = self.kernel.evaluate(_as_2d(x), self.x_train_)
+        return self.model_.predict(k_test)
+
+    def decision_function(self, x) -> np.ndarray:
+        if not hasattr(self, "model_"):
+            raise ValueError("QuantumOneClassClassifier must be fitted before scoring.")
+        k_test = self.kernel.evaluate(_as_2d(x), self.x_train_)
+        return self.model_.decision_function(k_test)
+
+
+class QuantumGaussianProcessRegressor:
+    """Gaussian process regressor using a quantum kernel covariance matrix."""
+
+    def __init__(
+        self,
+        kernel: QuantumKernel | None = None,
+        *,
+        alpha: float = 1e-6,
+        normalize_y: bool = True,
+        seed: int = 123,
+    ) -> None:
+        self.kernel = kernel if kernel is not None else QuantumKernel(seed=seed)
+        self.alpha = alpha
+        self.normalize_y = normalize_y
+        self.seed = seed
+
+    def get_params(self, deep: bool = True) -> dict[str, Any]:
+        return {
+            "kernel": self.kernel,
+            "alpha": self.alpha,
+            "normalize_y": self.normalize_y,
+            "seed": self.seed,
+        }
+
+    def set_params(self, **params):
+        for key, value in params.items():
+            if key not in self.get_params():
+                raise ValueError(f"Invalid parameter {key!r} for QuantumGaussianProcessRegressor.")
+            setattr(self, key, value)
+        return self
+
+    def fit(self, x, y):
+        x = _as_2d(x)
+        y = np.asarray(y, dtype=float).ravel()
+        if y.shape[0] != x.shape[0]:
+            raise ValueError("y length must match the number of samples.")
+
+        self.y_mean_ = float(y.mean()) if self.normalize_y else 0.0
+        y_centered = y - self.y_mean_
+        k_train = self.kernel.evaluate(x)
+        regularized = k_train + self.alpha * np.eye(k_train.shape[0])
+        self.cholesky_ = np.linalg.cholesky(regularized)
+        tmp = np.linalg.solve(self.cholesky_, y_centered)
+        self.dual_coef_ = np.linalg.solve(self.cholesky_.T, tmp)
+        self.x_train_ = x
+        return self
+
+    def predict(self, x, return_std: bool = False):
+        if not hasattr(self, "dual_coef_"):
+            raise ValueError("QuantumGaussianProcessRegressor must be fitted before prediction.")
+        x = _as_2d(x)
+        k_test = self.kernel.evaluate(x, self.x_train_)
+        mean = k_test @ self.dual_coef_ + self.y_mean_
+        if not return_std:
+            return np.asarray(mean, dtype=float)
+
+        v = np.linalg.solve(self.cholesky_, k_test.T)
+        k_self = np.asarray([self.kernel.value(sample, sample) for sample in x], dtype=float)
+        variance = np.maximum(k_self - np.sum(v * v, axis=0), 0.0)
+        return np.asarray(mean, dtype=float), np.sqrt(variance)
+
+    def score(self, x, y) -> float:
+        return -mean_squared_error(y, self.predict(x))
 
 
 def kernel_target_alignment(kernel_matrix, labels) -> float:
