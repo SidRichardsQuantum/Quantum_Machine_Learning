@@ -6,7 +6,9 @@ from qml.benchmarks import compare_classification_models, compare_regression_mod
 def _without_runtime(value):
     if isinstance(value, dict):
         return {
-            key: _without_runtime(item) for key, item in value.items() if key != "runtime_seconds"
+            key: _without_runtime(item)
+            for key, item in value.items()
+            if key not in {"runtime_seconds", "timing"}
         }
 
     if isinstance(value, list):

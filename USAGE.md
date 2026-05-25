@@ -6,10 +6,10 @@ All notebooks in this repository act as **thin clients** of these APIs.
 
 The design goal is:
 
-- reusable workflows  
-- deterministic experiments  
-- consistent outputs  
-- minimal configuration  
+- reusable workflows
+- deterministic experiments
+- consistent outputs
+- minimal configuration
 
 ---
 
@@ -106,13 +106,15 @@ pytest
 Tests marked with `@pytest.mark.slow` are used for heavier CLI and determinism
 checks. CI mirrors this split:
 
-- fast tests run across the Python version matrix  
-- the full suite runs on Python 3.12  
+- fast tests run across the Python version matrix
+- the full suite runs on Python 3.12
 
-Linting remains separate:
+Run the local quality gate before opening a pull request or preparing a release:
 
 ```bash
+pre-commit run --all-files
 ruff check .
+pytest
 ```
 
 The documentation site is deployed by GitHub Pages from the repository Markdown:
@@ -523,8 +525,8 @@ result = run_quantum_metric_learner(
 
 The model learns an embedding geometry such that:
 
-- samples from the same class are mapped closer together  
-- samples from different classes are separated by a margin  
+- samples from the same class are mapped closer together
+- samples from different classes are separated by a margin
 
 Classification is performed using nearest-centroid prediction in the learned embedding space.
 
@@ -645,6 +647,10 @@ from qml.classical_baselines import (
     run_logistic_classifier,
     run_svm_classifier,
     run_mlp_classifier,
+    run_random_forest_classifier,
+    run_gradient_boosting_classifier,
+    run_kernel_ridge_regression,
+    run_svr_regression,
     run_ridge_regression,
     run_mlp_regressor,
 )
@@ -681,11 +687,13 @@ result = compare_classification_models(
         "logistic_regression",
         "svm_classifier",
         "mlp_classifier",
+        "random_forest_classifier",
     ],
 
     seeds=[123, 456, 789],
 
     n_samples=200,
+    tune_classical=True,
 )
 ```
 
@@ -700,6 +708,8 @@ result = compare_regression_models(
     models=[
         "vqr",
         "ridge_regression",
+        "kernel_ridge_regression",
+        "svr_regression",
         "mlp_regressor",
     ],
 
@@ -785,16 +795,18 @@ Classification:
 
 ```bash
 python -m qml benchmark classification \
-    --models vqc qcnn quantum_kernel logistic_regression svm_classifier \
-    --seeds 123 456
+    --models vqc qcnn quantum_kernel logistic_regression svm_classifier random_forest_classifier \
+    --seeds 123 456 \
+    --tune-classical
 ```
 
 Regression:
 
 ```bash
 python -m qml benchmark regression \
-    --models vqr ridge_regression mlp_regressor \
-    --seeds 123 456
+    --models vqr ridge_regression kernel_ridge_regression svr_regression mlp_regressor \
+    --seeds 123 456 \
+    --tune-classical
 ```
 
 ---
@@ -856,11 +868,24 @@ pytest
 
 ## Development workflow
 
-Format code:
+Install the development dependencies once:
 
 ```bash
-black .
+pip install -e ".[dev]"
+```
+
+Run the full local quality gate:
+
+```bash
+pre-commit run --all-files
+pytest
+```
+
+Run focused checks while iterating:
+
+```bash
 ruff check .
+black .
 ```
 
 Run module:

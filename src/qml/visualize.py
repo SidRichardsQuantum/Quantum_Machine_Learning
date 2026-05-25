@@ -122,7 +122,6 @@ def plot_dataset_2d(
 
     # classification-style labels (small number of discrete classes)
     if unique_values.size <= 10 and np.allclose(unique_values, unique_values.astype(int)):
-
         for cls in unique_values:
             mask = y == cls
             plt.scatter(
@@ -135,7 +134,6 @@ def plot_dataset_2d(
 
     # regression-style continuous targets
     else:
-
         scatter = plt.scatter(
             x[:, 0],
             x[:, 1],

@@ -29,6 +29,17 @@ def _add_common_benchmark_args(parser: argparse.ArgumentParser) -> None:
         help="Fraction reserved for test data.",
     )
     parser.add_argument("--save", action="store_true", help="Save benchmark results.")
+    parser.add_argument(
+        "--tune-classical",
+        action="store_true",
+        help="Tune classical baselines with small GridSearchCV defaults.",
+    )
+    parser.add_argument(
+        "--cv",
+        type=int,
+        default=3,
+        help="Cross-validation folds for tuned classical baselines.",
+    )
 
 
 def _add_shots_arg(parser: argparse.ArgumentParser) -> None:
@@ -64,7 +75,7 @@ def _build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         "--dataset",
         type=str,
         default="moons",
-        choices=["moons", "circles", "blobs", "xor"],
+        choices=["moons", "circles", "blobs", "xor", "linear", "breast_cancer", "wine"],
         help="Classification dataset.",
     )
 
@@ -260,7 +271,7 @@ def _build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         "--dataset",
         type=str,
         default="linear",
-        choices=["linear", "sine", "polynomial"],
+        choices=["linear", "sine", "polynomial", "friedman", "diabetes"],
         help="Regression dataset.",
     )
     regression_parser.add_argument(

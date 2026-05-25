@@ -10,7 +10,17 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
-from sklearn.datasets import make_blobs, make_circles, make_moons, make_regression
+from sklearn.datasets import (
+    load_breast_cancer,
+    load_diabetes,
+    load_wine,
+    make_blobs,
+    make_circles,
+    make_classification,
+    make_friedman1,
+    make_moons,
+    make_regression,
+)
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
@@ -260,7 +270,8 @@ def make_classification_dataset(
     """
     Generate a standardized binary classification dataset by name.
 
-    Supported datasets are ``"moons"``, ``"circles"``, ``"blobs"``, and ``"xor"``.
+    Supported datasets are ``"moons"``, ``"circles"``, ``"blobs"``, ``"xor"``,
+    ``"linear"``, ``"breast_cancer"``, and ``"wine"``.
 
     Parameters
     ----------
@@ -310,10 +321,46 @@ def make_classification_dataset(
             test_size=test_size,
             seed=seed,
         )
+    if dataset == "linear":
+        x, y = make_classification(
+            n_samples=n_samples,
+            n_features=2,
+            n_redundant=0,
+            n_informative=2,
+            n_clusters_per_class=1,
+            class_sep=max(0.1, 1.5 - noise),
+            flip_y=min(max(noise, 0.0), 0.45),
+            random_state=seed,
+        )
+        return _split_and_scale_classification(x=x, y=y, test_size=test_size, seed=seed)
+    if dataset == "breast_cancer":
+        source = load_breast_cancer()
+        rng = np.random.default_rng(seed)
+        indices = rng.choice(
+            len(source.data),
+            size=min(n_samples, len(source.data)),
+            replace=False,
+        )
+        x = source.data[indices, :2]
+        y = source.target[indices]
+        return _split_and_scale_classification(x=x, y=y, test_size=test_size, seed=seed)
+    if dataset == "wine":
+        source = load_wine()
+        binary_mask = source.target < 2
+        x_all = source.data[binary_mask, :2]
+        y_all = source.target[binary_mask]
+        rng = np.random.default_rng(seed)
+        indices = rng.choice(len(x_all), size=min(n_samples, len(x_all)), replace=False)
+        return _split_and_scale_classification(
+            x=x_all[indices],
+            y=y_all[indices],
+            test_size=test_size,
+            seed=seed,
+        )
 
     raise ValueError(
         f"Unknown classification dataset: {dataset}. "
-        "Available datasets: moons, circles, blobs, xor."
+        "Available datasets: moons, circles, blobs, xor, linear, breast_cancer, wine."
     )
 
 
@@ -327,7 +374,8 @@ def make_regression_dataset(
     """
     Generate a standardized regression dataset.
 
-    Supported datasets are ``"linear"``, ``"sine"``, and ``"polynomial"``.
+    Supported datasets are ``"linear"``, ``"sine"``, ``"polynomial"``,
+    ``"friedman"``, and ``"diabetes"``.
 
     Parameters
     ----------
@@ -374,7 +422,30 @@ def make_regression_dataset(
         x = np.column_stack([x1, x2])
         y = x1**2 + 0.5 * x1 - 0.25 * x2 + rng.normal(0.0, noise, size=n_samples)
         return _split_and_scale_regression(x=x, y=y, test_size=test_size, seed=seed)
+    if dataset == "friedman":
+        x_full, y = make_friedman1(
+            n_samples=n_samples,
+            n_features=5,
+            noise=noise,
+            random_state=seed,
+        )
+        x = x_full[:, :2]
+        return _split_and_scale_regression(x=x, y=y, test_size=test_size, seed=seed)
+    if dataset == "diabetes":
+        source = load_diabetes()
+        rng = np.random.default_rng(seed)
+        indices = rng.choice(
+            len(source.data),
+            size=min(n_samples, len(source.data)),
+            replace=False,
+        )
+        x = source.data[indices, :2]
+        y = source.target[indices]
+        if noise > 0.0:
+            y = y + rng.normal(0.0, noise, size=len(y))
+        return _split_and_scale_regression(x=x, y=y, test_size=test_size, seed=seed)
 
     raise ValueError(
-        f"Unknown regression dataset: {dataset}. " "Available datasets: linear, sine, polynomial."
+        f"Unknown regression dataset: {dataset}. "
+        "Available datasets: linear, sine, polynomial, friedman, diabetes."
     )

@@ -1,5 +1,28 @@
 # CHANGELOG.md
 
+## [0.2.5] - Unreleased
+
+### Changed
+
+- Added local pre-commit quality hooks for Ruff, formatting, YAML, TOML, and
+  whitespace checks.
+- Refactored shared classical-baseline fitting, result assembly, naming, and
+  dataset helpers into a private utility module while preserving public
+  workflow APIs.
+- Refactored benchmark summary-statistics, timing, and metadata helpers into a
+  private utility module while preserving public benchmark APIs.
+- Updated packaging metadata tests to validate the next release version without
+  pinning stale package metadata.
+
+### Validation
+
+- Added focused tests for package release metadata, shared classical baseline
+  helper behavior, and benchmark aggregation helpers.
+- Verified `pre-commit run --all-files`, `ruff check .`, and the full pytest
+  suite pass after formatting and whitespace cleanup.
+
+---
+
 ## [0.2.4] - 25-05-2026
 
 ### Added

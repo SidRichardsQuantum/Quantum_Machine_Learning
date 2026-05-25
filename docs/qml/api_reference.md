@@ -103,8 +103,9 @@ The estimator classes expose `fit`, `predict`, `score`, `get_params`, and
 | `compare_regression_models(...)` | `qml.benchmarks` | Compare quantum and classical regressors across seed lists. |
 
 Benchmark results include run records, aggregate metric summaries, runtime
-summaries, train/test gap summaries, and a convenience `best_model` field based
-on the primary test metric.
+summaries, train/test gap summaries, confidence intervals, paired deltas against
+the best included classical baseline, tuning metadata, environment metadata, and
+a convenience `best_model` field based on the primary test metric.
 
 ## Classical Baselines
 
@@ -116,8 +117,20 @@ compared against standard references under the same dataset settings:
 | `run_logistic_classifier(...)` | `qml.classical_baselines` |
 | `run_svm_classifier(...)` | `qml.classical_baselines` |
 | `run_mlp_classifier(...)` | `qml.classical_baselines` |
+| `run_random_forest_classifier(...)` | `qml.classical_baselines` |
+| `run_gradient_boosting_classifier(...)` | `qml.classical_baselines` |
+| `run_knn_classifier(...)` | `qml.classical_baselines` |
+| `run_gaussian_process_classifier(...)` | `qml.classical_baselines` |
 | `run_ridge_regression(...)` | `qml.classical_baselines` |
 | `run_mlp_regressor(...)` | `qml.classical_baselines` |
+| `run_kernel_ridge_regression(...)` | `qml.classical_baselines` |
+| `run_svr_regression(...)` | `qml.classical_baselines` |
+| `run_gaussian_process_regressor(...)` | `qml.classical_baselines` |
+| `run_random_forest_regressor(...)` | `qml.classical_baselines` |
+| `run_gradient_boosting_regressor(...)` | `qml.classical_baselines` |
+| `run_knn_regressor(...)` | `qml.classical_baselines` |
+| `run_lasso_regression(...)` | `qml.classical_baselines` |
+| `run_elasticnet_regression(...)` | `qml.classical_baselines` |
 
 ## Reporting Helpers
 

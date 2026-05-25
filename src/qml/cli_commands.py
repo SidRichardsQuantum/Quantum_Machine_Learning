@@ -16,6 +16,8 @@ def _run_classification_benchmark_command(args: argparse.Namespace) -> int:
         test_size=args.test_size,
         dataset=args.dataset,
         save=args.save,
+        tune_classical=args.tune_classical,
+        cv=args.cv,
     )
 
     print("Benchmark type:", result["benchmark_type"])
@@ -46,6 +48,8 @@ def _run_regression_benchmark_command(args: argparse.Namespace) -> int:
         test_size=args.test_size,
         dataset=args.dataset,
         save=args.save,
+        tune_classical=args.tune_classical,
+        cv=args.cv,
     )
 
     print("Benchmark type:", result["benchmark_type"])

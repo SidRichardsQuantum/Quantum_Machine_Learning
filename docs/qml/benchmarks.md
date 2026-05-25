@@ -1,50 +1,25 @@
 # Benchmark Utilities
 
-The `qml.benchmarks` module provides helpers for comparing quantum and
-classical models across multiple random seeds under the same dataset settings.
+The `qml.benchmarks` module compares quantum and classical models across
+multiple random seeds under shared dataset settings. The helpers are intended
+for reproducible model-quality comparisons, not claims of quantum advantage.
 
-Benchmarking enables:
+Benchmark outputs include:
 
-- reproducible evaluation of model performance
-- comparison between quantum and classical approaches
-- estimation of performance variability due to stochastic training effects
-- runtime tracking for smoke-scale comparisons
-- train/test gap tracking for basic overfitting checks
-- consistent experiment logging
+- train/test metrics
+- runtime totals
+- fit/predict timing breakdowns when workflows expose them
+- train/test generalization gaps
+- mean, standard deviation, and 95% confidence intervals
+- paired deltas against the best included classical baseline
+- tuning metadata for tuned classical baselines
+- environment metadata for reproducibility
 
-Both **classification** and **regression** workflows are supported.
-
----
-
-## Overview
-
-Benchmark functions run multiple training jobs using different random seeds and
-aggregate performance metrics. They are intended for reproducible comparisons,
-not claims of quantum advantage.
-
-Typical workflow:
-
-1. choose models to compare
-2. run multiple seeds
-3. compute mean and standard deviation of metrics, runtime, and train/test gap
-4. optionally save results
-
-Example metrics include:
-
-- classification accuracy
-- regression MSE / MAE
-- final loss values when the model exposes them
-- runtime in seconds
-- train/test generalization gap
-- variability across seeds
-
-Results are returned as structured dictionaries and can optionally be saved to JSON.
+Both classification and regression workflows are supported.
 
 ---
 
 ## Classification Benchmarks
-
-Compare multiple classifiers on the same dataset.
 
 Supported models:
 
@@ -56,6 +31,10 @@ Supported models:
 - `logistic_regression`
 - `svm_classifier`
 - `mlp_classifier`
+- `random_forest_classifier`
+- `gradient_boosting_classifier`
+- `knn_classifier`
+- `gaussian_process_classifier`
 
 Example:
 
@@ -63,73 +42,58 @@ Example:
 from qml.benchmarks import compare_classification_models
 
 result = compare_classification_models(
-    models=["vqc", "quantum_kernel", "svm_classifier", "logistic_regression"],
+    models=[
+        "vqc",
+        "quantum_kernel",
+        "svm_classifier",
+        "random_forest_classifier",
+        "logistic_regression",
+    ],
     seeds=[0, 1, 2, 3],
     n_samples=200,
     noise=0.1,
 )
 ```
 
-Returned structure:
-
-```python
-{
-    "benchmark_type": "classification",
-    "models": [...],
-    "runs": [...],
-    "summary": {
-        "vqc": {
-            "train_accuracy": {"mean": ..., "std": ...},
-            "test_accuracy": {"mean": ..., "std": ...},
-            "generalization_gap": {"mean": ..., "std": ...},
-            "runtime_seconds": {"mean": ..., "std": ...},
-            "n_runs": 4
-        }
-    },
-    "best_model": {
-        "model": "svm_classifier",
-        "metric": "test_accuracy",
-        "value": ...,
-        "higher_is_better": True
-    }
-}
-```
-
-Each run record includes:
+Each classification run record includes:
 
 ```python
 {
     "model": "vqc",
     "seed": 0,
+    "dataset": "moons",
     "train_accuracy": ...,
     "test_accuracy": ...,
     "generalization_gap": ...,
     "runtime_seconds": ...,
-    "final_loss": ...
+    "timing": {"total_seconds": ...},
+    "final_loss": ...,
 }
 ```
 
-For classification, `generalization_gap` is computed as:
+For classification, `generalization_gap` is:
 
 ```text
 train_accuracy - test_accuracy
 ```
 
-A large positive value can indicate overfitting. A negative value can happen on
-small splits and should be interpreted across multiple seeds rather than from a
-single run.
-
 ---
 
 ## Regression Benchmarks
-
-Compare regression models on the same dataset.
 
 Supported models:
 
 - `vqr`
 - `ridge_regression`
 - `mlp_regressor`
+- `kernel_ridge_regression`
+- `svr_regression`
+- `gaussian_process_regressor`
+- `random_forest_regressor`
+- `gradient_boosting_regressor`
+- `knn_regressor`
+- `lasso_regression`
+- `elasticnet_regression`
 
 Example:
 
@@ -137,61 +101,146 @@ Example:
 from qml.benchmarks import compare_regression_models
 
 result = compare_regression_models(
-    models=["vqr", "ridge_regression"],
+    models=["vqr", "ridge_regression", "kernel_ridge_regression", "svr_regression"],
     seeds=[0, 1, 2],
     n_samples=200,
     noise=0.1,
 )
 ```
 
-Returned structure:
-
-```python
-{
-    "benchmark_type": "regression",
-    "summary": {
-        "vqr": {
-            "train_mse": {"mean": ..., "std": ...},
-            "test_mse": {"mean": ..., "std": ...},
-            "train_mae": {"mean": ..., "std": ...},
-            "test_mae": {"mean": ..., "std": ...},
-            "generalization_gap": {"mean": ..., "std": ...},
-            "runtime_seconds": {"mean": ..., "std": ...},
-            "n_runs": 3
-        }
-    },
-    "best_model": {
-        "model": "ridge_regression",
-        "metric": "test_mse",
-        "value": ...,
-        "higher_is_better": False
-    }
-}
-```
-
-Each run record includes:
-
-```python
-{
-    "model": "vqr",
-    "seed": 0,
-    "train_mse": ...,
-    "test_mse": ...,
-    "train_mae": ...,
-    "test_mae": ...,
-    "generalization_gap": ...,
-    "runtime_seconds": ...,
-    "final_loss": ...
-}
-```
-
-For regression, `generalization_gap` is computed as:
+For regression, `generalization_gap` is:
 
 ```text
 test_mse - train_mse
 ```
 
-Positive values indicate worse test error than train error.
+---
+
+## Result Structure
+
+Returned benchmark dictionaries include:
+
+```python
+{
+    "benchmark_type": "classification",
+    "models": [...],
+    "seeds": [...],
+    "dataset": "moons",
+    "runs": [...],
+    "summary": {
+        "svm_classifier": {
+            "test_accuracy": {
+                "mean": ...,
+                "std": ...,
+                "n": ...,
+                "ci95_low": ...,
+                "ci95_high": ...,
+            },
+            "runtime_seconds": {...},
+            "generalization_gap": {...},
+            "n_runs": 4,
+        }
+    },
+    "best_model": {
+        "model": "svm_classifier",
+        "metric": "test_accuracy",
+        "value": ...,
+        "higher_is_better": True,
+    },
+    "paired_vs_best_classical": {...},
+    "metadata": {...},
+}
+```
+
+The `best_model` field is selected from the aggregate test metric:
+
+- classification: highest mean `test_accuracy`
+- regression: lowest mean `test_mse`
+
+Use it as a convenience summary only. Always inspect run records, confidence
+intervals, paired classical deltas, and runtime before drawing conclusions.
+
+---
+
+## Paired Classical Comparison
+
+`paired_vs_best_classical` compares each selected model against the best
+included classical baseline on matching seeds. It reports:
+
+- reference classical model
+- seed-wise mean delta and confidence interval
+- win/loss/tie counts
+- number of paired seeds
+
+This is the preferred summary for evaluating whether a QML model improves over
+classical references in the same benchmark call.
+
+---
+
+## Classical Hyperparameter Tuning
+
+Classical baselines can be tuned with small `GridSearchCV` defaults:
+
+```python
+result = compare_classification_models(
+    models=["quantum_kernel", "svm_classifier", "random_forest_classifier"],
+    seeds=[0, 1, 2],
+    tune_classical=True,
+    cv=3,
+)
+```
+
+Per-model grids can be overridden through `model_kwargs`:
+
+```python
+result = compare_regression_models(
+    models=["vqr", "kernel_ridge_regression", "svr_regression"],
+    tune_classical=True,
+    model_kwargs={
+        "kernel_ridge_regression": {
+            "param_grid": {
+                "alpha": [0.01, 0.1, 1.0],
+                "kernel": ["rbf"],
+                "gamma": [0.1, 1.0],
+            }
+        }
+    },
+)
+```
+
+Quantum model tuning is supplied explicitly through `model_kwargs`, for example
+by sweeping layers, optimizer steps, step size, shots, or kernel settings across
+separate benchmark calls.
+
+---
+
+## Datasets
+
+Classification datasets:
+
+```text
+moons
+circles
+blobs
+xor
+linear
+breast_cancer
+wine
+```
+
+Regression datasets:
+
+```text
+linear
+sine
+polynomial
+friedman
+diabetes
+```
+
+The real-data options are projected to two features so they remain compatible
+with the compact quantum examples and visualizers. They are useful sanity
+checks, not substitutes for domain-specific benchmark suites.
 
 ---
 
@@ -201,16 +250,18 @@ Classification benchmark:
 
 ```bash
 python -m qml benchmark classification \
-    --models vqc qcnn quantum_kernel svm_classifier logistic_regression \
-    --seeds 123 456 789
+    --models vqc qcnn quantum_kernel svm_classifier random_forest_classifier \
+    --seeds 123 456 789 \
+    --tune-classical
 ```
 
 Regression benchmark:
 
 ```bash
 python -m qml benchmark regression \
-    --models vqr ridge_regression mlp_regressor \
-    --seeds 123 456
+    --models vqr ridge_regression kernel_ridge_regression svr_regression \
+    --seeds 123 456 \
+    --tune-classical
 ```
 
 Default settings:
@@ -219,169 +270,23 @@ Default settings:
 - noise: 0.1
 - test split: 0.25
 - seed: 123
-
-For release-quality comparisons, prefer explicit seed lists and include at
-least one classical baseline in the model list. Small default runs are useful
-for smoke checks, but they are not enough to evaluate model quality.
+- classical tuning: disabled unless `--tune-classical` is provided
 
 ---
 
-## Saving Benchmark Results
+## Saving Results
 
-Results can be saved to disk:
+Results can be saved to:
 
-```python
-compare_classification_models(
-    seeds=[0, 1, 2],
-    save=True,
-)
-```
-
-Saved files are placed in:
-
-```
+```text
 results/benchmarks/
 ```
 
-Example output file:
-
-```
-classification_benchmark.json
-```
-
-Saved JSON includes:
-
-- individual run records
-- aggregated metrics
-- runtime summaries
-- train/test generalization-gap summaries
-- best model according to the primary test metric
-- dataset configuration
-
-This allows reproducibility and later analysis.
+Saved JSON includes individual run records, aggregate metrics, timing summaries,
+paired classical comparisons, tuning metadata, environment metadata, and the
+dataset configuration.
 
 ---
-
-## Model Selection
-
-Models are referenced by string identifiers.
-
-Classification:
-
-```
-vqc
-qcnn
-quantum_kernel
-trainable_quantum_kernel
-quantum_metric_learning
-logistic_regression
-svm_classifier
-mlp_classifier
-```
-
-Regression:
-
-```
-vqr
-ridge_regression
-mlp_regressor
-```
-
-Invalid model names raise an error.
-
-Example:
-
-```python
-compare_classification_models(
-    models=["vqc", "invalid_model"]
-)
-```
-
----
-
-## Multi-seed Evaluation
-
-Variational quantum models depend on:
-
-- random parameter initialisation
-- optimiser stochasticity
-- dataset sampling variability
-
-Performance should therefore be evaluated across multiple seeds.
-
-Aggregate statistics:
-
-$$
-\mu = \frac{1}{N} \sum_{i=1}^N x_i
-$$
-
-$$
-\sigma = \sqrt{\frac{1}{N} \sum_{i=1}^N (x_i - \mu)^2}
-$$
-
-These values are computed for each metric.
-
-The `best_model` field is selected from the aggregated test metric:
-
-- classification: highest mean `test_accuracy`
-- regression: lowest mean `test_mse`
-
-Use it as a convenience summary only. Always inspect the full run records,
-standard deviations, and runtime before drawing conclusions.
-
----
-
-## Relationship to Other Modules
-
-Benchmark utilities call the following workflows:
-
-Classification:
-
-- `qml.classifiers.run_vqc`
-- `qml.qcnn.run_qcnn`
-- `qml.kernel_methods.run_quantum_kernel_classifier`
-- `qml.trainable_kernels.run_trainable_quantum_kernel_classifier`
-- `qml.metric_learning.run_quantum_metric_learner`
-- `qml.classical_baselines.run_logistic_classifier`
-- `qml.classical_baselines.run_svm_classifier`
-- `qml.classical_baselines.run_mlp_classifier`
-
-Regression:
-
-- `qml.regression.run_vqr`
-- `qml.classical_baselines.run_ridge_regression`
-- `qml.classical_baselines.run_mlp_regressor`
-
-Datasets are generated using shared utilities from:
-
-```
-qml.data
-```
-
-ensuring consistent experimental conditions across models.
-
-Metric-learning benchmarks use the same classification dataset name, sample
-count, split, and seed, but ignore the synthetic dataset `noise` parameter
-because the metric-learning workflow does not expose that setting.
-
----
-
-## When to Use Benchmarks
-
-Benchmarking is useful when:
-
-- comparing quantum vs classical performance
-- testing sensitivity to optimiser settings
-- evaluating ansatz depth
-- studying generalisation performance
-- generating reproducible experiment summaries
-
-Typical workflow:
-
-1. explore behaviour in notebooks
-2. run benchmark across seeds
-3. analyse aggregated metrics
-4. refine model configuration
 
 ## Interpretation Checklist
 
@@ -390,10 +295,12 @@ Before publishing a benchmark table, record:
 - model list and model-specific kwargs
 - dataset name, sample count, split, noise level, and seed list
 - analytic or finite-shot execution settings
-- package version and Python/PennyLane versions
-- classical baselines included in the comparison
-- mean and standard deviation across seeds
-- runtime and train/test gap
+- package, Python, scikit-learn, and PennyLane versions
+- classical baselines and tuning grids
+- mean, standard deviation, and confidence intervals
+- paired deltas against the best classical baseline
+- runtime totals and fit/predict breakdowns
+- train/test generalization gaps
 
-Benchmarks in this package are designed to make comparisons reproducible and
-auditable. They do not establish quantum advantage by themselves.
+Benchmarks in this package make comparisons reproducible and auditable. They do
+not establish quantum advantage by themselves.

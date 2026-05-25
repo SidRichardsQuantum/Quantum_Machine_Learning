@@ -40,31 +40,31 @@
 
 Modular **PennyLane-based quantum machine learning library** implementing reusable workflows for:
 
-- Variational quantum classification (VQC)  
-- Variational quantum regression (VQR)  
-- Quantum convolutional neural networks (QCNN)  
-- Quantum autoencoders  
-- Quantum kernel methods  
+- Variational quantum classification (VQC)
+- Variational quantum regression (VQR)
+- Quantum convolutional neural networks (QCNN)
+- Quantum autoencoders
+- Quantum kernel methods
 - Dataset-agnostic estimator APIs for user-supplied arrays
 - Quantum kernel classification and regression
-- Trainable quantum kernels (kernel-target alignment)  
+- Trainable quantum kernels (kernel-target alignment)
 - Multi-output variational regression and multiclass classification
 - Time-series windowing utilities
 - Human-readable reporting tables for notebooks and CLIs
-- Quantum metric learning (trainable embedding geometry)  
+- Quantum metric learning (trainable embedding geometry)
 - Quantum reservoir feature models
 - Quantum kernel PCA, one-class anomaly detection, and Gaussian process regression
 - Trainable quantum kernel regression
-- Classical baseline models  
-- Deterministic benchmark utilities  
+- Classical baseline models
+- Deterministic benchmark utilities
 
 The repository follows a **package-first design**:
 
-- algorithms implemented in `src/qml/`  
-- notebooks act as thin clients  
-- experiments produce reproducible outputs  
-- consistent plotting and result structures  
-- deterministic execution via explicit seeds  
+- algorithms implemented in `src/qml/`
+- notebooks act as thin clients
+- experiments produce reproducible outputs
+- consistent plotting and result structures
+- deterministic execution via explicit seeds
 - implementation contracts document the circuit/model family, objective, and
   metric semantics for each advertised algorithm
 
@@ -183,9 +183,9 @@ result = run_qcnn(
 
 Learns a small hierarchical quantum classifier using:
 
-- trainable data embedding across four qubits  
-- shared convolution-style two-qubit blocks  
-- pooling-style entangling reductions before final readout  
+- trainable data embedding across four qubits
+- shared convolution-style two-qubit blocks
+- pooling-style entangling reductions before final readout
 
 ---
 
@@ -204,9 +204,9 @@ result = run_quantum_autoencoder(
 
 Learns a compression map for structured four-qubit state families using:
 
-- a trainable encoder/decoder ansatz  
-- a latent subspace retained across selected qubits  
-- compression and reconstruction fidelity metrics  
+- a trainable encoder/decoder ansatz
+- a latent subspace retained across selected qubits
+- compression and reconstruction fidelity metrics
 
 ---
 
@@ -306,8 +306,8 @@ result = run_quantum_metric_learner(
 
 Learns a trainable embedding circuit using contrastive supervision:
 
-- same-class samples mapped closer together  
-- different-class samples separated in feature space  
+- same-class samples mapped closer together
+- different-class samples separated in feature space
 
 Classification is performed via nearest-centroid prediction in the learned embedding.
 
@@ -371,8 +371,10 @@ result = compare_classification_models(
         "trainable_quantum_kernel",
         "logistic_regression",
         "svm_classifier",
+        "random_forest_classifier",
     ],
     seeds=[123, 456],
+    tune_classical=True,
 )
 ```
 
@@ -406,10 +408,11 @@ result = compare_classification_models(
 
 Result structure remains consistent across models.
 Benchmark summaries include aggregate train/test metrics, runtime summaries,
-generalization-gap summaries, and a `best_model` convenience field based on the
-primary test metric. Use these summaries with classical baselines and multiple
-seeds; the smoke-scale defaults are for reproducibility checks, not
-quantum-advantage claims.
+fit/predict timing breakdowns, confidence intervals, paired deltas against the
+best included classical baseline, generalization-gap summaries, environment
+metadata, and a `best_model` convenience field based on the primary test metric.
+Use these summaries with classical baselines and multiple seeds; the smoke-scale
+defaults are for reproducibility checks, not quantum-advantage claims.
 
 ---
 
@@ -421,6 +424,10 @@ Included reference models:
 - ridge regression
 - support vector machine
 - multilayer perceptron
+- random forest and gradient boosting
+- k-nearest neighbors
+- Gaussian-process models
+- kernel ridge, SVR, Lasso, and ElasticNet regression
 
 These provide performance context for quantum models.
 
@@ -444,14 +451,16 @@ Run benchmarks:
 
 ```bash
 python -m qml benchmark classification \
-    --models vqc qcnn quantum_kernel svm_classifier logistic_regression \
-    --seeds 123 456
+    --models vqc qcnn quantum_kernel svm_classifier random_forest_classifier \
+    --seeds 123 456 \
+    --tune-classical
 ```
 
 ```bash
 python -m qml benchmark regression \
-    --models vqr ridge_regression mlp_regressor \
-    --seeds 123 456
+    --models vqr ridge_regression kernel_ridge_regression svr_regression \
+    --seeds 123 456 \
+    --tune-classical
 ```
 
 CLI outputs include:
@@ -732,34 +741,42 @@ $$
 
 where:
 
-- $d$ is distance between learned embeddings  
-- $y \in \{0,1\}$ indicates whether samples share a class  
-- $m$ is a separation margin  
+- $d$ is distance between learned embeddings
+- $y \in \{0,1\}$ indicates whether samples share a class
+- $m$ is a separation margin
 
 The learned embedding is used for classification via nearest-centroid prediction in feature space.
 
 Supports:
 
-- trainable data re-uploading embeddings  
-- stochastic pair sampling  
-- deterministic optimisation via fixed seeds  
+- trainable data re-uploading embeddings
+- stochastic pair sampling
+- deterministic optimisation via fixed seeds
 - consistent evaluation pipeline with other models
 
 ---
 
 ## Development workflow
 
-Run tests:
+Install development tools:
 
 ```bash
+pip install -e ".[dev]"
+```
+
+Run the full local quality gate:
+
+```bash
+pre-commit run --all-files
 pytest
 ```
 
-Format code:
+Run individual checks while iterating:
 
 ```bash
-black .
 ruff check .
+black .
+pytest
 ```
 
 Run module:

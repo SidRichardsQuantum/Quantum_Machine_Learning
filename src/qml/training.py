@@ -28,7 +28,6 @@ def run_training_loop(
     patience_counter = 0
 
     for _ in range(steps):
-
         out = step_fn(params)
 
         # allow step_fn to return extra metadata safely
@@ -41,7 +40,6 @@ def run_training_loop(
         loss_trace.append(float(loss))
 
         if patience is not None:
-
             if loss < best_loss - min_delta:
                 best_loss = loss
                 patience_counter = 0

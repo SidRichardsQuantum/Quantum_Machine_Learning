@@ -8,15 +8,32 @@ Benchmark helpers for comparing quantum and classical models across multiple see
 from __future__ import annotations
 
 from collections.abc import Callable
-from statistics import mean, pstdev
+from statistics import mean
 from time import perf_counter
 from typing import Any
 
+from qml._benchmark_utils import (
+    benchmark_metadata as _benchmark_metadata,
+    summary_stats as _summary_stats,
+    timing_from_result as _timing_from_result,
+)
 from qml.classical_baselines import (
+    run_elasticnet_regression,
+    run_gaussian_process_classifier,
+    run_gaussian_process_regressor,
+    run_gradient_boosting_classifier,
+    run_gradient_boosting_regressor,
+    run_kernel_ridge_regression,
+    run_knn_classifier,
+    run_knn_regressor,
+    run_lasso_regression,
     run_logistic_classifier,
     run_mlp_classifier,
     run_mlp_regressor,
+    run_random_forest_classifier,
+    run_random_forest_regressor,
     run_ridge_regression,
+    run_svr_regression,
     run_svm_classifier,
 )
 from qml.classifiers import run_vqc
@@ -40,12 +57,47 @@ _CLASSIFICATION_MODELS: dict[str, ClassificationRunner] = {
     "logistic_regression": run_logistic_classifier,
     "svm_classifier": run_svm_classifier,
     "mlp_classifier": run_mlp_classifier,
+    "random_forest_classifier": run_random_forest_classifier,
+    "gradient_boosting_classifier": run_gradient_boosting_classifier,
+    "knn_classifier": run_knn_classifier,
+    "gaussian_process_classifier": run_gaussian_process_classifier,
 }
 
 _REGRESSION_MODELS: dict[str, RegressionRunner] = {
     "vqr": run_vqr,
     "ridge_regression": run_ridge_regression,
     "mlp_regressor": run_mlp_regressor,
+    "kernel_ridge_regression": run_kernel_ridge_regression,
+    "svr_regression": run_svr_regression,
+    "gaussian_process_regressor": run_gaussian_process_regressor,
+    "random_forest_regressor": run_random_forest_regressor,
+    "gradient_boosting_regressor": run_gradient_boosting_regressor,
+    "knn_regressor": run_knn_regressor,
+    "lasso_regression": run_lasso_regression,
+    "elasticnet_regression": run_elasticnet_regression,
+}
+
+_CLASSICAL_CLASSIFICATION_MODELS = {
+    "logistic_regression",
+    "svm_classifier",
+    "mlp_classifier",
+    "random_forest_classifier",
+    "gradient_boosting_classifier",
+    "knn_classifier",
+    "gaussian_process_classifier",
+}
+
+_CLASSICAL_REGRESSION_MODELS = {
+    "ridge_regression",
+    "mlp_regressor",
+    "kernel_ridge_regression",
+    "svr_regression",
+    "gaussian_process_regressor",
+    "random_forest_regressor",
+    "gradient_boosting_regressor",
+    "knn_regressor",
+    "lasso_regression",
+    "elasticnet_regression",
 }
 
 _MODEL_NAME_ALIASES: dict[str, str] = {
@@ -54,22 +106,93 @@ _MODEL_NAME_ALIASES: dict[str, str] = {
     "trainable-kernel": "trainable_quantum_kernel",
     "metric_learning": "quantum_metric_learning",
     "metric-learning": "quantum_metric_learning",
+    "rf_classifier": "random_forest_classifier",
+    "gb_classifier": "gradient_boosting_classifier",
+    "gpc": "gaussian_process_classifier",
+    "rf_regressor": "random_forest_regressor",
+    "gb_regressor": "gradient_boosting_regressor",
+    "gpr": "gaussian_process_regressor",
+    "kernel_ridge": "kernel_ridge_regression",
+    "svr": "svr_regression",
+    "lasso": "lasso_regression",
+    "elasticnet": "elasticnet_regression",
 }
 
 
-def _mean_std(values: list[float]) -> dict[str, float]:
-    """
-    Return mean and population standard deviation for a list of floats.
-    """
-    if not values:
-        return {"mean": float("nan"), "std": float("nan")}
+def _apply_classical_tuning(
+    model_name: str,
+    model_kwargs: dict[str, dict[str, Any]],
+    classical_models: set[str],
+    *,
+    tune_classical: bool,
+    cv: int,
+) -> dict[str, Any]:
+    kwargs = dict(model_kwargs.get(model_name, {}))
+    if model_name in classical_models:
+        kwargs.setdefault("tune", tune_classical)
+        kwargs.setdefault("cv", cv)
+    return kwargs
 
-    if len(values) == 1:
-        return {"mean": float(values[0]), "std": 0.0}
+
+def _paired_classical_comparison(
+    runs: list[dict[str, Any]],
+    selected_models: list[str],
+    classical_models: set[str],
+    metric: str,
+    *,
+    higher_is_better: bool,
+) -> dict[str, Any]:
+    classical_selected = [model for model in selected_models if model in classical_models]
+    if not classical_selected:
+        return {"reference_model": None, "metric": metric, "comparisons": {}}
+
+    means = {}
+    for model in classical_selected:
+        values = [float(run[metric]) for run in runs if run["model"] == model]
+        if values:
+            means[model] = mean(values)
+    if not means:
+        return {"reference_model": None, "metric": metric, "comparisons": {}}
+
+    reference_model = max(means, key=means.get) if higher_is_better else min(means, key=means.get)
+    reference_by_seed = {
+        run["seed"]: float(run[metric])
+        for run in runs
+        if run["model"] == reference_model and metric in run
+    }
+
+    comparisons: dict[str, Any] = {}
+    for model in selected_models:
+        deltas = []
+        wins = 0
+        losses = 0
+        ties = 0
+        for run in runs:
+            if run["model"] != model or run["seed"] not in reference_by_seed:
+                continue
+            delta = float(run[metric]) - reference_by_seed[run["seed"]]
+            deltas.append(delta)
+            better_delta = delta if higher_is_better else -delta
+            if better_delta > 0:
+                wins += 1
+            elif better_delta < 0:
+                losses += 1
+            else:
+                ties += 1
+
+        comparisons[model] = {
+            "mean_delta": _summary_stats(deltas),
+            "wins": wins,
+            "losses": losses,
+            "ties": ties,
+            "n_pairs": len(deltas),
+        }
 
     return {
-        "mean": float(mean(values)),
-        "std": float(pstdev(values)),
+        "reference_model": reference_model,
+        "metric": metric,
+        "higher_is_better": higher_is_better,
+        "comparisons": comparisons,
     }
 
 
@@ -242,6 +365,8 @@ def compare_classification_models(
     save: bool = False,
     filename: str = "classification_benchmark.json",
     dataset: str = "moons",
+    tune_classical: bool = False,
+    cv: int = 3,
 ) -> dict[str, Any]:
     """
     Compare classification models across multiple seeds.
@@ -264,6 +389,10 @@ def compare_classification_models(
         Whether to save the benchmark summary JSON.
     filename
         Output filename when ``save=True``.
+    tune_classical
+        Whether to run supported classical baselines through ``GridSearchCV``.
+    cv
+        Cross-validation folds used when ``tune_classical=True``.
 
     Returns
     -------
@@ -301,7 +430,16 @@ def compare_classification_models(
                 model_name=model_name,
                 runner=runner,
                 common_kwargs={**common_kwargs, "seed": seed},
-                model_kwargs=model_kwargs,
+                model_kwargs={
+                    **model_kwargs,
+                    model_name: _apply_classical_tuning(
+                        model_name,
+                        model_kwargs,
+                        _CLASSICAL_CLASSIFICATION_MODELS,
+                        tune_classical=tune_classical,
+                        cv=cv,
+                    ),
+                },
             )
             runtime_seconds = perf_counter() - start
 
@@ -324,9 +462,13 @@ def compare_classification_models(
                 "test_accuracy": test_accuracy,
                 "generalization_gap": train_accuracy - test_accuracy,
                 "runtime_seconds": runtime_seconds,
+                "timing": _timing_from_result(result, runtime_seconds),
             }
 
             if isinstance(result, dict):
+                if "tuning" in result:
+                    run_record["tuning"] = result["tuning"]
+
                 if "final_loss" in result:
                     final_loss = float(result["final_loss"])
                     run_record["final_loss"] = final_loss
@@ -343,9 +485,9 @@ def compare_classification_models(
             runs.append(run_record)
 
         model_summary = {
-            "train_accuracy": _mean_std(train_accuracies),
-            "test_accuracy": _mean_std(test_accuracies),
-            "generalization_gap": _mean_std(
+            "train_accuracy": _summary_stats(train_accuracies),
+            "test_accuracy": _summary_stats(test_accuracies),
+            "generalization_gap": _summary_stats(
                 [
                     train_accuracy - test_accuracy
                     for train_accuracy, test_accuracy in zip(
@@ -355,12 +497,12 @@ def compare_classification_models(
                     )
                 ]
             ),
-            "runtime_seconds": _mean_std(runtime_values),
+            "runtime_seconds": _summary_stats(runtime_values),
             "n_runs": len(seeds),
         }
 
         if final_losses:
-            model_summary["final_loss"] = _mean_std(final_losses)
+            model_summary["final_loss"] = _summary_stats(final_losses)
 
         alignment_values = [
             float(run["final_alignment"])
@@ -368,7 +510,7 @@ def compare_classification_models(
             if run["model"] == model_name and "final_alignment" in run
         ]
         if alignment_values:
-            model_summary["final_alignment"] = _mean_std(alignment_values)
+            model_summary["final_alignment"] = _summary_stats(alignment_values)
 
         summary[model_name] = model_summary
 
@@ -380,6 +522,8 @@ def compare_classification_models(
         "noise": noise,
         "test_size": test_size,
         "dataset": dataset,
+        "tune_classical": tune_classical,
+        "cv": cv,
         "runs": runs,
         "summary": summary,
         "best_model": _best_model_by_summary_metric(
@@ -387,6 +531,14 @@ def compare_classification_models(
             "test_accuracy",
             higher_is_better=True,
         ),
+        "paired_vs_best_classical": _paired_classical_comparison(
+            runs,
+            selected_models,
+            _CLASSICAL_CLASSIFICATION_MODELS,
+            "test_accuracy",
+            higher_is_better=True,
+        ),
+        "metadata": _benchmark_metadata(),
     }
 
     if save:
@@ -405,6 +557,8 @@ def compare_regression_models(
     save: bool = False,
     filename: str = "regression_benchmark.json",
     dataset: str = "linear",
+    tune_classical: bool = False,
+    cv: int = 3,
 ) -> dict[str, Any]:
     """
     Compare regression models across multiple seeds.
@@ -427,6 +581,10 @@ def compare_regression_models(
         Whether to save the benchmark summary JSON.
     filename
         Output filename when ``save=True``.
+    tune_classical
+        Whether to run supported classical baselines through ``GridSearchCV``.
+    cv
+        Cross-validation folds used when ``tune_classical=True``.
 
     Returns
     -------
@@ -466,7 +624,16 @@ def compare_regression_models(
                 model_name=model_name,
                 runner=runner,
                 common_kwargs={**common_kwargs, "seed": seed},
-                model_kwargs=model_kwargs,
+                model_kwargs={
+                    **model_kwargs,
+                    model_name: _apply_classical_tuning(
+                        model_name,
+                        model_kwargs,
+                        _CLASSICAL_REGRESSION_MODELS,
+                        tune_classical=tune_classical,
+                        cv=cv,
+                    ),
+                },
             )
             runtime_seconds = perf_counter() - start
 
@@ -491,7 +658,11 @@ def compare_regression_models(
                 "test_mae": test_mae,
                 "generalization_gap": test_mse - train_mse,
                 "runtime_seconds": runtime_seconds,
+                "timing": _timing_from_result(result, runtime_seconds),
             }
+
+            if "tuning" in result:
+                run_record["tuning"] = result["tuning"]
 
             if "final_loss" in result:
                 final_loss = float(result["final_loss"])
@@ -501,11 +672,11 @@ def compare_regression_models(
             runs.append(run_record)
 
         model_summary = {
-            "train_mse": _mean_std(train_mse_values),
-            "test_mse": _mean_std(test_mse_values),
-            "train_mae": _mean_std(train_mae_values),
-            "test_mae": _mean_std(test_mae_values),
-            "generalization_gap": _mean_std(
+            "train_mse": _summary_stats(train_mse_values),
+            "test_mse": _summary_stats(test_mse_values),
+            "train_mae": _summary_stats(train_mae_values),
+            "test_mae": _summary_stats(test_mae_values),
+            "generalization_gap": _summary_stats(
                 [
                     test_mse - train_mse
                     for train_mse, test_mse in zip(
@@ -515,11 +686,11 @@ def compare_regression_models(
                     )
                 ]
             ),
-            "runtime_seconds": _mean_std(runtime_values),
+            "runtime_seconds": _summary_stats(runtime_values),
             "n_runs": len(seeds),
         }
         if final_losses:
-            model_summary["final_loss"] = _mean_std(final_losses)
+            model_summary["final_loss"] = _summary_stats(final_losses)
 
         summary[model_name] = model_summary
 
@@ -531,6 +702,8 @@ def compare_regression_models(
         "noise": noise,
         "test_size": test_size,
         "dataset": dataset,
+        "tune_classical": tune_classical,
+        "cv": cv,
         "runs": runs,
         "summary": summary,
         "best_model": _best_model_by_summary_metric(
@@ -538,6 +711,14 @@ def compare_regression_models(
             "test_mse",
             higher_is_better=False,
         ),
+        "paired_vs_best_classical": _paired_classical_comparison(
+            runs,
+            selected_models,
+            _CLASSICAL_REGRESSION_MODELS,
+            "test_mse",
+            higher_is_better=False,
+        ),
+        "metadata": _benchmark_metadata(),
     }
 
     if save:

@@ -126,7 +126,6 @@ def apply_data_reuploading_embedding(
         raise ValueError(f"Expected weights shape (n_layers, {len(wires)}, 3), got {weights.shape}")
 
     for layer_weights in weights:
-
         for i, wire in enumerate(wires):
             qml.RY(x[i], wires=wire)
             qml.Rot(

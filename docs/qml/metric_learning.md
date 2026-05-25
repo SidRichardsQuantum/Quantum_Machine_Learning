@@ -4,8 +4,8 @@ Quantum metric learning trains a parameterised quantum embedding such that dista
 
 Instead of directly predicting class labels, the model learns a representation in which:
 
-- samples from the same class are close  
-- samples from different classes are separated  
+- samples from the same class are close
+- samples from different classes are separated
 
 Classification can then be performed using simple classical methods such as nearest centroid or k-nearest neighbours.
 
@@ -33,8 +33,8 @@ $$
 
 where:
 
-- $k$ is the number of qubits  
-- $\theta$ are trainable circuit parameters  
+- $k$ is the number of qubits
+- $\theta$ are trainable circuit parameters
 
 The embedding is constructed using expectation values of Pauli observables:
 
@@ -149,13 +149,13 @@ $$
 
 where:
 
-- $m$ is a margin hyperparameter  
-- $d_{ij}$ is Euclidean distance between embeddings  
+- $m$ is a margin hyperparameter
+- $d_{ij}$ is Euclidean distance between embeddings
 
 This objective:
 
-- pulls same-class samples together  
-- pushes different-class samples apart  
+- pulls same-class samples together
+- pushes different-class samples apart
 
 ---
 

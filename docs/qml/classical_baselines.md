@@ -99,6 +99,24 @@ MLPs provide a flexible nonlinear baseline.
 
 ---
 
+### Additional classifier baselines
+
+The module also includes stronger nonlinear and nonparametric references:
+
+```python
+from qml.classical_baselines import (
+    run_gaussian_process_classifier,
+    run_gradient_boosting_classifier,
+    run_knn_classifier,
+    run_random_forest_classifier,
+)
+```
+
+These baselines are useful when comparing QML classifiers against tuned
+classical methods rather than only simple sanity checks.
+
+---
+
 ## Regression baselines
 
 ### Ridge regression
@@ -154,6 +172,60 @@ test_mae
 ```
 
 MLP regression is a useful nonlinear comparison for VQR.
+
+---
+
+### Additional regression baselines
+
+The module also includes:
+
+```python
+from qml.classical_baselines import (
+    run_elasticnet_regression,
+    run_gaussian_process_regressor,
+    run_gradient_boosting_regressor,
+    run_kernel_ridge_regression,
+    run_knn_regressor,
+    run_lasso_regression,
+    run_random_forest_regressor,
+    run_svr_regression,
+)
+```
+
+`kernel_ridge_regression`, `svr_regression`, and
+`gaussian_process_regressor` are especially relevant counterparts for quantum
+kernel and quantum Gaussian-process workflows.
+
+---
+
+## Hyperparameter tuning and timing
+
+Classical baseline runners accept optional tuning arguments:
+
+```python
+result = run_svm_classifier(
+    tune=True,
+    cv=3,
+    param_grid={"C": [0.1, 1.0, 10.0], "gamma": ["scale", "auto"]},
+)
+```
+
+When tuning is enabled, results include:
+
+```
+tuning.enabled
+tuning.cv
+tuning.best_params
+tuning.best_score
+```
+
+Classical result dictionaries also include a `timing` field:
+
+```
+timing.fit_seconds
+timing.predict_seconds
+timing.total_seconds
+```
 
 ---
 
@@ -218,6 +290,8 @@ Classical baselines help contextualise quantum model performance:
 | classification        | VQC                | logistic regression, MLP |
 | kernel classification | quantum kernel SVM | classical SVM            |
 | regression            | VQR                | ridge regression, MLP    |
+| tree classification   | QML classifiers    | random forest, boosting  |
+| kernel regression     | quantum kernels    | kernel ridge, SVR, GPR   |
 
 Comparisons are demonstrated in the notebooks:
 
