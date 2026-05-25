@@ -129,6 +129,10 @@ python docs/pages/generate_results.py
 
 The generated summary is written to `RESULTS.md` and included in the GitHub Pages site.
 
+Use `docs/qml/benchmark_interpretation.md` when reading benchmark summaries and
+`docs/qml/model_selection.md` when choosing which package API and classical
+baseline to start with.
+
 ---
 
 ## Variational quantum classifier (VQC)

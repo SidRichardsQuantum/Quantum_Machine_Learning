@@ -58,6 +58,18 @@ DOCS = [
         "results-benchmarks.html",
         "Tables and plots extracted from executed benchmark notebooks.",
     ),
+    (
+        "Benchmark Interpretation",
+        ROOT / "docs/qml/benchmark_interpretation.md",
+        "benchmark-interpretation.html",
+        "How to read benchmark metrics, intervals, paired deltas, and runtime tradeoffs.",
+    ),
+    (
+        "Model Selection",
+        ROOT / "docs/qml/model_selection.md",
+        "model-selection.html",
+        "Task-oriented guidance for choosing QML APIs and classical baselines.",
+    ),
     ("Changelog", ROOT / "CHANGELOG.md", "changelog.html", "Release notes and project history."),
     (
         "Variational Quantum Classifier",

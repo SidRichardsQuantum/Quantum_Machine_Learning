@@ -1,6 +1,25 @@
 # CHANGELOG.md
 
-## [0.2.6] - Unreleased
+## [0.2.7] - 26-05-2026
+
+### Added
+
+- Added a benchmark interpretation guide covering confidence intervals, paired
+  classical deltas, generalization gaps, runtime tradeoffs, finite-shot results,
+  tuning fairness, and release-note wording.
+- Added a model-selection guide for choosing QML APIs, estimator classes,
+  embeddings, finite-shot settings, and classical baselines by task type.
+
+### Changed
+
+- Added the new release-hardening guides to the generated Pages documentation
+  navigation and README documentation index.
+- Expanded README algorithm-note links to include advanced kernels, reservoirs,
+  embeddings, classical baselines, and benchmark documentation.
+
+---
+
+## [0.2.6] - 25-05-2026
 
 ### Added
 

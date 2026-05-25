@@ -515,6 +515,8 @@ Core documentation:
 - **RESULTS_TUTORIALS.md** — generated tutorial notebook outputs
 - **RESULTS_REAL_EXAMPLES.md** — generated real-example notebook outputs
 - **RESULTS_BENCHMARKS.md** — generated benchmark notebook outputs
+- **docs/qml/benchmark_interpretation.md** — benchmark reading guide for metrics, intervals, paired deltas, runtime, and release wording
+- **docs/qml/model_selection.md** — task-oriented model-selection guide for QML APIs and classical baselines
 
 Algorithm notes:
 
@@ -524,7 +526,12 @@ Algorithm notes:
 - docs/qml/qcnn.md
 - docs/qml/autoencoder.md
 - docs/qml/quantum_kernels.md
+- docs/qml/advanced_kernels.md
+- docs/qml/quantum_reservoirs.md
+- docs/qml/embeddings.md
 - docs/qml/metric_learning.md
+- docs/qml/classical_baselines.md
+- docs/qml/benchmarks.md
 
 Tutorial notebooks:
 
