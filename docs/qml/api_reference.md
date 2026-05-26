@@ -22,6 +22,7 @@ from qml import (
     QuantumReservoirRegressor,
     QuantumRegressor,
     TrainableQuantumKernelRegressor,
+    build_noise_model,
     format_table,
     kernel_target_alignment,
     list_supported_optimizers,
@@ -82,6 +83,10 @@ Use these when data already exists outside the package:
 The estimator classes expose `fit`, `predict`, `score`, `get_params`, and
 `set_params` where those operations apply.
 
+Circuit-backed estimators accept an optional `noise_model` dictionary for
+depolarizing, amplitude-damping, and readout-error simulation. Use
+`qml.noise.build_noise_model(...)` to validate explicit channel probabilities.
+
 ## Embeddings and Ansatz Helpers
 
 | Function | Module | Purpose |
@@ -94,6 +99,14 @@ The estimator classes expose `fit`, `predict`, `score`, `get_params`, and
 | `apply_data_reuploading_embedding(...)` | `qml.embeddings` | Trainable repeated feature encoding. |
 | `apply_hardware_efficient_ansatz(...)` | `qml.ansatz` | Default variational ansatz. |
 | `apply_strongly_entangling_ansatz(...)` | `qml.ansatz` | PennyLane strongly entangling template wrapper. |
+
+## Noise Helpers
+
+| Function | Module | Purpose |
+| --- | --- | --- |
+| `build_noise_model(...)` | `qml.noise` | Build a validated optional noise-model dictionary. |
+| `normalize_noise_model(...)` | `qml.noise` | Canonicalize and validate supported channel probabilities. |
+| `noise_model_tag(...)` | `qml.noise` | Build compact tags for filenames and metadata. |
 
 ## Benchmark APIs
 

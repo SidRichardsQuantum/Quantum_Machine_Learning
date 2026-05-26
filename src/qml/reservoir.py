@@ -14,6 +14,7 @@ import pennylane as qml
 from sklearn.linear_model import LogisticRegression, Ridge
 
 from qml.metrics import accuracy_score, mean_absolute_error, mean_squared_error
+from qml.noise import apply_noise_channels, device_name_for_noise, noise_model_to_dict
 
 
 def _as_2d(x) -> np.ndarray:
@@ -40,6 +41,7 @@ class QuantumReservoirFeatures:
         n_layers: int = 2,
         seed: int = 123,
         shots: int | None = None,
+        noise_model: dict[str, float] | None = None,
         input_scale: float = 1.0,
         weight_scale: float = 1.0,
     ) -> None:
@@ -47,6 +49,7 @@ class QuantumReservoirFeatures:
         self.n_layers = n_layers
         self.seed = seed
         self.shots = shots
+        self.noise_model = noise_model_to_dict(noise_model)
         self.input_scale = input_scale
         self.weight_scale = weight_scale
 
@@ -56,6 +59,7 @@ class QuantumReservoirFeatures:
             "n_layers": self.n_layers,
             "seed": self.seed,
             "shots": self.shots,
+            "noise_model": self.noise_model,
             "input_scale": self.input_scale,
             "weight_scale": self.weight_scale,
         }
@@ -65,6 +69,8 @@ class QuantumReservoirFeatures:
         for key, value in params.items():
             if key not in valid:
                 raise ValueError(f"Invalid parameter {key!r} for QuantumReservoirFeatures.")
+            if key == "noise_model":
+                value = noise_model_to_dict(value)
             setattr(self, key, value)
         return self
 
@@ -88,7 +94,9 @@ class QuantumReservoirFeatures:
 
     def _make_qnode(self):
         wires = list(range(self.n_qubits_))
-        dev = qml.device("default.qubit", wires=self.n_qubits_, seed=self.seed)
+        dev = qml.device(
+            device_name_for_noise(self.noise_model), wires=self.n_qubits_, seed=self.seed
+        )
 
         @qml.qnode(dev)
         def circuit_base(sample, weights):
@@ -107,6 +115,7 @@ class QuantumReservoirFeatures:
                 if len(wires) > 2:
                     qml.CNOT(wires=[wires[-1], wires[0]])
 
+            apply_noise_channels(wires, self.noise_model, readout_wires=wires)
             return [qml.expval(qml.PauliZ(wire)) for wire in wires]
 
         return qml.set_shots(circuit_base, self.shots) if self.shots is not None else circuit_base

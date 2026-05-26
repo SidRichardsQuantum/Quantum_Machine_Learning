@@ -18,6 +18,7 @@ from qml.io_utils import images_path, results_path, save_json
 from qml.io_utils import ensure_dir
 from qml.kernels import QuantumKernel
 from qml.metrics import accuracy_score
+from qml.noise import noise_model_tag, noise_model_to_dict
 from qml.visualize import plot_dataset_2d, plot_kernel_matrix
 
 
@@ -27,6 +28,7 @@ def run_quantum_kernel_classifier(
     test_size: float = 0.25,
     seed: int = 123,
     shots: int | None = None,
+    noise_model: dict[str, float] | None = None,
     embedding: str = "angle",
     plot: bool = False,
     save: bool = False,
@@ -49,6 +51,9 @@ def run_quantum_kernel_classifier(
         Random seed.
     shots
         Number of measurement shots. If ``None``, uses analytic mode.
+    noise_model
+        Optional channel probabilities for noisy simulation. Supported keys are
+        ``depolarizing``, ``amplitude_damping``, and ``readout_error``.
     plot
         Whether to display plots.
     save
@@ -68,7 +73,13 @@ def run_quantum_kernel_classifier(
     y_test = data["y_test"]
 
     n_qubits = x_train.shape[1]
-    quantum_kernel = QuantumKernel(embedding=embedding, shots=shots, seed=seed)
+    noise_model = noise_model_to_dict(noise_model)
+    quantum_kernel = QuantumKernel(
+        embedding=embedding,
+        shots=shots,
+        seed=seed,
+        noise_model=noise_model,
+    )
     kernel_matrix_train = quantum_kernel.evaluate(x_train)
     kernel_matrix_test = quantum_kernel.evaluate(x_test, x_train)
 
@@ -87,6 +98,7 @@ def run_quantum_kernel_classifier(
         "test_size": test_size,
         "n_qubits": n_qubits,
         "shots": shots,
+        "noise_model": noise_model,
         "embedding": embedding,
         "train_accuracy": accuracy_score(y_train, y_train_pred),
         "test_accuracy": accuracy_score(y_test, y_test_pred),
@@ -107,6 +119,7 @@ def run_quantum_kernel_classifier(
         f"_noise{str(noise).replace('.', 'p')}"
         f"_seed{seed}"
         f"_{shots_tag}"
+        f"_{noise_model_tag(noise_model)}"
     )
 
     def _results_file(filename: str) -> Path:

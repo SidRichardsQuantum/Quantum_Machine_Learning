@@ -319,9 +319,10 @@ metric-learning workflow returns a typed dataclass.
 
 ---
 
-## Noise-aware execution (finite shots)
+## Noise-aware execution
 
-Quantum circuits can be evaluated either analytically or with finite sampling.
+Quantum circuits can be evaluated analytically, with finite sampling, or with a
+small opt-in channel noise model.
 
 Finite-shot execution uses:
 
@@ -340,6 +341,22 @@ result = run_vqc(
 )
 ```
 
+Channel noise is configured with explicit probabilities:
+
+```python
+from qml import build_noise_model, run_vqc
+
+noise_model = build_noise_model(depolarizing=0.01, readout_error=0.02)
+
+result = run_vqc(
+    n_samples=200,
+    n_layers=2,
+    steps=50,
+    shots=128,
+    noise_model=noise_model,
+)
+```
+
 Trainable kernel workflows support separate shot settings:
 
 ```python
@@ -350,7 +367,9 @@ result = run_trainable_quantum_kernel_classifier(
 )
 ```
 
-All workflows remain deterministic when a fixed seed is provided.
+Noisy workflows use PennyLane `default.mixed`; noiseless workflows keep the
+existing `default.qubit` path. All workflows remain deterministic when a fixed
+seed is provided.
 
 ---
 
@@ -517,6 +536,7 @@ Core documentation:
 - **RESULTS_BENCHMARKS.md** — generated benchmark notebook outputs
 - **docs/qml/benchmark_interpretation.md** — benchmark reading guide for metrics, intervals, paired deltas, runtime, and release wording
 - **docs/qml/model_selection.md** — task-oriented model-selection guide for QML APIs and classical baselines
+- **docs/qml/noise_models.md** — opt-in depolarizing, amplitude-damping, and readout-error simulation guide
 
 Algorithm notes:
 
@@ -529,6 +549,7 @@ Algorithm notes:
 - docs/qml/advanced_kernels.md
 - docs/qml/quantum_reservoirs.md
 - docs/qml/embeddings.md
+- docs/qml/noise_models.md
 - docs/qml/metric_learning.md
 - docs/qml/classical_baselines.md
 - docs/qml/benchmarks.md

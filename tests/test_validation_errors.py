@@ -5,6 +5,7 @@ import pytest
 
 from qml import QuantumClassifier, QuantumKernel, QuantumRegressor, make_sequence_windows
 from qml.embeddings import embedding_parameter_shape
+from qml.noise import normalize_noise_model
 from qml.optimizers import get_optimizer
 
 
@@ -42,3 +43,11 @@ def test_unknown_embedding_and_optimizer_names_are_rejected() -> None:
 
     with pytest.raises(ValueError, match="Unsupported optimizer"):
         get_optimizer("unknown")
+
+
+def test_invalid_noise_models_are_rejected() -> None:
+    with pytest.raises(ValueError, match="Unknown noise channel"):
+        normalize_noise_model({"unknown": 0.1})
+
+    with pytest.raises(ValueError, match="between 0 and 1"):
+        normalize_noise_model({"readout_error": -0.1})

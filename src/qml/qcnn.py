@@ -17,6 +17,12 @@ from pennylane import numpy as pnp
 from qml.data import make_classification_dataset
 from qml.io_utils import ensure_dir, images_path, results_path, save_json
 from qml.metrics import accuracy_score
+from qml.noise import (
+    apply_noise_channels,
+    device_name_for_noise,
+    noise_model_tag,
+    noise_model_to_dict,
+)
 from qml.optimizers import get_optimizer
 from qml.training import run_training_loop
 from qml.visualize import plot_dataset_2d, plot_decision_boundary, plot_loss_curve
@@ -154,6 +160,7 @@ def run_qcnn(
     early_stopping_patience: int | None = None,
     early_stopping_min_delta: float = 0.0,
     shots: int | None = None,
+    noise_model: dict[str, float] | None = None,
     plot: bool = False,
     save: bool = False,
     results_dir: str | Path | None = None,
@@ -177,7 +184,8 @@ def run_qcnn(
 
     n_qubits = 4
     wires = list(range(n_qubits))
-    dev = qml.device("default.qubit", wires=n_qubits, seed=seed)
+    noise_model = noise_model_to_dict(noise_model)
+    dev = qml.device(device_name_for_noise(noise_model), wires=n_qubits, seed=seed)
 
     param_shapes = qcnn_parameter_shape()
     rng = np.random.default_rng(seed)
@@ -191,6 +199,7 @@ def run_qcnn(
         structured = _unpack_params(flat_params, shapes)
         _apply_qcnn_embedding(x, structured["embedding"], wires)
         _apply_qcnn(structured)
+        apply_noise_channels(wires, noise_model, readout_wires=[3])
         return qml.expval(qml.PauliZ(3))
 
     circuit = qml.set_shots(circuit_base, shots) if shots is not None else circuit_base
@@ -245,6 +254,7 @@ def run_qcnn(
         "early_stopping_patience": early_stopping_patience,
         "early_stopping_min_delta": early_stopping_min_delta,
         "shots": shots,
+        "noise_model": noise_model,
         "loss_history": loss_history,
         "final_loss": _binary_cross_entropy(y_train, train_probs),
         "train_accuracy": accuracy_score(y_train, y_train_pred),
@@ -269,6 +279,7 @@ def run_qcnn(
     stem = (
         f"{dataset}_steps{steps}_samples{n_samples}"
         f"_noise{str(noise).replace('.', 'p')}_seed{seed}_{shots_tag}"
+        f"_{noise_model_tag(noise_model)}"
     )
 
     def predict_proba_grid(x_grid):

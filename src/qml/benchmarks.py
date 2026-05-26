@@ -69,6 +69,7 @@ def _run_quantum_reservoir_classifier(
     dataset: str = "moons",
     n_layers: int = 2,
     shots: int | None = None,
+    noise_model: dict[str, float] | None = None,
     input_scale: float = 1.0,
     weight_scale: float = 1.0,
     c: float = 1.0,
@@ -89,6 +90,7 @@ def _run_quantum_reservoir_classifier(
             n_layers=n_layers,
             seed=seed,
             shots=shots,
+            noise_model=noise_model,
             input_scale=input_scale,
             weight_scale=weight_scale,
         ),
@@ -126,6 +128,7 @@ def _run_quantum_kernel_regressor(
     dataset: str = "sine",
     embedding: str = "angle",
     shots: int | None = None,
+    noise_model: dict[str, float] | None = None,
     alpha: float = 1.0,
     plot: bool = False,
     save: bool = False,
@@ -139,7 +142,12 @@ def _run_quantum_kernel_regressor(
         dataset=dataset,
     )
     model = QuantumKernelRegressor(
-        kernel=QuantumKernel(embedding=embedding, shots=shots, seed=seed),
+        kernel=QuantumKernel(
+            embedding=embedding,
+            shots=shots,
+            seed=seed,
+            noise_model=noise_model,
+        ),
         alpha=alpha,
         seed=seed,
         **kernel_ridge_kwargs,
@@ -175,6 +183,7 @@ def _run_quantum_gaussian_process_regressor(
     dataset: str = "sine",
     embedding: str = "angle",
     shots: int | None = None,
+    noise_model: dict[str, float] | None = None,
     alpha: float = 1e-6,
     normalize_y: bool = True,
     plot: bool = False,
@@ -188,7 +197,12 @@ def _run_quantum_gaussian_process_regressor(
         dataset=dataset,
     )
     model = QuantumGaussianProcessRegressor(
-        kernel=QuantumKernel(embedding=embedding, shots=shots, seed=seed),
+        kernel=QuantumKernel(
+            embedding=embedding,
+            shots=shots,
+            seed=seed,
+            noise_model=noise_model,
+        ),
         alpha=alpha,
         normalize_y=normalize_y,
         seed=seed,
@@ -224,6 +238,7 @@ def _run_quantum_reservoir_regressor(
     dataset: str = "sine",
     n_layers: int = 2,
     shots: int | None = None,
+    noise_model: dict[str, float] | None = None,
     input_scale: float = 1.0,
     weight_scale: float = 1.0,
     alpha: float = 1.0,
@@ -243,6 +258,7 @@ def _run_quantum_reservoir_regressor(
             n_layers=n_layers,
             seed=seed,
             shots=shots,
+            noise_model=noise_model,
             input_scale=input_scale,
             weight_scale=weight_scale,
         ),
@@ -477,9 +493,7 @@ def _canonical_model_name(
     canonical = _MODEL_NAME_ALIASES.get(model_name, model_name)
     if canonical not in available_models:
         available = sorted(set(available_models) | set(_MODEL_NAME_ALIASES))
-        raise ValueError(
-            f"Unknown model: {model_name}. " f"Available models: {', '.join(available)}."
-        )
+        raise ValueError(f"Unknown model: {model_name}. Available models: {', '.join(available)}.")
     return canonical
 
 

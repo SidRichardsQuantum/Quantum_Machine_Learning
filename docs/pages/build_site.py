@@ -70,6 +70,12 @@ DOCS = [
         "model-selection.html",
         "Task-oriented guidance for choosing QML APIs and classical baselines.",
     ),
+    (
+        "Noise Models",
+        ROOT / "docs/qml/noise_models.md",
+        "noise-models.html",
+        "Validated depolarizing, amplitude-damping, and readout-error simulation options.",
+    ),
     ("Changelog", ROOT / "CHANGELOG.md", "changelog.html", "Release notes and project history."),
     (
         "Variational Quantum Classifier",

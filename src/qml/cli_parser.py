@@ -23,6 +23,7 @@ def _add_common_dataset_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--seed", type=int, default=123, help="Random seed.")
     parser.add_argument("--plot", action="store_true", help="Display plots.")
     parser.add_argument("--save", action="store_true", help="Save results and figures.")
+    _add_noise_model_args(parser)
 
 
 def _add_common_benchmark_args(parser: argparse.ArgumentParser) -> None:
@@ -46,6 +47,7 @@ def _add_common_benchmark_args(parser: argparse.ArgumentParser) -> None:
         default=3,
         help="Cross-validation folds for tuned classical baselines.",
     )
+    _add_noise_model_args(parser)
 
 
 def _add_shots_arg(parser: argparse.ArgumentParser) -> None:
@@ -54,6 +56,27 @@ def _add_shots_arg(parser: argparse.ArgumentParser) -> None:
         type=int,
         default=None,
         help="Number of measurement shots (None = analytic mode).",
+    )
+
+
+def _add_noise_model_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--depolarizing",
+        type=float,
+        default=0.0,
+        help="Per-wire depolarizing-channel probability for quantum circuits.",
+    )
+    parser.add_argument(
+        "--amplitude-damping",
+        type=float,
+        default=0.0,
+        help="Per-wire amplitude-damping probability for quantum circuits.",
+    )
+    parser.add_argument(
+        "--readout-error",
+        type=float,
+        default=0.0,
+        help="Bit-flip probability applied before measurement.",
     )
 
 

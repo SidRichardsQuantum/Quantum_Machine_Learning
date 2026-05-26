@@ -5,9 +5,20 @@ from __future__ import annotations
 import argparse
 
 
+def _noise_model_from_args(args: argparse.Namespace) -> dict[str, float] | None:
+    from qml.noise import build_noise_model
+
+    return build_noise_model(
+        depolarizing=args.depolarizing,
+        amplitude_damping=args.amplitude_damping,
+        readout_error=args.readout_error,
+    )
+
+
 def _run_classification_benchmark_command(args: argparse.Namespace) -> int:
     from qml.benchmarks import compare_classification_models
 
+    noise_model = _noise_model_from_args(args)
     result = compare_classification_models(
         models=args.models,
         seeds=args.seeds,
@@ -15,6 +26,13 @@ def _run_classification_benchmark_command(args: argparse.Namespace) -> int:
         noise=args.noise,
         test_size=args.test_size,
         dataset=args.dataset,
+        model_kwargs={
+            "vqc": {"noise_model": noise_model},
+            "qcnn": {"noise_model": noise_model},
+            "quantum_kernel": {"noise_model": noise_model},
+            "trainable_quantum_kernel": {"noise_model": noise_model},
+            "quantum_reservoir": {"noise_model": noise_model},
+        },
         save=args.save,
         tune_classical=args.tune_classical,
         cv=args.cv,
@@ -40,6 +58,7 @@ def _run_classification_benchmark_command(args: argparse.Namespace) -> int:
 def _run_regression_benchmark_command(args: argparse.Namespace) -> int:
     from qml.benchmarks import compare_regression_models
 
+    noise_model = _noise_model_from_args(args)
     result = compare_regression_models(
         models=args.models,
         seeds=args.seeds,
@@ -47,6 +66,13 @@ def _run_regression_benchmark_command(args: argparse.Namespace) -> int:
         noise=args.noise,
         test_size=args.test_size,
         dataset=args.dataset,
+        model_kwargs={
+            "vqr": {"noise_model": noise_model},
+            "quantum_kernel_regressor": {"noise_model": noise_model},
+            "quantum_gaussian_process_regressor": {"noise_model": noise_model},
+            "trainable_quantum_kernel_regressor": {"noise_model": noise_model},
+            "quantum_reservoir_regressor": {"noise_model": noise_model},
+        },
         save=args.save,
         tune_classical=args.tune_classical,
         cv=args.cv,
@@ -78,6 +104,7 @@ def _run_finite_shot_benchmark_command(args: argparse.Namespace) -> int:
         "Shot values:",
         ", ".join("analytic" if shots is None else str(shots) for shots in args.shots),
     )
+    noise_model = _noise_model_from_args(args)
     results = []
 
     for shots in args.shots:
@@ -90,16 +117,22 @@ def _run_finite_shot_benchmark_command(args: argparse.Namespace) -> int:
             test_size=args.test_size,
             dataset=args.classification_dataset,
             model_kwargs={
-                "vqc": {"n_layers": 1, "steps": args.steps, "shots": shots},
-                "qcnn": {"steps": args.steps, "shots": shots},
-                "quantum_kernel": {"shots": shots},
+                "vqc": {
+                    "n_layers": 1,
+                    "steps": args.steps,
+                    "shots": shots,
+                    "noise_model": noise_model,
+                },
+                "qcnn": {"steps": args.steps, "shots": shots, "noise_model": noise_model},
+                "quantum_kernel": {"shots": shots, "noise_model": noise_model},
                 "trainable_quantum_kernel": {
                     "steps": max(1, args.steps // 2),
                     "embedding_layers": 1,
                     "shots_train": shots,
                     "shots_kernel": shots,
+                    "noise_model": noise_model,
                 },
-                "quantum_reservoir": {"n_layers": 1, "shots": shots},
+                "quantum_reservoir": {"n_layers": 1, "shots": shots, "noise_model": noise_model},
             },
             save=False,
             tune_classical=args.tune_classical,
@@ -113,15 +146,25 @@ def _run_finite_shot_benchmark_command(args: argparse.Namespace) -> int:
             test_size=args.test_size,
             dataset=args.regression_dataset,
             model_kwargs={
-                "vqr": {"n_layers": 1, "steps": args.steps, "shots": shots},
-                "quantum_kernel_regressor": {"shots": shots},
-                "quantum_gaussian_process_regressor": {"shots": shots},
-                "quantum_reservoir_regressor": {"n_layers": 1, "shots": shots},
+                "vqr": {
+                    "n_layers": 1,
+                    "steps": args.steps,
+                    "shots": shots,
+                    "noise_model": noise_model,
+                },
+                "quantum_kernel_regressor": {"shots": shots, "noise_model": noise_model},
+                "quantum_gaussian_process_regressor": {"shots": shots, "noise_model": noise_model},
+                "quantum_reservoir_regressor": {
+                    "n_layers": 1,
+                    "shots": shots,
+                    "noise_model": noise_model,
+                },
                 "trainable_quantum_kernel_regressor": {
                     "steps": max(1, args.steps // 2),
                     "embedding_layers": 1,
                     "shots_train": shots,
                     "shots_kernel": shots,
+                    "noise_model": noise_model,
                 },
             },
             save=False,
@@ -173,6 +216,7 @@ def _run_vqc_command(args: argparse.Namespace) -> int:
     """
     from qml.classifiers import run_vqc
 
+    noise_model = _noise_model_from_args(args)
     result = run_vqc(
         n_samples=args.samples,
         noise=args.noise,
@@ -188,6 +232,7 @@ def _run_vqc_command(args: argparse.Namespace) -> int:
         optimizer=args.optimizer,
         early_stopping_patience=args.early_stopping_patience,
         early_stopping_min_delta=args.early_stopping_min_delta,
+        noise_model=noise_model,
     )
 
     print(f"Model: {result['model']}")
@@ -204,6 +249,7 @@ def _run_regression_command(args: argparse.Namespace) -> int:
     """
     from qml.regression import run_vqr
 
+    noise_model = _noise_model_from_args(args)
     result = run_vqr(
         n_samples=args.samples,
         noise=args.noise,
@@ -219,6 +265,7 @@ def _run_regression_command(args: argparse.Namespace) -> int:
         optimizer=args.optimizer,
         early_stopping_patience=args.early_stopping_patience,
         early_stopping_min_delta=args.early_stopping_min_delta,
+        noise_model=noise_model,
     )
 
     print(f"Model: {result['model']}")
@@ -237,6 +284,7 @@ def _run_qcnn_command(args: argparse.Namespace) -> int:
     """
     from qml.qcnn import run_qcnn
 
+    noise_model = _noise_model_from_args(args)
     result = run_qcnn(
         n_samples=args.samples,
         noise=args.noise,
@@ -251,6 +299,7 @@ def _run_qcnn_command(args: argparse.Namespace) -> int:
         optimizer=args.optimizer,
         early_stopping_patience=args.early_stopping_patience,
         early_stopping_min_delta=args.early_stopping_min_delta,
+        noise_model=noise_model,
     )
 
     print(f"Model: {result['model']}")
@@ -368,6 +417,7 @@ def _run_kernel_command(args: argparse.Namespace) -> int:
     """
     from qml.kernel_methods import run_quantum_kernel_classifier
 
+    noise_model = _noise_model_from_args(args)
     result = run_quantum_kernel_classifier(
         n_samples=args.samples,
         noise=args.noise,
@@ -377,6 +427,7 @@ def _run_kernel_command(args: argparse.Namespace) -> int:
         plot=args.plot,
         shots=args.shots,
         save=args.save,
+        noise_model=noise_model,
     )
 
     print(f"Model: {result['model']}")

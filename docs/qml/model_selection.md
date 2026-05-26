@@ -88,7 +88,8 @@ without knowing the input range.
 ## Shots And Noise
 
 Use analytic execution for API smoke tests and initial model comparisons. Add
-finite-shot runs when sampling variance is part of the question.
+finite-shot runs when sampling variance is part of the question. Add channel
+noise only after the noiseless behavior is understood.
 
 Finite-shot or noisy results are most useful when paired with:
 
@@ -97,6 +98,10 @@ Finite-shot or noisy results are most useful when paired with:
 - multiple seeds
 - runtime summaries
 - a short statement about metric degradation
+
+The package-level `noise_model` option supports depolarizing,
+amplitude-damping, and readout-error probabilities for circuit-backed QML APIs.
+These simulations are robustness checks, not hardware-calibrated claims.
 
 Do not mix analytic and finite-shot results in one ranking unless the execution
 mode is clearly labeled.

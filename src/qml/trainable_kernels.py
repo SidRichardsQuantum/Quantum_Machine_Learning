@@ -21,6 +21,12 @@ from qml.data import make_regression_dataset
 from qml.embeddings import embedding_parameter_shape, get_embedding
 from qml.io_utils import ensure_dir, images_path, results_path, save_json
 from qml.metrics import accuracy_score, mean_absolute_error, mean_squared_error
+from qml.noise import (
+    apply_noise_channels,
+    device_name_for_noise,
+    noise_model_tag,
+    noise_model_to_dict,
+)
 from qml.optimizers import get_optimizer
 from qml.training import run_training_loop
 from qml.visualize import (
@@ -147,6 +153,7 @@ class TrainableQuantumKernelRegressor:
         alpha: float = 1.0,
         shots_train: int | None = None,
         shots_kernel: int | None = None,
+        noise_model: dict[str, float] | None = None,
         seed: int = 123,
     ) -> None:
         self.embedding = embedding
@@ -159,6 +166,7 @@ class TrainableQuantumKernelRegressor:
         self.alpha = alpha
         self.shots_train = shots_train
         self.shots_kernel = shots_kernel
+        self.noise_model = noise_model_to_dict(noise_model)
         self.seed = seed
 
     def get_params(self, deep: bool = True) -> dict[str, Any]:
@@ -173,6 +181,7 @@ class TrainableQuantumKernelRegressor:
             "alpha": self.alpha,
             "shots_train": self.shots_train,
             "shots_kernel": self.shots_kernel,
+            "noise_model": self.noise_model,
             "seed": self.seed,
         }
 
@@ -181,6 +190,8 @@ class TrainableQuantumKernelRegressor:
         for key, value in params.items():
             if key not in valid:
                 raise ValueError(f"Invalid parameter {key!r} for TrainableQuantumKernelRegressor.")
+            if key == "noise_model":
+                value = noise_model_to_dict(value)
             setattr(self, key, value)
         return self
 
@@ -202,8 +213,16 @@ class TrainableQuantumKernelRegressor:
                 )
             param_shape = (1,)
 
-        dev_train = qml.device("default.qubit", wires=n_qubits, seed=self.seed)
-        dev_eval = qml.device("default.qubit", wires=n_qubits, seed=self.seed)
+        dev_train = qml.device(
+            device_name_for_noise(self.noise_model),
+            wires=n_qubits,
+            seed=self.seed,
+        )
+        dev_eval = qml.device(
+            device_name_for_noise(self.noise_model),
+            wires=n_qubits,
+            seed=self.seed,
+        )
 
         def apply_embedding(x, params) -> None:
             if is_trainable:
@@ -215,12 +234,14 @@ class TrainableQuantumKernelRegressor:
         def kernel_train_base(x1, x2, params):
             apply_embedding(x1, params)
             qml.adjoint(apply_embedding)(x2, params)
+            apply_noise_channels(wires, self.noise_model, readout_wires=wires)
             return qml.probs(wires=wires)
 
         @qml.qnode(dev_eval)
         def kernel_eval_base(x1, x2, params):
             apply_embedding(x1, params)
             qml.adjoint(apply_embedding)(x2, params)
+            apply_noise_channels(wires, self.noise_model, readout_wires=wires)
             return qml.probs(wires=wires)
 
         kernel_train = (
@@ -327,6 +348,7 @@ def run_trainable_quantum_kernel_classifier(
     svc_c: float = 1.0,
     shots_train: int | None = None,
     shots_kernel: int | None = None,
+    noise_model: dict[str, float] | None = None,
     plot: bool = False,
     save: bool = False,
     results_dir: str | Path | None = None,
@@ -429,8 +451,9 @@ def run_trainable_quantum_kernel_classifier(
 
         param_shape = (1,)
 
-    dev_train = qml.device("default.qubit", wires=n_qubits, seed=seed)
-    dev_kernel = qml.device("default.qubit", wires=n_qubits, seed=seed)
+    noise_model = noise_model_to_dict(noise_model)
+    dev_train = qml.device(device_name_for_noise(noise_model), wires=n_qubits, seed=seed)
+    dev_kernel = qml.device(device_name_for_noise(noise_model), wires=n_qubits, seed=seed)
 
     def apply_embedding(x, params) -> None:
         if is_trainable:
@@ -442,12 +465,14 @@ def run_trainable_quantum_kernel_classifier(
     def kernel_circuit_train_base(x1, x2, params):
         apply_embedding(x1, params)
         qml.adjoint(apply_embedding)(x2, params)
+        apply_noise_channels(wires, noise_model, readout_wires=wires)
         return qml.probs(wires=wires)
 
     @qml.qnode(dev_kernel)
     def kernel_circuit_eval_base(x1, x2, params):
         apply_embedding(x1, params)
         qml.adjoint(apply_embedding)(x2, params)
+        apply_noise_channels(wires, noise_model, readout_wires=wires)
         return qml.probs(wires=wires)
 
     kernel_circuit_train = (
@@ -575,6 +600,7 @@ def run_trainable_quantum_kernel_classifier(
         "svc_c": svc_c,
         "shots_train": shots_train,
         "shots_kernel": shots_kernel,
+        "noise_model": noise_model,
         "loss_trace": loss_trace,
         "alignment_trace": alignment_trace,
         "final_loss": float(loss_trace[-1]) if loss_trace else float("nan"),
@@ -603,7 +629,8 @@ def run_trainable_quantum_kernel_classifier(
         f"samples{n_samples}_"
         f"noise{str(noise).replace('.', 'p')}_"
         f"seed{seed}_"
-        f"{train_tag}_{kernel_tag}"
+        f"{train_tag}_{kernel_tag}_"
+        f"{noise_model_tag(noise_model)}"
     )
 
     def _results_file(filename: str) -> Path:
@@ -679,6 +706,7 @@ def run_trainable_quantum_kernel_regressor(
     alpha: float = 1.0,
     shots_train: int | None = None,
     shots_kernel: int | None = None,
+    noise_model: dict[str, float] | None = None,
 ) -> dict[str, Any]:
     """
     Run a trainable quantum kernel regressor on a named regression dataset.
@@ -701,6 +729,7 @@ def run_trainable_quantum_kernel_regressor(
         alpha=alpha,
         shots_train=shots_train,
         shots_kernel=shots_kernel,
+        noise_model=noise_model,
         seed=seed,
     )
     model.fit(data["x_train"], data["y_train"])
@@ -716,6 +745,9 @@ def run_trainable_quantum_kernel_regressor(
         "embedding": model.embedding_name_,
         "embedding_layers": embedding_layers,
         "steps": steps,
+        "shots_train": shots_train,
+        "shots_kernel": shots_kernel,
+        "noise_model": model.noise_model,
         "loss_trace": model.loss_trace_,
         "final_loss": float(model.loss_trace_[-1]),
         "final_alignment": model.alignment_,

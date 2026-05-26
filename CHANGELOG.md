@@ -1,6 +1,37 @@
 # CHANGELOG.md
 
-## [0.2.7] - 26-05-2026
+## [0.2.8] - 25-05-2026
+
+### Added
+
+- Added `qml.noise` helpers for validated depolarizing, amplitude-damping, and
+  readout-error channel specifications.
+- Added opt-in `noise_model` support for variational estimators, quantum
+  kernels, trainable quantum kernels, QCNN workflows, reservoir feature maps,
+  and the VQC/VQR/kernel workflow functions.
+- Added CLI noise-model flags for circuit-backed workflows and benchmark
+  commands:
+  - `--depolarizing`
+  - `--amplitude-damping`
+  - `--readout-error`
+
+### Changed
+
+- Switched noisy circuit execution to PennyLane `default.mixed` only when a
+  nonzero noise model is supplied, preserving existing noiseless defaults.
+- Included canonical `noise_model` metadata in noisy workflow and benchmark
+  outputs.
+- Bumped package metadata to `0.2.8`.
+
+### Validation
+
+- Added focused tests for noise-model validation, noisy quantum kernels, noisy
+  variational estimators, and noisy reservoir features.
+- Verified focused noise, validation, estimator API, and Ruff checks pass.
+
+---
+
+## [0.2.7] - 25-05-2026
 
 ### Added
 
@@ -39,6 +70,29 @@
 
 - Expanded the finite-shot benchmark notebook to compare analytic, 64-shot,
   128-shot, and 512-shot execution with metric deltas versus analytic baselines.
+- Added local pre-commit quality hooks for Ruff, formatting, YAML, TOML, and
+  whitespace checks.
+- Refactored shared classical-baseline fitting, result assembly, naming, and
+  dataset helpers into a private utility module while preserving public
+  workflow APIs.
+- Refactored benchmark summary-statistics, timing, and metadata helpers into a
+  private utility module while preserving public benchmark APIs.
+- Updated packaging metadata tests to validate the next release version without
+  pinning stale package metadata.
+
+### Validation
+
+- Added focused tests for package release metadata, shared classical baseline
+  helper behavior, and benchmark aggregation helpers.
+- Verified `pre-commit run --all-files`, `ruff check .`, and the full pytest
+  suite pass after formatting and whitespace cleanup.
+
+---
+
+## [0.2.5] - 25-05-2026
+
+### Changed
+
 - Added local pre-commit quality hooks for Ruff, formatting, YAML, TOML, and
   whitespace checks.
 - Refactored shared classical-baseline fitting, result assembly, naming, and

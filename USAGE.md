@@ -617,7 +617,9 @@ Optional arguments:
 
 ## Noise-aware execution
 
-Finite-shot simulation is supported across all quantum workflows.
+Finite-shot simulation is supported across all quantum workflows. Circuit-backed
+workflows also accept explicit depolarizing, amplitude-damping, and readout
+error probabilities through `noise_model`.
 
 Internally implemented via:
 
@@ -638,7 +640,27 @@ run_trainable_quantum_kernel_classifier(
 )
 ```
 
-When a seed is provided, runs remain deterministic.
+Channel-noise example:
+
+```python
+from qml import build_noise_model, run_quantum_kernel_classifier
+
+noise_model = build_noise_model(depolarizing=0.01, readout_error=0.02)
+
+run_quantum_kernel_classifier(
+    shots=256,
+    noise_model=noise_model,
+)
+```
+
+CLI commands expose the same model with flags:
+
+```bash
+qml-pennylane vqc --shots 128 --depolarizing 0.01 --readout-error 0.02
+```
+
+Noisy workflows use PennyLane `default.mixed`. When a seed is provided, runs
+remain deterministic.
 
 ---
 

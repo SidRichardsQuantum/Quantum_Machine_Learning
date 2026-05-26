@@ -18,6 +18,12 @@ from sklearn.svm import SVC
 
 from qml.embeddings import apply_angle_embedding, get_embedding
 from qml.metrics import accuracy_score, mean_absolute_error, mean_squared_error
+from qml.noise import (
+    apply_noise_channels,
+    device_name_for_noise,
+    noise_model_cache_key,
+    noise_model_to_dict,
+)
 
 
 def _as_2d(x) -> np.ndarray:
@@ -57,6 +63,9 @@ class QuantumKernel:
         Optional shot count. ``None`` uses analytic simulation.
     seed
         Device seed.
+    noise_model
+        Optional channel probabilities for noisy simulation. Supported keys are
+        ``depolarizing``, ``amplitude_damping``, and ``readout_error``.
     cache
         Whether to cache pairwise kernel evaluations.
     """
@@ -65,8 +74,12 @@ class QuantumKernel:
     params: np.ndarray | None = None
     shots: int | None = None
     seed: int = 123
+    noise_model: dict[str, float] | None = None
     cache: bool = True
     _pair_cache: dict[tuple[Any, ...], float] = field(default_factory=dict, init=False)
+
+    def __post_init__(self) -> None:
+        self.noise_model = noise_model_to_dict(self.noise_model)
 
     def clear_cache(self) -> None:
         """Clear cached pairwise kernel evaluations."""
@@ -94,8 +107,14 @@ class QuantumKernel:
             )
 
         params = None if self.params is None else np.asarray(self.params, dtype=float)
-        key = (_cache_key(x1, params), _cache_key(x2, params), self.embedding, self.shots)
-        reverse_key = (key[1], key[0], key[2], key[3])
+        key = (
+            _cache_key(x1, params),
+            _cache_key(x2, params),
+            self.embedding,
+            self.shots,
+            noise_model_cache_key(self.noise_model),
+        )
+        reverse_key = (key[1], key[0], key[2], key[3], key[4])
         if self.cache:
             if key in self._pair_cache:
                 return self._pair_cache[key]
@@ -103,12 +122,13 @@ class QuantumKernel:
                 return self._pair_cache[reverse_key]
 
         wires = list(range(x1.shape[0]))
-        dev = qml.device("default.qubit", wires=len(wires), seed=self.seed)
+        dev = qml.device(device_name_for_noise(self.noise_model), wires=len(wires), seed=self.seed)
 
         @qml.qnode(dev)
         def circuit_base(a, b):
             self._apply_embedding(a, wires)
             qml.adjoint(self._apply_embedding)(b, wires)
+            apply_noise_channels(wires, self.noise_model, readout_wires=wires)
             return qml.probs(wires=wires)
 
         circuit = (

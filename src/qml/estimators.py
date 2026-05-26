@@ -17,6 +17,7 @@ from pennylane import numpy as pnp
 from qml.ansatz import apply_hardware_efficient_ansatz, parameter_shape
 from qml.embeddings import apply_angle_embedding
 from qml.metrics import accuracy_score, mean_absolute_error, mean_squared_error
+from qml.noise import apply_noise_channels, device_name_for_noise, noise_model_to_dict
 from qml.optimizers import get_optimizer
 from qml.training import run_training_loop
 
@@ -54,6 +55,7 @@ class QuantumRegressor:
         optimizer_kwargs: dict[str, Any] | None = None,
         seed: int = 123,
         shots: int | None = None,
+        noise_model: dict[str, float] | None = None,
     ) -> None:
         self.n_layers = n_layers
         self.steps = steps
@@ -62,6 +64,7 @@ class QuantumRegressor:
         self.optimizer_kwargs = optimizer_kwargs or {}
         self.seed = seed
         self.shots = shots
+        self.noise_model = noise_model_to_dict(noise_model)
 
     def get_params(self, deep: bool = True) -> dict[str, Any]:
         """Return constructor parameters for sklearn-style model selection."""
@@ -73,6 +76,7 @@ class QuantumRegressor:
             "optimizer_kwargs": dict(self.optimizer_kwargs),
             "seed": self.seed,
             "shots": self.shots,
+            "noise_model": self.noise_model,
         }
 
     def set_params(self, **params):
@@ -81,18 +85,21 @@ class QuantumRegressor:
         for key, value in params.items():
             if key not in valid:
                 raise ValueError(f"Invalid parameter {key!r} for QuantumRegressor.")
+            if key == "noise_model":
+                value = noise_model_to_dict(value)
             setattr(self, key, value)
         return self
 
     def _fit_single(self, x: np.ndarray, y: np.ndarray, seed: int) -> _TrainedCircuit:
         n_qubits = x.shape[1]
         wires = list(range(n_qubits))
-        dev = qml.device("default.qubit", wires=n_qubits, seed=seed)
+        dev = qml.device(device_name_for_noise(self.noise_model), wires=n_qubits, seed=seed)
 
         @qml.qnode(dev, interface="autograd")
         def circuit_base(sample, params):
             apply_angle_embedding(sample, wires=wires)
             apply_hardware_efficient_ansatz(params, wires=wires)
+            apply_noise_channels(wires, self.noise_model, readout_wires=[0])
             return qml.expval(qml.PauliZ(wires[0]))
 
         circuit = (
@@ -136,12 +143,13 @@ class QuantumRegressor:
     def _predict_single(self, x: np.ndarray, params: np.ndarray) -> np.ndarray:
         n_qubits = x.shape[1]
         wires = list(range(n_qubits))
-        dev = qml.device("default.qubit", wires=n_qubits, seed=self.seed)
+        dev = qml.device(device_name_for_noise(self.noise_model), wires=n_qubits, seed=self.seed)
 
         @qml.qnode(dev)
         def circuit_base(sample, current_params):
             apply_angle_embedding(sample, wires=wires)
             apply_hardware_efficient_ansatz(current_params, wires=wires)
+            apply_noise_channels(wires, self.noise_model, readout_wires=[0])
             return qml.expval(qml.PauliZ(wires[0]))
 
         circuit = (
@@ -180,6 +188,7 @@ class QuantumClassifier:
         optimizer_kwargs: dict[str, Any] | None = None,
         seed: int = 123,
         shots: int | None = None,
+        noise_model: dict[str, float] | None = None,
     ) -> None:
         self.n_layers = n_layers
         self.steps = steps
@@ -188,6 +197,7 @@ class QuantumClassifier:
         self.optimizer_kwargs = optimizer_kwargs or {}
         self.seed = seed
         self.shots = shots
+        self.noise_model = noise_model_to_dict(noise_model)
 
     def get_params(self, deep: bool = True) -> dict[str, Any]:
         """Return constructor parameters for sklearn-style model selection."""
@@ -199,6 +209,7 @@ class QuantumClassifier:
             "optimizer_kwargs": dict(self.optimizer_kwargs),
             "seed": self.seed,
             "shots": self.shots,
+            "noise_model": self.noise_model,
         }
 
     def set_params(self, **params):
@@ -207,18 +218,21 @@ class QuantumClassifier:
         for key, value in params.items():
             if key not in valid:
                 raise ValueError(f"Invalid parameter {key!r} for QuantumClassifier.")
+            if key == "noise_model":
+                value = noise_model_to_dict(value)
             setattr(self, key, value)
         return self
 
     def _fit_binary(self, x: np.ndarray, y_binary: np.ndarray, seed: int) -> _TrainedCircuit:
         n_qubits = x.shape[1]
         wires = list(range(n_qubits))
-        dev = qml.device("default.qubit", wires=n_qubits, seed=seed)
+        dev = qml.device(device_name_for_noise(self.noise_model), wires=n_qubits, seed=seed)
 
         @qml.qnode(dev, interface="autograd")
         def circuit_base(sample, params):
             apply_angle_embedding(sample, wires=wires)
             apply_hardware_efficient_ansatz(params, wires=wires)
+            apply_noise_channels(wires, self.noise_model, readout_wires=[0])
             return qml.expval(qml.PauliZ(wires[0]))
 
         circuit = (
@@ -268,12 +282,13 @@ class QuantumClassifier:
     def _predict_proba_binary(self, x: np.ndarray, params: np.ndarray) -> np.ndarray:
         n_qubits = x.shape[1]
         wires = list(range(n_qubits))
-        dev = qml.device("default.qubit", wires=n_qubits, seed=self.seed)
+        dev = qml.device(device_name_for_noise(self.noise_model), wires=n_qubits, seed=self.seed)
 
         @qml.qnode(dev)
         def circuit_base(sample, current_params):
             apply_angle_embedding(sample, wires=wires)
             apply_hardware_efficient_ansatz(current_params, wires=wires)
+            apply_noise_channels(wires, self.noise_model, readout_wires=[0])
             return qml.expval(qml.PauliZ(wires[0]))
 
         circuit = (

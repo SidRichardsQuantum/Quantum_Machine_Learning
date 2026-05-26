@@ -23,6 +23,12 @@ from qml.embeddings import (
 from qml.io_utils import images_path, results_path, save_json
 from qml.io_utils import ensure_dir
 from qml.metrics import accuracy_score
+from qml.noise import (
+    apply_noise_channels,
+    device_name_for_noise,
+    noise_model_tag,
+    noise_model_to_dict,
+)
 from qml.visualize import (
     plot_dataset_2d,
     plot_decision_boundary,
@@ -67,6 +73,7 @@ def run_vqc(
     embedding: str = "angle",
     embedding_layers: int = 1,
     shots: int | None = None,
+    noise_model: dict[str, float] | None = None,
     plot: bool = False,
     save: bool = False,
     results_dir: str | Path | None = None,
@@ -100,6 +107,9 @@ def run_vqc(
         parameters.
     shots
         Number of measurement shots. If ``None``, uses analytic mode.
+    noise_model
+        Optional channel probabilities for noisy simulation. Supported keys are
+        ``depolarizing``, ``amplitude_damping``, and ``readout_error``.
     plot
         Whether to show generated plots.
     save
@@ -128,6 +138,7 @@ def run_vqc(
 
     n_qubits = x_train.shape[1]
     wires = list(range(n_qubits))
+    noise_model = noise_model_to_dict(noise_model)
 
     embedding_name = embedding.strip().lower()
     embedding_fn = get_embedding(embedding_name)
@@ -152,7 +163,7 @@ def run_vqc(
             ansatz_params = pnp.reshape(params, ansatz_shape)
         return embedding_params, ansatz_params
 
-    dev = qml.device("default.qubit", wires=n_qubits, seed=seed)
+    dev = qml.device(device_name_for_noise(noise_model), wires=n_qubits, seed=seed)
 
     @qml.qnode(dev, interface="autograd")
     def circuit_base(x, params):
@@ -164,6 +175,7 @@ def run_vqc(
             embedding_fn(x, embedding_params, wires=wires)
 
         apply_hardware_efficient_ansatz(ansatz_params, wires=wires)
+        apply_noise_channels(wires, noise_model, readout_wires=[0])
         return qml.expval(qml.PauliZ(wires[0]))
 
     circuit = qml.set_shots(circuit_base, shots) if shots is not None else circuit_base
@@ -225,6 +237,7 @@ def run_vqc(
         "early_stopping_patience": early_stopping_patience,
         "early_stopping_min_delta": early_stopping_min_delta,
         "shots": shots,
+        "noise_model": noise_model,
         "loss_history": loss_history,
         "final_loss": _binary_cross_entropy(y_train, train_probs),
         "train_accuracy": accuracy_score(y_train, y_train_pred),
@@ -246,6 +259,7 @@ def run_vqc(
     stem = (
         f"{dataset}_embed{embedding_name}_layers{n_layers}_steps{steps}_samples{n_samples}"
         f"_noise{str(noise).replace('.', 'p')}_seed{seed}_{shots_tag}"
+        f"_{noise_model_tag(noise_model)}"
     )
 
     def predict_proba_grid(x_grid):
