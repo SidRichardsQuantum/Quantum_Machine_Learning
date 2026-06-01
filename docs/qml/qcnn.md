@@ -30,6 +30,9 @@ $$
 |\phi(x)\rangle.
 $$
 
+Here $x \in \mathbb{R}^{d}$ is one input feature vector and $d$ is the feature
+dimension before it is mapped onto the four-qubit register.
+
 The QCNN applies a hierarchical circuit of the form
 
 $$
@@ -50,6 +53,10 @@ The components are:
 - `U_pool`: pooling-style entangling reductions
 - `U_conv,2`: second-stage convolution on the reduced representation
 - `U_dense`: final single-qubit rotations before readout
+- $\theta$ is the complete parameter vector.
+- $\theta_e$, $\theta_1$, $\theta_2$, and $\theta_d$ are the trainable
+  parameter subsets for the embedding, first convolution, second convolution,
+  and dense readout blocks.
 
 ---
 
@@ -61,6 +68,9 @@ $$
 s(x,\theta) = \langle Z_3 \rangle.
 $$
 
+Here $Z_3$ is the Pauli-$Z$ observable on the readout wire, and $s(x,\theta)$
+is the scalar circuit score for input $x$ and parameters $\theta$.
+
 This expectation is mapped to a binary probability:
 
 $$
@@ -69,7 +79,9 @@ p(y=1 \mid x,\theta)
 \frac{1 - s(x,\theta)}{2}.
 $$
 
-Training minimizes binary cross-entropy over the training set.
+Here $p(y=1 \mid x,\theta)$ is the predicted probability of class 1. Training
+minimizes binary cross-entropy over the training set, where each training label
+$y_i$ is in $\{0,1\}$.
 
 ---
 

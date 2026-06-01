@@ -29,6 +29,9 @@ $$
 |\psi(x)\rangle.
 $$
 
+Here $x$ indexes one sample from the structured state family, and
+$|\psi(x)\rangle$ is the corresponding normalized four-qubit input state.
+
 The encoder applies a trainable unitary
 
 $$
@@ -36,6 +39,9 @@ $$
 =
 U(\theta)|\psi(x)\rangle.
 $$
+
+Here $\theta$ is the complete set of encoder parameters and $U(\theta)$ is the
+trainable encoder unitary.
 
 If compression succeeds, the state factorizes approximately as
 
@@ -57,6 +63,9 @@ how often the trash subsystem lands in the all-zero basis state.
 The training signal is the probability of measuring the trash subsystem in
 $|0\rangle^{\otimes k}$.
 
+Here $k$ is the number of trash qubits, equal to the total register width minus
+the number of retained latent qubits.
+
 If
 
 $$
@@ -70,6 +79,8 @@ $$
 =
 1 - \mathbb{E}_x \left[p_{\mathrm{trash}}(0 \cdots 0 \mid x,\theta)\right].
 $$
+
+Here $\mathbb{E}_x[\cdot]$ is the empirical average over the training samples.
 
 Minimizing this loss encourages the encoder to compress the structured state
 family into the latent subsystem.

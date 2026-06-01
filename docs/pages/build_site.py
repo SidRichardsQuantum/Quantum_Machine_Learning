@@ -42,6 +42,12 @@ DOCS = [
         "Stable public imports, workflow functions, estimators, benchmarks, and helpers.",
     ),
     (
+        "Algorithm Coverage",
+        ROOT / "docs/qml/algorithm_coverage.md",
+        "algorithm-coverage.html",
+        "Map implemented QML algorithms to theory notes, tutorials, benchmarks, and pages.",
+    ),
+    (
         "Tutorial Results",
         RESULT_DOCS / "tutorials.md",
         "results-tutorials.html",
@@ -143,6 +149,12 @@ DOCS = [
         ROOT / "docs/qml/benchmarks.md",
         "benchmarks.html",
         "Deterministic multi-seed comparisons across implemented models.",
+    ),
+    (
+        "Implementation Contracts",
+        ROOT / "docs/qml/implementation_contracts.md",
+        "implementation-contracts.html",
+        "Behavioral contracts for advertised quantum and classical model implementations.",
     ),
 ]
 

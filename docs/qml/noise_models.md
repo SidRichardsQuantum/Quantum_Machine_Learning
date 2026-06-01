@@ -17,6 +17,14 @@ Use `qml.noise.build_noise_model(...)` or pass a dictionary with these keys:
 All values are probabilities in `[0, 1]`. Nonzero noise models run on
 PennyLane `default.mixed`; noiseless workflows continue to use `default.qubit`.
 
+The probability parameters mean:
+
+- `depolarizing`: probability of replacing a wire state with a depolarized
+  state after supported circuit operations.
+- `amplitude_damping`: probability of amplitude damping on each circuit wire.
+- `readout_error`: probability of a bit-flip approximation to measurement
+  readout error on measured wires.
+
 ## Example
 
 ```python
@@ -38,6 +46,9 @@ result = run_vqc(
 
 kernel = QuantumKernel(shots=256, noise_model=noise_model)
 ```
+
+Here `shots` is the number of circuit samples per expectation or probability
+estimate. `shots=None` means analytic simulator execution.
 
 ## CLI
 

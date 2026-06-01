@@ -13,5 +13,10 @@ Regenerate these reports from the repository root:
 python docs/pages/generate_results.py
 ```
 
-Pass `--execute-notebooks` to rerun notebooks before extracting notebook outputs.
-These reports are reproducible reference outputs, not quantum-advantage claims.
+Pass `--execute-notebooks` to rerun all notebooks before extracting notebook
+outputs, or pass `--execute-notebook <path>` one or more times to rerun only
+selected notebooks. GitHub Pages publishes the committed reports and assets; the
+`Refresh results` workflow executes notebooks and refreshes generated artifacts
+when relevant notebook, QML source, result-generation, or dependency files
+change. These reports are reproducible reference outputs, not quantum-advantage
+claims.

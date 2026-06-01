@@ -27,7 +27,7 @@ def _run_classification_benchmark_command(args: argparse.Namespace) -> int:
         test_size=args.test_size,
         dataset=args.dataset,
         model_kwargs={
-            "vqc": {"noise_model": noise_model},
+            "vqc": {"noise_model": noise_model, "batch_size": args.batch_size},
             "qcnn": {"noise_model": noise_model},
             "quantum_kernel": {"noise_model": noise_model},
             "trainable_quantum_kernel": {"noise_model": noise_model},
@@ -67,7 +67,7 @@ def _run_regression_benchmark_command(args: argparse.Namespace) -> int:
         test_size=args.test_size,
         dataset=args.dataset,
         model_kwargs={
-            "vqr": {"noise_model": noise_model},
+            "vqr": {"noise_model": noise_model, "batch_size": args.batch_size},
             "quantum_kernel_regressor": {"noise_model": noise_model},
             "quantum_gaussian_process_regressor": {"noise_model": noise_model},
             "trainable_quantum_kernel_regressor": {"noise_model": noise_model},
@@ -120,6 +120,7 @@ def _run_finite_shot_benchmark_command(args: argparse.Namespace) -> int:
                 "vqc": {
                     "n_layers": 1,
                     "steps": args.steps,
+                    "batch_size": args.batch_size,
                     "shots": shots,
                     "noise_model": noise_model,
                 },
@@ -149,6 +150,7 @@ def _run_finite_shot_benchmark_command(args: argparse.Namespace) -> int:
                 "vqr": {
                     "n_layers": 1,
                     "steps": args.steps,
+                    "batch_size": args.batch_size,
                     "shots": shots,
                     "noise_model": noise_model,
                 },
@@ -232,6 +234,7 @@ def _run_vqc_command(args: argparse.Namespace) -> int:
         optimizer=args.optimizer,
         early_stopping_patience=args.early_stopping_patience,
         early_stopping_min_delta=args.early_stopping_min_delta,
+        batch_size=args.batch_size,
         noise_model=noise_model,
     )
 
@@ -265,6 +268,7 @@ def _run_regression_command(args: argparse.Namespace) -> int:
         optimizer=args.optimizer,
         early_stopping_patience=args.early_stopping_patience,
         early_stopping_min_delta=args.early_stopping_min_delta,
+        batch_size=args.batch_size,
         noise_model=noise_model,
     )
 

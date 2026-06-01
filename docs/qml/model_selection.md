@@ -70,6 +70,10 @@ Estimator classes expose `fit`, `predict`, `score`, `get_params`, and
 functions when you need custom splits, preprocessing, or integration with other
 Python workflows.
 
+For variational estimators, set `batch_size` to use deterministic mini-batch
+optimizer updates. Leave `batch_size=None` for full-batch training, which is the
+default and matches earlier package behavior.
+
 ## Cross-Validation Helpers
 
 Use `qml.model_selection` when comparing estimator-style models on

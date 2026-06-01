@@ -70,6 +70,10 @@ C
 gamma
 ```
 
+Here `kernel` selects the SVM kernel family, `C` is the inverse regularization
+strength, and `gamma` controls the scale of RBF, polynomial, and sigmoid
+kernels when those kernels use it.
+
 Useful for comparison with quantum kernel methods.
 
 ---
@@ -132,6 +136,8 @@ result = run_ridge_regression(
     alpha=1.0,
 )
 ```
+
+Here `alpha` is the L2 regularization strength.
 
 Returns:
 

@@ -34,7 +34,8 @@ $$
 where:
 
 - $k$ is the number of qubits
-- $\theta$ are trainable circuit parameters
+- $d$ is the input feature dimension
+- $\theta$ is the full set of trainable circuit parameters
 
 The embedding is constructed using expectation values of Pauli observables:
 
@@ -60,13 +61,14 @@ The quantum embedding uses a parameterised circuit:
 $$
 |\phi(x,\theta)\rangle
 =
-U(x,\theta)|0\rangle
+U(x,\theta)|0\rangle^{\otimes k}
 $$
 
 where:
 
 - $U(x,\theta)$ contains both data encoding and trainable parameters
 - entangling gates allow correlations between features
+- $|0\rangle^{\otimes k}$ is the initial $k$-qubit computational basis state
 
 The embedding vector is obtained from expectation values:
 
@@ -92,6 +94,14 @@ U_{ent}
 U_{enc}(x,\theta_\ell)
 $$
 
+where:
+
+- $L$ is the number of re-uploading layers
+- $\ell$ is the layer index
+- $\theta_\ell$ is the trainable parameter block for layer $\ell$
+- $U_{ent}$ is the entangling operation used in each layer
+- $U_{enc}$ is the data-dependent encoding operation
+
 Example encoding layer:
 
 $$
@@ -102,6 +112,10 @@ R_X(x_i + \theta_{i1})
 R_Y(x_i + \theta_{i2})
 R_Z(\theta_{i3})
 $$
+
+where $i$ indexes the encoded feature/qubit position, $x_i$ is the corresponding
+input feature, and $\theta_{i1}$, $\theta_{i2}$, and $\theta_{i3}$ are trainable
+rotation offsets or angles for that position.
 
 Repeated encoding allows the circuit to learn nonlinear transformations of the input space.
 
@@ -116,6 +130,8 @@ Given two inputs:
 $$
 x_i, x_j
 $$
+
+with labels $y_i$ and $y_j$, respectively.
 
 define embedding distance:
 
@@ -151,6 +167,7 @@ where:
 
 - $m$ is a margin hyperparameter
 - $d_{ij}$ is Euclidean distance between embeddings
+- $y_{ij}$ is 1 for same-class pairs and 0 for different-class pairs
 
 This objective:
 
@@ -181,23 +198,26 @@ After training, embeddings can be used for classical classification.
 
 A simple approach uses nearest centroid prediction.
 
-Compute centroid for each class:
+Compute centroid for each class $r$:
 
 $$
-c_k
+c_r
 =
-\frac{1}{N_k}
-\sum_{i : y_i = k}
+\frac{1}{N_r}
+\sum_{i : y_i = r}
 z(x_i,\theta)
 $$
+
+where $c_r$ is the centroid for class $r$ and $N_r$ is the number of training
+samples with label $r$.
 
 Prediction rule:
 
 $$
 \hat{y}
 =
-\arg\min_k
-\|z(x,\theta) - c_k\|_2
+\arg\min_r
+\|z(x,\theta) - c_r\|_2
 $$
 
 Other possible classifiers include:

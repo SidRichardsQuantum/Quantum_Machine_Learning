@@ -217,8 +217,8 @@ result = compare_regression_models(
 ```
 
 Quantum model tuning is supplied explicitly through `model_kwargs`, for example
-by sweeping layers, optimizer steps, step size, shots, or kernel settings across
-separate benchmark calls.
+by sweeping layers, optimizer steps, step size, `batch_size`, shots, or kernel
+settings across separate benchmark calls.
 
 ---
 
@@ -274,6 +274,12 @@ qml-pennylane benchmark finite-shots \
   --seeds 0 1 2 \
   --samples 70
 ```
+
+The benchmark notebook suite also includes a noise-model sweep that compares
+noiseless execution against depolarizing, amplitude-damping, readout-error, and
+combined low-noise settings for representative classification and regression
+QML workflows. Use it as a template for controlled hardware-error sensitivity
+studies by increasing seeds, sample counts, and channel probabilities.
 
 The real-data options are projected to two features so they remain compatible
 with the compact quantum examples and visualizers. They are useful sanity
@@ -332,6 +338,7 @@ Before publishing a benchmark table, record:
 - model list and model-specific kwargs
 - dataset name, sample count, split, noise level, and seed list
 - analytic or finite-shot execution settings
+- noise-model settings when noisy channels are enabled
 - package, Python, scikit-learn, and PennyLane versions
 - classical baselines and tuning grids
 - mean, standard deviation, and confidence intervals

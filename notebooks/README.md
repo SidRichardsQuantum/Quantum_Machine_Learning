@@ -42,6 +42,7 @@ seeds, training steps, and classical tuning for stronger benchmark runs.
 | `benchmarks/04-variational-model-capacity-benchmark.ipynb` | Sweep small VQC, QCNN, and VQR capacity settings against simple classical references. |
 | `benchmarks/05-finite-shot-benchmark.ipynb` | Compare analytic and finite-shot execution for supported QML workflows. |
 | `benchmarks/06-real-data-small-sample-benchmark.ipynb` | Benchmark small-feature real datasets exposed by the package against classical baselines. |
+| `benchmarks/07-noise-model-benchmark.ipynb` | Compare noiseless, depolarizing, amplitude-damping, readout-error, and combined-noise execution for representative QML workflows. |
 
 ## Real example notebooks
 

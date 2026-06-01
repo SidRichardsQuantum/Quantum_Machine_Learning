@@ -294,9 +294,13 @@ $$
 
 where $T$ is the total number of optimisation iterations.
 
+By default, each step uses the full training split. If `batch_size` is set, each
+step uses a deterministic mini-batch sampled from the training split. The
+mini-batch size is denoted by $B$, where $1 \le B \le N_{\mathrm{train}}$.
+
 At each step:
 
-1. evaluate the circuit on the training set
+1. evaluate the circuit on the current training batch
 2. compute probabilities $p_i$
 3. compute loss $\mathcal{L}(\theta)$
 4. compute gradients with respect to $\theta$

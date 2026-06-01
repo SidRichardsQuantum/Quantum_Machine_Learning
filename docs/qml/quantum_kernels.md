@@ -1,12 +1,13 @@
 # Quantum Kernel Methods
 
-This note describes the quantum kernel classifier implemented in `qml.kernel_methods`.
+This note describes the quantum kernel classifier and regressor implementations
+in `qml.kernel_methods` and `qml.kernels`.
 
-The model is a **hybrid quantum–classical classifier**:
+The models are **hybrid quantum-classical kernel estimators**:
 
 - classical data is encoded into a quantum state
 - pairwise quantum state overlaps define a kernel
-- the kernel matrix is passed to a classical support vector machine (SVM)
+- the kernel matrix is passed to a classical estimator
 - prediction is performed classically using the quantum-computed kernel
 
 Unlike the variational quantum classifier, there are **no trainable quantum circuit parameters** in the current implementation.
@@ -15,7 +16,7 @@ Unlike the variational quantum classifier, there are **no trainable quantum circ
 
 ## Data
 
-We consider a binary classification dataset:
+For classification, we consider a binary dataset:
 
 $$
 \mathcal{D} = \{(x_i, y_i)\}_{i=1}^N
@@ -27,6 +28,11 @@ where:
 - $x_i \in \mathbb{R}^d$ is the feature vector for sample $i$
 - $y_i \in \{0,1\}$ is the binary label for sample $i$
 - $d$ is the feature dimension
+
+For regression with `QuantumKernelRegressor`, the same notation is used except
+that the target is continuous:
+
+- $y_i \in \mathbb{R}$ is the regression target for sample $i$
 
 In the current implementation:
 
@@ -248,6 +254,44 @@ The quantum computer is used only for kernel evaluation. The optimisation of the
 
 ---
 
+## Kernel ridge regression
+
+For regression, the same quantum fidelity kernel can be consumed by kernel
+ridge regression. Given training targets:
+
+$$
+y \in \mathbb{R}^{N_{\mathrm{train}}},
+$$
+
+kernel ridge regression solves the regularized dual problem:
+
+$$
+\alpha = (K^{\mathrm{train}} + \lambda I)^{-1} y
+$$
+
+where:
+
+- $K^{\mathrm{train}}$ is the quantum kernel matrix on training inputs
+- $\lambda$ is the ridge regularization strength
+- $I$ is the identity matrix with shape
+  $N_{\mathrm{train}} \times N_{\mathrm{train}}$
+- $\alpha$ are the learned dual coefficients
+
+Predictions for a test input $x'$ use its kernel vector against the training
+set:
+
+$$
+\hat{y}(x') =
+\sum_{i=1}^{N_{\mathrm{train}}} \alpha_i K(x_i, x').
+$$
+
+The package exposes this path through `qml.kernels.QuantumKernelRegressor` and
+the benchmark model name `quantum_kernel_regressor`. The quantum part still only
+computes the feature-map fidelity kernel; target fitting and prediction are
+classical kernel-ridge operations.
+
+---
+
 ## Why kernels are useful
 
 Kernel methods are attractive because they separate two tasks:
@@ -318,7 +362,7 @@ It is appropriate for small educational and research-scale examples.
 
 ## Current implementation choices
 
-The current quantum kernel classifier is intentionally minimal.
+The current quantum kernel implementations are intentionally minimal.
 
 ### Included
 
@@ -328,7 +372,9 @@ The current quantum kernel classifier is intentionally minimal.
 - nearest-neighbour entangling structure
 - exact statevector simulation
 - precomputed-kernel SVM
+- precomputed-kernel ridge regression
 - train/test accuracy
+- train/test MSE and MAE for regression
 - returned train and test kernel matrices
 
 ---
@@ -338,8 +384,9 @@ The current quantum kernel classifier is intentionally minimal.
 The implemented workflow is organised as follows:
 
 - `qml.data` prepares the dataset
-- `qml.kernel_methods` defines the feature map, kernel circuit, kernel matrices, and SVM workflow
-- `qml.metrics` computes accuracy
+- `qml.kernel_methods` defines the small dataset-backed classifier workflow
+- `qml.kernels` defines reusable kernel estimators for user-supplied arrays
+- `qml.metrics` computes accuracy and regression metrics
 - `qml.io_utils` optionally saves results
 
 So the notebook remains a package client, while the full kernel logic lives in the package.
@@ -348,7 +395,7 @@ So the notebook remains a package client, while the full kernel logic lives in t
 
 ## Summary
 
-The implemented quantum kernel classifier is defined by:
+The implemented quantum kernel family is defined by:
 
 1. a feature map $U(x)$
 2. encoded states $|\phi(x)\rangle = U(x)|0\rangle^{\otimes n}$
@@ -357,7 +404,8 @@ The implemented quantum kernel classifier is defined by:
    K(x_i,x_j)=|\langle \phi(x_i)\mid\phi(x_j)\rangle|^2
    $$
 4. a training kernel matrix and test kernel matrix
-5. a classical SVM trained on the precomputed kernel
+5. a classical SVM classifier or kernel-ridge regressor trained on the
+   precomputed kernel
 
 Formally:
 
@@ -385,4 +433,6 @@ f(x)
 \sum_{i=1}^{N_{\mathrm{train}}} \alpha_i\,K(x_i, x) + b
 $$
 
-This is the core quantum kernel workflow used in the repository.
+This is the core quantum kernel workflow used in the repository. The
+classification and regression variants differ in the classical estimator that
+consumes the kernel, not in the quantum fidelity-kernel definition.

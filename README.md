@@ -150,6 +150,7 @@ result = run_vqc(
     n_samples=200,
     n_layers=2,
     steps=50,
+    batch_size=None,
     plot=True,
 )
 ```
@@ -165,6 +166,7 @@ result = run_vqr(
     n_samples=200,
     n_layers=2,
     steps=50,
+    batch_size=None,
     plot=True,
 )
 ```
@@ -460,9 +462,11 @@ Run workflows directly:
 
 ```bash
 python -m qml vqc --steps 50 --plot
+python -m qml vqc --steps 50 --batch-size 16
 python -m qml qcnn --steps 50 --plot
 python -m qml autoencoder --steps 50 --plot
 python -m qml regression --steps 50 --plot
+python -m qml regression --steps 50 --batch-size 16
 python -m qml kernel --plot
 python -m qml trainable-kernel --steps 50 --plot
 python -m qml metric-learning --steps 50 --plot
@@ -535,6 +539,7 @@ Core documentation:
 - **USAGE.md** — API examples
 - **ROADMAP.md** — package, notebook, benchmark, and release roadmap
 - **docs/qml/api_reference.md** — public imports, workflows, estimators, benchmarks, and helpers
+- **docs/qml/algorithm_coverage.md** — implementation-to-documentation coverage matrix
 - **docs/results/README.md** — generated result report index
 - **docs/results/api-reference.md** — generated deterministic reference outputs
 - **docs/results/tutorials.md** — generated tutorial notebook outputs
@@ -547,6 +552,7 @@ Core documentation:
 Algorithm notes:
 
 - docs/qml/api_reference.md
+- docs/qml/algorithm_coverage.md
 - docs/qml/variational_quantum_classifier.md
 - docs/qml/variational_regression.md
 - docs/qml/qcnn.md
@@ -559,6 +565,7 @@ Algorithm notes:
 - docs/qml/metric_learning.md
 - docs/qml/classical_baselines.md
 - docs/qml/benchmarks.md
+- docs/qml/implementation_contracts.md
 
 Tutorial notebooks:
 

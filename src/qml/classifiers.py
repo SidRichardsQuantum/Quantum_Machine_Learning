@@ -35,7 +35,7 @@ from qml.visualize import (
     plot_decision_boundary,
     plot_loss_curve,
 )
-from qml.training import run_training_loop
+from qml.training import minibatch_indices, run_training_loop, validate_batch_size
 from qml.optimizers import get_optimizer
 
 
@@ -71,6 +71,7 @@ def run_vqc(
     optimizer_kwargs: dict[str, Any] | None = None,
     early_stopping_patience: int | None = None,
     early_stopping_min_delta: float = 0.0,
+    batch_size: int | None = None,
     embedding: str = "angle",
     embedding_layers: int = 1,
     shots: int | None = None,
@@ -100,6 +101,9 @@ def run_vqc(
         Number of optimizer steps.
     step_size
         Optimizer step size.
+    batch_size
+        Optional mini-batch size for optimizer updates. If ``None``, training
+        uses the full training split at every step.
     embedding
         Embedding name. Supported values include ``"angle"`` and
         ``"data_reupload"``.
@@ -136,6 +140,7 @@ def run_vqc(
     x_test = data["x_test"]
     y_train = data["y_train"]
     y_test = data["y_test"]
+    batch_size = validate_batch_size(batch_size, len(x_train))
 
     n_qubits = x_train.shape[1]
     wires = list(range(n_qubits))
@@ -187,9 +192,9 @@ def run_vqc(
     def predict_proba_batch(x_data, params):
         return pnp.array([predict_proba_single(x, params) for x in x_data])
 
-    def cost(params):
-        probs = predict_proba_batch(x_train, params)
-        return _binary_cross_entropy_tensor(y_train, probs)
+    def cost(params, x_batch, y_batch):
+        probs = predict_proba_batch(x_batch, params)
+        return _binary_cross_entropy_tensor(y_batch, probs)
 
     rng = np.random.default_rng(seed)
     init_params = 0.01 * rng.standard_normal(total_size)
@@ -201,8 +206,15 @@ def run_vqc(
         **(optimizer_kwargs or {}),
     )
 
+    batch_iter = minibatch_indices(len(x_train), batch_size, seed=seed)
+
     def step_fn(params):
-        return opt.step_and_cost(cost, params)
+        batch_idx = next(batch_iter)
+
+        def batch_cost(current_params):
+            return cost(current_params, x_train[batch_idx], y_train[batch_idx])
+
+        return opt.step_and_cost(batch_cost, params)
 
     params, loss_history = run_training_loop(
         step_fn,
@@ -246,6 +258,7 @@ def run_vqc(
         "optimizer_kwargs": optimizer_kwargs or {},
         "early_stopping_patience": early_stopping_patience,
         "early_stopping_min_delta": early_stopping_min_delta,
+        "batch_size": batch_size,
         "shots": shots,
         "noise_model": noise_model,
         "loss_history": loss_history,

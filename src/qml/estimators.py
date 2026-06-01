@@ -19,7 +19,7 @@ from qml.embeddings import apply_angle_embedding
 from qml.metrics import accuracy_score, mean_absolute_error, mean_squared_error
 from qml.noise import apply_noise_channels, device_name_for_noise, noise_model_to_dict
 from qml.optimizers import get_optimizer
-from qml.training import run_training_loop
+from qml.training import minibatch_indices, run_training_loop, validate_batch_size
 
 
 def _as_2d(x) -> np.ndarray:
@@ -56,6 +56,7 @@ class QuantumRegressor:
         seed: int = 123,
         shots: int | None = None,
         noise_model: dict[str, float] | None = None,
+        batch_size: int | None = None,
     ) -> None:
         self.n_layers = n_layers
         self.steps = steps
@@ -65,6 +66,7 @@ class QuantumRegressor:
         self.seed = seed
         self.shots = shots
         self.noise_model = noise_model_to_dict(noise_model)
+        self.batch_size = batch_size
 
     def get_params(self, deep: bool = True) -> dict[str, Any]:
         """Return constructor parameters for sklearn-style model selection."""
@@ -77,6 +79,7 @@ class QuantumRegressor:
             "seed": self.seed,
             "shots": self.shots,
             "noise_model": self.noise_model,
+            "batch_size": self.batch_size,
         }
 
     def set_params(self, **params):
@@ -109,17 +112,23 @@ class QuantumRegressor:
         def predict_batch(samples, params):
             return pnp.array([circuit(sample, params) for sample in samples])
 
-        def cost(params):
-            preds = predict_batch(x, params)
-            return pnp.mean((preds - pnp.asarray(y, dtype=float)) ** 2)
-
         rng = np.random.default_rng(seed)
         init = 0.01 * rng.standard_normal(parameter_shape(self.n_layers, n_qubits))
         params = pnp.array(init, requires_grad=True)
         opt = get_optimizer(self.optimizer, stepsize=self.step_size, **self.optimizer_kwargs)
 
+        batch_size = validate_batch_size(self.batch_size, len(x))
+        batch_iter = minibatch_indices(len(x), batch_size, seed=seed)
+
         def step_fn(current_params):
-            return opt.step_and_cost(cost, current_params)
+            batch_idx = next(batch_iter)
+
+            def batch_cost(params):
+                preds = predict_batch(x[batch_idx], params)
+                targets = pnp.asarray(y[batch_idx], dtype=float)
+                return pnp.mean((preds - targets) ** 2)
+
+            return opt.step_and_cost(batch_cost, current_params)
 
         params, loss_history = run_training_loop(step_fn, params, self.steps)
         return _TrainedCircuit(params=np.asarray(params, dtype=float), loss_history=loss_history)
@@ -189,6 +198,7 @@ class QuantumClassifier:
         seed: int = 123,
         shots: int | None = None,
         noise_model: dict[str, float] | None = None,
+        batch_size: int | None = None,
     ) -> None:
         self.n_layers = n_layers
         self.steps = steps
@@ -198,6 +208,7 @@ class QuantumClassifier:
         self.seed = seed
         self.shots = shots
         self.noise_model = noise_model_to_dict(noise_model)
+        self.batch_size = batch_size
 
     def get_params(self, deep: bool = True) -> dict[str, Any]:
         """Return constructor parameters for sklearn-style model selection."""
@@ -210,6 +221,7 @@ class QuantumClassifier:
             "seed": self.seed,
             "shots": self.shots,
             "noise_model": self.noise_model,
+            "batch_size": self.batch_size,
         }
 
     def set_params(self, **params):
@@ -242,19 +254,24 @@ class QuantumClassifier:
         def predict_proba_batch(samples, params):
             return pnp.array([0.5 * (1.0 - circuit(sample, params)) for sample in samples])
 
-        def cost(params):
-            eps = 1e-8
-            probs = pnp.clip(predict_proba_batch(x, params), eps, 1.0 - eps)
-            targets = pnp.asarray(y_binary, dtype=float)
-            return -pnp.mean(targets * pnp.log(probs) + (1.0 - targets) * pnp.log(1.0 - probs))
-
         rng = np.random.default_rng(seed)
         init = 0.01 * rng.standard_normal(parameter_shape(self.n_layers, n_qubits))
         params = pnp.array(init, requires_grad=True)
         opt = get_optimizer(self.optimizer, stepsize=self.step_size, **self.optimizer_kwargs)
 
+        batch_size = validate_batch_size(self.batch_size, len(x))
+        batch_iter = minibatch_indices(len(x), batch_size, seed=seed)
+
         def step_fn(current_params):
-            return opt.step_and_cost(cost, current_params)
+            batch_idx = next(batch_iter)
+
+            def batch_cost(params):
+                eps = 1e-8
+                probs = pnp.clip(predict_proba_batch(x[batch_idx], params), eps, 1.0 - eps)
+                targets = pnp.asarray(y_binary[batch_idx], dtype=float)
+                return -pnp.mean(targets * pnp.log(probs) + (1.0 - targets) * pnp.log(1.0 - probs))
+
+            return opt.step_and_cost(batch_cost, current_params)
 
         params, loss_history = run_training_loop(step_fn, params, self.steps)
         return _TrainedCircuit(params=np.asarray(params, dtype=float), loss_history=loss_history)

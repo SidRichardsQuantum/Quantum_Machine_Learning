@@ -1,6 +1,6 @@
 # CHANGELOG.md
 
-## [Unreleased]
+## [0.2.10] - 01-06-2026
 
 ### Added
 
@@ -10,6 +10,14 @@
 - Added `--execute-notebook` support to `docs/pages/generate_results.py` so
   notebook-only refreshes can execute just the notebooks changed in a commit
   before regenerating the notebook result pages.
+- Added `notebooks/benchmarks/07-noise-model-benchmark.ipynb` comparing
+  noiseless, depolarizing, amplitude-damping, readout-error, and combined-noise
+  execution for representative classification and regression QML workflows.
+- Added an algorithm documentation coverage page mapping public QML
+  implementations to theory notes, tutorials, benchmarks, and generated web
+  pages.
+- Added deterministic mini-batch training support for VQC/VQR workflows and
+  variational estimator wrappers via `batch_size`.
 
 ### Changed
 
@@ -24,6 +32,10 @@
   itself.
 - Updated Pages tooling documentation to describe the split between fast static
   deployment and explicit generated-result refreshes.
+- Expanded kernel documentation for quantum kernel regression and trainable
+  quantum kernel classification theory coverage.
+- Clarified variable and parameter definitions across QML theory and support
+  documentation pages.
 
 ### Validation
 
@@ -31,6 +43,8 @@
 - Verified `docs/pages/generate_results.py` and `docs/pages/build_site.py`
   compile successfully.
 - Verified the static Pages build succeeds locally.
+- Added focused tests for mini-batch index generation, VQC/VQR mini-batch
+  workflows, and estimator parameter plumbing.
 
 ---
 

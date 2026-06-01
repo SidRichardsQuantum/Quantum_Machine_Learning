@@ -34,6 +34,9 @@ apply_angle_embedding(x, wires=[0, 1, 2])
 
 The input length must match the number of wires.
 
+Here `x` is the input feature vector and `wires` is the ordered list of qubits
+receiving those features.
+
 ## Amplitude Embedding
 
 ```python
@@ -46,6 +49,9 @@ The helper accepts up to `2 ** n_wires` features, pads shorter vectors with
 zeros, and normalizes the state. Longer vectors raise `ValueError` rather than
 silently truncating information.
 
+Here `n_wires` is the number of qubits in `wires`, so the amplitude state has
+dimension `2 ** n_wires`.
+
 ## ZZ Feature Map
 
 ```python
@@ -57,6 +63,9 @@ apply_zz_feature_map(x, wires=[0, 1, 2])
 This map applies single-qubit phase rotations and nearest-neighbor pairwise
 products through CNOT-RZ-CNOT blocks.
 
+Here each component of `x` supplies a feature angle, and adjacent entries define
+the pairwise products used in the ZZ interaction terms.
+
 ## IQP Feature Map
 
 ```python
@@ -67,6 +76,9 @@ apply_iqp_feature_map(x, wires=[0, 1, 2])
 
 The IQP-style map uses Hadamards, single-qubit phase rotations, and ring ZZ
 interactions.
+
+Here "ring" means the pairwise interaction pattern wraps from the final wire
+back to the first wire.
 
 ## Data Re-uploading Embedding
 
@@ -82,6 +94,10 @@ apply_data_reuploading_embedding(x, weights, wires=[0, 1, 2])
 
 Expected weight shape is `(n_layers, n_qubits, 3)`.
 
+Here `n_layers` is the number of repeated encoding layers, `n_qubits` is the
+number of wires, and the final dimension stores three trainable rotation values
+per qubit.
+
 ## Ansatz Helpers
 
 The default hardware-efficient ansatz uses trainable `RY` and `RZ` rotations
@@ -93,6 +109,9 @@ from qml.ansatz import apply_hardware_efficient_ansatz, parameter_shape
 params = rng.normal(size=parameter_shape(n_layers=2, n_qubits=3))
 apply_hardware_efficient_ansatz(params, wires=[0, 1, 2])
 ```
+
+Here `params` is the trainable parameter tensor, `n_layers` is the number of
+ansatz layers, and `n_qubits` is the number of circuit wires.
 
 For stronger entangling templates:
 

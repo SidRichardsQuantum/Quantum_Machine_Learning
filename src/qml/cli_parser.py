@@ -59,6 +59,15 @@ def _add_shots_arg(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _add_batch_size_arg(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=None,
+        help="Mini-batch size for variational model training (None = full batch).",
+    )
+
+
 def _add_noise_model_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--depolarizing",
@@ -99,6 +108,7 @@ def _build_parser(prog: str | None = None) -> argparse.ArgumentParser:
     vqc_parser.add_argument("--layers", type=int, default=2, help="Number of ansatz layers.")
     vqc_parser.add_argument("--steps", type=int, default=50, help="Number of optimizer steps.")
     vqc_parser.add_argument("--step-size", type=float, default=0.1, help="Optimizer step size.")
+    _add_batch_size_arg(vqc_parser)
     _add_shots_arg(vqc_parser)
     vqc_parser.add_argument(
         "--dataset",
@@ -321,6 +331,7 @@ def _build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         default=0.1,
         help="Optimizer step size.",
     )
+    _add_batch_size_arg(regression_parser)
     _add_shots_arg(regression_parser)
 
     logistic_parser = subparsers.add_parser(
@@ -442,6 +453,7 @@ def _build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         help="Random seeds.",
     )
     _add_common_benchmark_args(classification_benchmark_parser)
+    _add_batch_size_arg(classification_benchmark_parser)
 
     regression_benchmark_parser = benchmark_subparsers.add_parser(
         "regression",
@@ -468,6 +480,7 @@ def _build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         help="Random seeds.",
     )
     _add_common_benchmark_args(regression_benchmark_parser)
+    _add_batch_size_arg(regression_benchmark_parser)
 
     finite_shot_benchmark_parser = benchmark_subparsers.add_parser(
         "finite-shots",
@@ -525,6 +538,7 @@ def _build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         help="Small optimizer step count for trainable quantum models.",
     )
     _add_common_benchmark_args(finite_shot_benchmark_parser)
+    _add_batch_size_arg(finite_shot_benchmark_parser)
 
     parser.add_argument("--optimizer", type=str, default="adam")
     parser.add_argument("--early-stopping-patience", type=int, default=None)

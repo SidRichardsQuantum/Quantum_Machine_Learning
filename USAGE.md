@@ -172,6 +172,7 @@ result = run_vqc(
 | n_layers  | ansatz depth         | 2       |
 | steps     | optimisation steps   | 50      |
 | step_size | Adam learning rate   | 0.1     |
+| batch_size | mini-batch size (`None` = full batch) | None |
 | shots     | finite-shot sampling | None    |
 | plot      | show plots           | False   |
 | save      | save JSON + plots    | False   |
@@ -194,6 +195,7 @@ Typical fields:
 
     "steps",
     "step_size",
+    "batch_size",
 
     "loss_history",
 
@@ -244,6 +246,7 @@ result = run_vqr(
 | n_layers  | ansatz depth         | 2       |
 | steps     | optimisation steps   | 50      |
 | step_size | Adam learning rate   | 0.1     |
+| batch_size | mini-batch size (`None` = full batch) | None |
 | shots     | finite-shot sampling | None    |
 | plot      | show plots           | False   |
 | save      | save outputs         | False   |
@@ -804,11 +807,15 @@ Run workflows directly:
 ```bash
 python -m qml vqc --steps 50 --plot
 
+python -m qml vqc --steps 50 --batch-size 16
+
 python -m qml qcnn --steps 50 --plot
 
 python -m qml autoencoder --steps 50 --plot
 
 python -m qml regression --steps 50 --plot
+
+python -m qml regression --steps 50 --batch-size 16
 
 python -m qml kernel --plot
 

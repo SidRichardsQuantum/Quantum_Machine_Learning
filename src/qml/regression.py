@@ -32,7 +32,7 @@ from qml.visualize import (
     plot_loss_curve,
     plot_regression_predictions,
 )
-from qml.training import run_training_loop
+from qml.training import minibatch_indices, run_training_loop, validate_batch_size
 from qml.optimizers import get_optimizer
 
 
@@ -48,6 +48,7 @@ def run_vqr(
     optimizer_kwargs: dict[str, Any] | None = None,
     early_stopping_patience: int | None = None,
     early_stopping_min_delta: float = 0.0,
+    batch_size: int | None = None,
     shots: int | None = None,
     noise_model: dict[str, float] | None = None,
     plot: bool = False,
@@ -75,6 +76,9 @@ def run_vqr(
         Number of optimizer steps.
     step_size
         Optimizer step size.
+    batch_size
+        Optional mini-batch size for optimizer updates. If ``None``, training
+        uses the full training split at every step.
     shots
         Number of measurement shots. If ``None``, uses analytic mode.
     noise_model
@@ -101,6 +105,7 @@ def run_vqr(
     x_test = data["x_test"]
     y_train = data["y_train"]
     y_test = data["y_test"]
+    batch_size = validate_batch_size(batch_size, len(x_train))
 
     n_qubits = x_train.shape[1]
     wires = list(range(n_qubits))
@@ -123,9 +128,9 @@ def run_vqr(
     def predict_batch(x_data, params):
         return pnp.array([predict_single(x, params) for x in x_data])
 
-    def cost(params):
-        preds = predict_batch(x_train, params)
-        targets = pnp.asarray(y_train, dtype=float)
+    def cost(params, x_batch, y_batch):
+        preds = predict_batch(x_batch, params)
+        targets = pnp.asarray(y_batch, dtype=float)
         return pnp.mean((preds - targets) ** 2)
 
     rng = np.random.default_rng(seed)
@@ -137,8 +142,15 @@ def run_vqr(
         **(optimizer_kwargs or {}),
     )
 
+    batch_iter = minibatch_indices(len(x_train), batch_size, seed=seed)
+
     def step_fn(params):
-        return opt.step_and_cost(cost, params)
+        batch_idx = next(batch_iter)
+
+        def batch_cost(current_params):
+            return cost(current_params, x_train[batch_idx], y_train[batch_idx])
+
+        return opt.step_and_cost(batch_cost, params)
 
     params, loss_history = run_training_loop(
         step_fn,
@@ -173,6 +185,7 @@ def run_vqr(
         "optimizer_kwargs": optimizer_kwargs or {},
         "early_stopping_patience": early_stopping_patience,
         "early_stopping_min_delta": early_stopping_min_delta,
+        "batch_size": batch_size,
         "step_size": step_size,
         "shots": shots,
         "noise_model": noise_model,

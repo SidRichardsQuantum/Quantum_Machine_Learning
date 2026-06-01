@@ -93,9 +93,22 @@ Use these when data already exists outside the package:
 The estimator classes expose `fit`, `predict`, `score`, `get_params`, and
 `set_params` where those operations apply.
 
+`QuantumClassifier` and `QuantumRegressor` are sklearn-style wrappers around
+the same circuit families described in the VQC and VQR theory pages. They do
+not introduce a separate model family; they adapt the package's variational
+classifier and regressor behavior to user-supplied arrays and estimator-style
+model-selection utilities.
+
+Variational workflows and estimator wrappers accept `batch_size` for
+deterministic mini-batch optimizer updates. The default `batch_size=None`
+preserves full-batch training.
+
 Circuit-backed estimators accept an optional `noise_model` dictionary for
 depolarizing, amplitude-damping, and readout-error simulation. Use
 `qml.noise.build_noise_model(...)` to validate explicit channel probabilities.
+
+For a compact map from public QML implementations to theory notes, tutorials,
+benchmarks, and generated web pages, see `docs/qml/algorithm_coverage.md`.
 
 ## Embeddings and Ansatz Helpers
 

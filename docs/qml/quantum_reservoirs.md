@@ -22,6 +22,9 @@ reservoir = QuantumReservoirFeatures(
 features = reservoir.fit_transform(x_train)
 ```
 
+Here `x_train` is the training feature matrix with one sample per row, and
+`features` is the transformed matrix of reservoir expectation-value features.
+
 The circuit:
 
 1. repeats or truncates each input row to the reservoir qubit count
@@ -56,6 +59,9 @@ model.fit(x_train, y_train)
 pred = model.predict(x_test)
 ```
 
+Here `y_train` is the continuous training-target vector, `x_test` is the test
+feature matrix, and `pred` contains predicted continuous target values.
+
 The regressor exposes `score(x, y)` as negative mean-squared error and
 `mean_absolute_error(x, y)` as a convenience metric.
 
@@ -74,6 +80,9 @@ model.fit(x_train, y_train)
 pred = model.predict(x_test)
 proba = model.predict_proba(x_test)
 ```
+
+Here `y_train` contains class labels, `pred` contains predicted class labels,
+and `proba` contains predicted class probabilities.
 
 The classifier supports binary and multiclass labels through scikit-learn's
 logistic regression implementation.

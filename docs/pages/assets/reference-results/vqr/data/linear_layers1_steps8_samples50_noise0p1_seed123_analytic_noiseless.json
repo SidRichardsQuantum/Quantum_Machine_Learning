@@ -1,4 +1,5 @@
 {
+  "batch_size": null,
   "circuit_metadata": {
     "ansatz": "hardware_efficient",
     "depth_is_estimate": true,

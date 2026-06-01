@@ -86,8 +86,9 @@ def test_quantum_regressor_multi_output_smoke():
     )
     y = np.column_stack([x[:, 0], x[:, 1]])
 
-    reg = QuantumRegressor(n_layers=1, steps=1, step_size=0.05, seed=3)
+    reg = QuantumRegressor(n_layers=1, steps=1, step_size=0.05, seed=3, batch_size=2)
     assert reg.get_params()["n_layers"] == 1
+    assert reg.get_params()["batch_size"] == 2
     reg.set_params(step_size=0.04)
     assert reg.step_size == 0.04
     reg.fit(x, y)
@@ -112,8 +113,9 @@ def test_quantum_classifier_multiclass_smoke():
     )
     y = np.asarray([0, 0, 1, 1, 2, 2])
 
-    clf = QuantumClassifier(n_layers=1, steps=1, step_size=0.05, seed=4)
+    clf = QuantumClassifier(n_layers=1, steps=1, step_size=0.05, seed=4, batch_size=3)
     assert clf.get_params()["steps"] == 1
+    assert clf.get_params()["batch_size"] == 3
     clf.set_params(step_size=0.04)
     assert clf.step_size == 0.04
     clf.fit(x, y)

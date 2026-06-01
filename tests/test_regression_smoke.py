@@ -24,6 +24,24 @@ def test_run_vqr_smoke():
     assert "test_mae" in result
 
 
+def test_run_vqr_minibatch_smoke():
+    result = run_vqr(
+        n_samples=24,
+        noise=0.1,
+        test_size=0.25,
+        seed=0,
+        n_layers=1,
+        steps=2,
+        step_size=0.1,
+        batch_size=4,
+        plot=False,
+        save=False,
+    )
+
+    assert result["batch_size"] == 4
+    assert len(result["loss_history"]) == 2
+
+
 def test_run_vqr_save_outputs(tmp_path: Path):
     result = run_vqr(
         n_samples=24,
