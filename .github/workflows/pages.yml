@@ -8,9 +8,7 @@ on:
       - README.md
       - USAGE.md
       - THEORY.md
-      - RESULTS.md
-      - RESULTS_TUTORIALS.md
-      - RESULTS_REAL_EXAMPLES.md
+      - docs/results/**
       - CHANGELOG.md
       - src/**
       - notebooks/**

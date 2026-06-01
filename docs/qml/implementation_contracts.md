@@ -53,6 +53,9 @@ computed from the trained model rather than from a shortcut.
 
 - Trainable models must return learned parameters and a loss/alignment trace
   when an optimization objective is present.
+- Circuit-backed workflow results should include `circuit_metadata` with
+  trainable-parameter counts and an estimated package-template depth. Depth is
+  reported for relative interpretation and is not a hardware-compiled depth.
 - Fidelity kernels in analytic mode must be symmetric with diagonal entries
   near one and nonnegative eigenvalues up to numerical tolerance.
 - Autoencoder reconstruction fidelity must be computed after compression loss,

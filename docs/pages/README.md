@@ -10,11 +10,14 @@ style of the root portfolio site at:
 ## Files
 
 - `build_site.py` builds `_site/` from the repository Markdown files.
-- `generate_results.py` runs deterministic smoke-scale QML workflows and writes `RESULTS.md`.
+- `generate_results.py` runs deterministic smoke-scale QML workflows and writes
+  `docs/results/api-reference.md`.
   It can also execute notebooks and extract their printed tables and plots into
-  `RESULTS_TUTORIALS.md`, `RESULTS_REAL_EXAMPLES.md`, and `RESULTS_BENCHMARKS.md`.
+  `docs/results/tutorials.md`, `docs/results/real-examples.md`, and
+  `docs/results/benchmarks.md`.
 - `styles.css` defines the custom portfolio-style visual system for the generated site.
-- `assets/reference-results/` stores generated result plots and JSON artifacts embedded by `RESULTS.md`.
+- `assets/reference-results/` stores generated result plots and JSON artifacts embedded by
+  `docs/results/api-reference.md`.
 - `assets/notebook-results/` stores plots extracted from executed notebooks.
 
 ## Generate Results
@@ -25,7 +28,7 @@ From the repository root:
 python docs/pages/generate_results.py
 ```
 
-This refreshes `RESULTS.md`, the notebook result pages, and generated assets.
+This refreshes `docs/results/`, the notebook result pages, and generated assets.
 
 The package API result configurations are intentionally small so GitHub Pages can
 regenerate them in CI. Notebook result pages are generated from executed notebooks
@@ -67,6 +70,6 @@ The workflow in `.github/workflows/pages.yml`:
 
 1. Checks out the repository.
 2. Installs the package and docs dependencies.
-3. Regenerates `RESULTS.md`, notebook result pages, and result images.
+3. Regenerates `docs/results/`, notebook result pages, and result images.
 4. Builds `_site/`.
 5. Deploys the Pages artifact.

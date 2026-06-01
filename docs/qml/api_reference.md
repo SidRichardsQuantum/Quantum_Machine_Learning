@@ -22,13 +22,18 @@ from qml import (
     QuantumReservoirRegressor,
     QuantumRegressor,
     TrainableQuantumKernelRegressor,
+    ansatz_parameter_count,
     build_noise_model,
+    cross_validate_estimator,
+    embedding_parameter_count,
+    estimate_circuit_depth,
     format_table,
     kernel_target_alignment,
     list_supported_optimizers,
     make_sequence_windows,
     print_section,
     print_table,
+    qcnn_parameter_count,
     run_qcnn,
     run_quantum_autoencoder,
     run_quantum_kernel_classifier,
@@ -37,6 +42,8 @@ from qml import (
     run_trainable_quantum_kernel_regressor,
     run_vqc,
     run_vqr,
+    select_best_model,
+    train_test_evaluate,
 )
 ```
 
@@ -79,6 +86,9 @@ Use these when data already exists outside the package:
 | `QuantumReservoirClassifier` | `qml.reservoir` | Logistic classifier trained on reservoir features. |
 | `QuantumReservoirRegressor` | `qml.reservoir` | Ridge regressor trained on reservoir features. |
 | `make_sequence_windows` | `qml.preprocessing` | Convert a sequence into fixed-width supervised windows. |
+| `cross_validate_estimator(...)` | `qml.model_selection` | Cross-validate estimator-style models with deterministic sklearn splitters. |
+| `train_test_evaluate(...)` | `qml.model_selection` | Fit and score one deterministic train/test split. |
+| `select_best_model(...)` | `qml.model_selection` | Cross-validate candidate estimators and optionally refit the best one. |
 
 The estimator classes expose `fit`, `predict`, `score`, `get_params`, and
 `set_params` where those operations apply.
@@ -99,6 +109,14 @@ depolarizing, amplitude-damping, and readout-error simulation. Use
 | `apply_data_reuploading_embedding(...)` | `qml.embeddings` | Trainable repeated feature encoding. |
 | `apply_hardware_efficient_ansatz(...)` | `qml.ansatz` | Default variational ansatz. |
 | `apply_strongly_entangling_ansatz(...)` | `qml.ansatz` | PennyLane strongly entangling template wrapper. |
+| `ansatz_parameter_count(...)` | `qml.circuit_metadata` | Count trainable parameters for supported ansatz templates. |
+| `embedding_parameter_count(...)` | `qml.circuit_metadata` | Count trainable parameters for supported embeddings. |
+| `estimate_circuit_depth(...)` | `qml.circuit_metadata` | Estimate package-template circuit depth for reporting. |
+| `qcnn_parameter_count()` | `qml.circuit_metadata` | Count trainable parameters in the default QCNN template. |
+
+Workflow result dictionaries for circuit-backed package models include a
+`circuit_metadata` field with qubit count, trainable-parameter count, estimated
+depth, embedding/ansatz labels, and a `depth_is_estimate` flag.
 
 ## Noise Helpers
 

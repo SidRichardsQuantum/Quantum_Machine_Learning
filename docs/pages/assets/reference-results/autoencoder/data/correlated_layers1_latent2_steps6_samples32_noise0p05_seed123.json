@@ -1,4 +1,18 @@
 {
+  "circuit_metadata": {
+    "ansatz": "hardware_efficient",
+    "depth_is_estimate": true,
+    "embedding": "state_preparation",
+    "embedding_layers": 1,
+    "estimated_depth": 8,
+    "latent_qubits": 2,
+    "model": "quantum_autoencoder",
+    "n_layers": 1,
+    "n_qubits": 4,
+    "template": "autoencoder",
+    "trainable_parameters": 8,
+    "trash_qubits": 2
+  },
   "early_stopping_min_delta": 0.0,
   "early_stopping_patience": null,
   "family": "correlated",

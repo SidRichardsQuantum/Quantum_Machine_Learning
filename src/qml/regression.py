@@ -15,6 +15,7 @@ import pennylane as qml
 from pennylane import numpy as pnp
 
 from qml.ansatz import apply_hardware_efficient_ansatz, parameter_shape
+from qml.circuit_metadata import circuit_metadata
 from qml.data import make_regression_dataset
 from qml.embeddings import apply_angle_embedding
 from qml.io_utils import images_path, results_path, save_json
@@ -159,6 +160,14 @@ def run_vqr(
         "test_size": test_size,
         "n_qubits": n_qubits,
         "n_layers": n_layers,
+        "circuit_metadata": circuit_metadata(
+            model="vqr",
+            n_qubits=n_qubits,
+            n_layers=n_layers,
+            embedding="angle",
+            embedding_layers=1,
+            template="vqr",
+        ),
         "steps": steps,
         "optimizer": optimizer,
         "optimizer_kwargs": optimizer_kwargs or {},

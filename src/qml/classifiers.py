@@ -15,6 +15,7 @@ import pennylane as qml
 from pennylane import numpy as pnp
 
 from qml.ansatz import apply_hardware_efficient_ansatz, parameter_shape
+from qml.circuit_metadata import circuit_metadata
 from qml.data import make_classification_dataset
 from qml.embeddings import (
     embedding_parameter_shape,
@@ -230,6 +231,15 @@ def run_vqc(
         "embedding": embedding_name,
         "embedding_layers": embedding_layers,
         "n_layers": n_layers,
+        "circuit_metadata": circuit_metadata(
+            model="vqc",
+            n_qubits=n_qubits,
+            n_layers=n_layers,
+            embedding=embedding_name,
+            embedding_layers=embedding_layers,
+            template="vqc",
+            trainable_parameters=total_size,
+        ),
         "steps": steps,
         "step_size": step_size,
         "optimizer": optimizer,

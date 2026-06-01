@@ -70,6 +70,46 @@ Estimator classes expose `fit`, `predict`, `score`, `get_params`, and
 functions when you need custom splits, preprocessing, or integration with other
 Python workflows.
 
+## Cross-Validation Helpers
+
+Use `qml.model_selection` when comparing estimator-style models on
+user-supplied arrays:
+
+```python
+from qml import QuantumReservoirClassifier, cross_validate_estimator, select_best_model
+from sklearn.linear_model import LogisticRegression
+
+cv_result = cross_validate_estimator(
+    QuantumReservoirClassifier(seed=0),
+    x,
+    y,
+    cv=3,
+    task="classification",
+)
+
+selection = select_best_model(
+    {
+        "logistic": LogisticRegression(max_iter=1000),
+        "reservoir": QuantumReservoirClassifier(seed=0),
+    },
+    x,
+    y,
+    cv=3,
+    task="classification",
+)
+```
+
+The helpers return dictionaries with fold records, mean/std/95 percent interval
+summaries, runtime summaries, scorer metadata, and the refit best estimator when
+requested. Defaults are intentionally simple:
+
+| Task | Default scorer | Splitter |
+| --- | --- | --- |
+| Classification | `accuracy` | `StratifiedKFold` |
+| Regression | `neg_mean_squared_error` | `KFold` |
+
+Pass `task` explicitly when floating labels are actually class labels.
+
 ## Choosing Embeddings
 
 Use the smallest embedding that preserves the task signal:

@@ -98,6 +98,7 @@ Keep these implementations general and estimator-like:
 - Quantum metric learning
 - Quantum convolutional neural network
 - Quantum autoencoder
+- Cross-validation and model-selection helpers for estimator-style APIs
 
 Potential additions:
 
@@ -110,8 +111,7 @@ Potential additions:
   regularized alignment, and task-weighted alignment
 - Noise model utilities for depolarizing, amplitude damping, readout error,
   and shot-noise comparisons
-- Cross-validation helpers for estimator APIs
-- Dataset-agnostic model selection helpers with careful runtime controls
+- Additional model-selection scoring options and result-format integrations
 
 ### Embeddings and ansatz library
 
@@ -126,7 +126,6 @@ Potential additions:
 
 - Basis, phase, and displacement-inspired embeddings
 - Problem-independent feature scaling utilities for quantum embeddings
-- Parameter-count and circuit-depth reporting
 - Optional circuit drawing utilities for tutorials and docs
 
 ### Training and optimization
@@ -188,20 +187,17 @@ Benchmark notebooks should answer one narrow question each.
 
 Keep generated outputs discoverable:
 
-- `RESULTS.md`: smoke-scale API reference outputs
-- `RESULTS_TUTORIALS.md`: extracted tutorial notebook outputs
-- `RESULTS_REAL_EXAMPLES.md`: extracted real-example outputs
-- `RESULTS_BENCHMARKS.md`: extracted benchmark outputs
+- `docs/results/api-reference.md`: smoke-scale API reference outputs
+- `docs/results/tutorials.md`: extracted tutorial notebook outputs
+- `docs/results/real-examples.md`: extracted real-example outputs
+- `docs/results/benchmarks.md`: extracted benchmark outputs
 
 Potential additions:
 
-- A benchmark interpretation guide covering confidence intervals, paired
-  deltas, runtime/quality tradeoffs, and finite-shot degradation
-- A model-selection guide explaining which QML API to try for classification,
-  regression, anomaly detection, or surrogate modeling
 - A notebook authoring guide with required sections, validation blocks, and
   plotting expectations
-- API examples for using user-supplied arrays instead of named datasets
+- Expanded API examples for user-supplied arrays, model selection, and circuit
+  metadata reporting
 
 ## Quality Gates
 
@@ -211,6 +207,7 @@ Before adding or advertising a new algorithm:
 - public API has validation errors for invalid shapes and options
 - unit or smoke tests cover fit/predict/result behavior
 - implementation contract is documented
+- circuit-backed workflow results include `circuit_metadata` where applicable
 - tutorial notebook exists or is planned in the same milestone
 - benchmark coverage exists or is explicitly deferred
 - at least one real-example candidate is identified if the method is useful for
@@ -247,8 +244,8 @@ Before adding a new benchmark notebook:
 
 - Improve estimator consistency across classifiers, regressors, kernels,
   reservoirs, and trainable kernels.
-- Add cross-validation/model-selection helpers.
-- Add a benchmark interpretation guide.
+- Extend cross-validation/model-selection helpers with additional scorers and
+  notebook/reporting integrations as real usage patterns emerge.
 - Expand implementation contracts for noise and finite-shot behavior.
 
 ### Domain examples release
@@ -262,5 +259,5 @@ Before adding a new benchmark notebook:
 
 - Add runtime scaling benchmarks.
 - Add noise-channel benchmarks.
-- Add circuit-depth and parameter-count reporting.
+- Use circuit metadata in benchmark summaries and runtime/quality/depth plots.
 - Improve CI/docs controls for long-running notebooks.

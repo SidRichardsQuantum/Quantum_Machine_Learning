@@ -10,6 +10,7 @@ Benchmark outputs include:
 - runtime totals
 - fit/predict timing breakdowns when workflows expose them
 - train/test generalization gaps
+- circuit metadata for circuit-backed workflows when available
 - mean, standard deviation, and 95% confidence intervals
 - paired deltas against the best included classical baseline
 - tuning metadata for tuned classical baselines
@@ -143,6 +144,8 @@ Returned benchmark dictionaries include:
             },
             "runtime_seconds": {...},
             "generalization_gap": {...},
+            "trainable_parameters": {...},
+            "estimated_depth": {...},
             "n_runs": 4,
         }
     },

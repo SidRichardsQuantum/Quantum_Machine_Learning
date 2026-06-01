@@ -14,6 +14,7 @@ import numpy as np
 import pennylane as qml
 from pennylane import numpy as pnp
 
+from qml.circuit_metadata import circuit_metadata, qcnn_parameter_count
 from qml.data import make_classification_dataset
 from qml.io_utils import ensure_dir, images_path, results_path, save_json
 from qml.metrics import accuracy_score
@@ -247,6 +248,17 @@ def run_qcnn(
         "noise": noise,
         "test_size": test_size,
         "n_qubits": n_qubits,
+        "circuit_metadata": circuit_metadata(
+            model="qcnn",
+            n_qubits=n_qubits,
+            n_layers=1,
+            embedding="trainable_qcnn_embedding",
+            embedding_layers=1,
+            ansatz=None,
+            template="qcnn",
+            trainable_parameters=qcnn_parameter_count(),
+            extra={"active_wires_by_stage": [[0, 1, 2, 3], [1, 3], [3]]},
+        ),
         "steps": steps,
         "step_size": step_size,
         "optimizer": optimizer,

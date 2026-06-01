@@ -23,6 +23,7 @@ os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
+RESULT_DOCS = ROOT / "docs/results"
 RESULT_ASSETS = ROOT / "docs/pages/assets/reference-results"
 NOTEBOOK_ASSETS = ROOT / "docs/pages/assets/notebook-results"
 NOTEBOOK_RESULTS = {
@@ -33,7 +34,7 @@ NOTEBOOK_RESULTS = {
             "These pages are generated from notebook outputs, including text tables and plots."
         ),
         "directory": ROOT / "notebooks/tutorials",
-        "output": ROOT / "RESULTS_TUTORIALS.md",
+        "output": RESULT_DOCS / "tutorials.md",
     },
     "real_examples": {
         "title": "Real Example Notebook Results",
@@ -42,7 +43,7 @@ NOTEBOOK_RESULTS = {
             "These examples use small reproducible physics, mathematics, or dynamical-system tasks."
         ),
         "directory": ROOT / "notebooks/real_examples",
-        "output": ROOT / "RESULTS_REAL_EXAMPLES.md",
+        "output": RESULT_DOCS / "real-examples.md",
     },
     "benchmarks": {
         "title": "Benchmark Notebook Results",
@@ -52,7 +53,7 @@ NOTEBOOK_RESULTS = {
             "confidence intervals, paired deltas, runtime summaries, and finite-shot sweeps."
         ),
         "directory": ROOT / "notebooks/benchmarks",
-        "output": ROOT / "RESULTS_BENCHMARKS.md",
+        "output": RESULT_DOCS / "benchmarks.md",
     },
 }
 
@@ -138,7 +139,7 @@ def run_images(run_dir: str) -> list[Path]:
     image_dir = RESULT_ASSETS / run_dir
     if not image_dir.exists():
         return []
-    return sorted(path.relative_to(ROOT) for path in image_dir.glob("*.png"))
+    return sorted(Path(os.path.relpath(path, RESULT_DOCS)) for path in image_dir.glob("*.png"))
 
 
 def output_dirs(run_dir: str) -> dict[str, Path]:
@@ -506,7 +507,7 @@ def write_notebook_images(path: Path, notebook, group: str) -> list[Path]:
                 encoded = "".join(encoded)
             image_path = output_dir / f"figure-{index:02d}.png"
             image_path.write_bytes(base64.b64decode(encoded))
-            images.append(image_path.relative_to(ROOT))
+            images.append(Path(os.path.relpath(image_path, RESULT_DOCS)))
             index += 1
     return images
 
@@ -696,13 +697,13 @@ def main() -> None:
     parser.add_argument(
         "--output",
         type=Path,
-        default=ROOT / "RESULTS.md",
+        default=RESULT_DOCS / "api-reference.md",
         help="Markdown file to write.",
     )
     parser.add_argument(
         "--skip-notebook-results",
         action="store_true",
-        help="Do not generate RESULTS_TUTORIALS.md or RESULTS_REAL_EXAMPLES.md.",
+        help="Do not generate notebook result pages.",
     )
     parser.add_argument(
         "--execute-notebooks",
@@ -717,6 +718,7 @@ def main() -> None:
     args = parser.parse_args()
 
     if not args.skip_api_results:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
         runs = run_reference_results()
         args.output.write_text(render_results(runs), encoding="utf-8")
 

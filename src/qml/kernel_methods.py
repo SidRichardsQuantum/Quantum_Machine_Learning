@@ -13,6 +13,7 @@ from typing import Any
 import numpy as np
 from sklearn.svm import SVC
 
+from qml.circuit_metadata import circuit_metadata
 from qml.data import make_classification_dataset
 from qml.io_utils import images_path, results_path, save_json
 from qml.io_utils import ensure_dir
@@ -97,6 +98,16 @@ def run_quantum_kernel_classifier(
         "noise": noise,
         "test_size": test_size,
         "n_qubits": n_qubits,
+        "circuit_metadata": circuit_metadata(
+            model="quantum_kernel_classifier",
+            n_qubits=n_qubits,
+            n_layers=1,
+            embedding=embedding,
+            embedding_layers=1,
+            ansatz=None,
+            template="kernel",
+            trainable_parameters=0,
+        ),
         "shots": shots,
         "noise_model": noise_model,
         "embedding": embedding,

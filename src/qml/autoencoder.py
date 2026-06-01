@@ -16,6 +16,7 @@ from pennylane import numpy as pnp
 from sklearn.model_selection import train_test_split
 
 from qml.ansatz import apply_hardware_efficient_ansatz, parameter_shape
+from qml.circuit_metadata import circuit_metadata
 from qml.io_utils import ensure_dir, images_path, results_path, save_json
 from qml.optimizers import get_optimizer
 from qml.training import run_training_loop
@@ -273,6 +274,19 @@ def run_quantum_autoencoder(
         "latent_qubits": latent_qubits,
         "trash_qubits": trash_qubits,
         "n_layers": n_layers,
+        "circuit_metadata": circuit_metadata(
+            model="quantum_autoencoder",
+            n_qubits=n_qubits,
+            n_layers=n_layers,
+            embedding="state_preparation",
+            embedding_layers=1,
+            template="autoencoder",
+            trainable_parameters=int(np.prod(param_shape)),
+            extra={
+                "latent_qubits": int(latent_qubits),
+                "trash_qubits": int(trash_qubits),
+            },
+        ),
         "steps": steps,
         "step_size": step_size,
         "optimizer": optimizer,

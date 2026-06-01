@@ -17,6 +17,7 @@ from qml._benchmark_utils import (
     summary_stats as _summary_stats,
     timing_from_result as _timing_from_result,
 )
+from qml.circuit_metadata import circuit_metadata
 from qml.classical_baselines import (
     run_elasticnet_regression,
     run_gaussian_process_classifier,
@@ -106,10 +107,23 @@ def _run_quantum_reservoir_classifier(
     y_train_pred = model.predict(data["x_train"])
     y_test_pred = model.predict(data["x_test"])
     predict_seconds = perf_counter() - predict_start
+    n_qubits = int(data["x_train"].shape[1])
     return {
         "model": "quantum_reservoir_classifier",
         "dataset": dataset,
         "seed": seed,
+        "n_qubits": n_qubits,
+        "circuit_metadata": circuit_metadata(
+            model="quantum_reservoir_classifier",
+            n_qubits=n_qubits,
+            n_layers=n_layers,
+            embedding="reservoir_angle",
+            embedding_layers=1,
+            ansatz=None,
+            template="variational",
+            trainable_parameters=0,
+            extra={"fixed_reservoir_parameters": int(n_layers * n_qubits * 3)},
+        ),
         "train_accuracy": accuracy_score(data["y_train"], y_train_pred),
         "test_accuracy": accuracy_score(data["y_test"], y_test_pred),
         "timing": {
@@ -159,10 +173,22 @@ def _run_quantum_kernel_regressor(
     y_train_pred = model.predict(data["x_train"])
     y_test_pred = model.predict(data["x_test"])
     predict_seconds = perf_counter() - predict_start
+    n_qubits = int(data["x_train"].shape[1])
     return {
         "model": "quantum_kernel_regressor",
         "dataset": dataset,
         "seed": seed,
+        "n_qubits": n_qubits,
+        "circuit_metadata": circuit_metadata(
+            model="quantum_kernel_regressor",
+            n_qubits=n_qubits,
+            n_layers=1,
+            embedding=embedding,
+            embedding_layers=1,
+            ansatz=None,
+            template="kernel",
+            trainable_parameters=0,
+        ),
         "train_mse": mean_squared_error(data["y_train"], y_train_pred),
         "test_mse": mean_squared_error(data["y_test"], y_test_pred),
         "train_mae": mean_absolute_error(data["y_train"], y_train_pred),
@@ -214,10 +240,22 @@ def _run_quantum_gaussian_process_regressor(
     y_train_pred = model.predict(data["x_train"])
     y_test_pred = model.predict(data["x_test"])
     predict_seconds = perf_counter() - predict_start
+    n_qubits = int(data["x_train"].shape[1])
     return {
         "model": "quantum_gaussian_process_regressor",
         "dataset": dataset,
         "seed": seed,
+        "n_qubits": n_qubits,
+        "circuit_metadata": circuit_metadata(
+            model="quantum_gaussian_process_regressor",
+            n_qubits=n_qubits,
+            n_layers=1,
+            embedding=embedding,
+            embedding_layers=1,
+            ansatz=None,
+            template="kernel",
+            trainable_parameters=0,
+        ),
         "train_mse": mean_squared_error(data["y_train"], y_train_pred),
         "test_mse": mean_squared_error(data["y_test"], y_test_pred),
         "train_mae": mean_absolute_error(data["y_train"], y_train_pred),
@@ -273,10 +311,23 @@ def _run_quantum_reservoir_regressor(
     y_train_pred = model.predict(data["x_train"])
     y_test_pred = model.predict(data["x_test"])
     predict_seconds = perf_counter() - predict_start
+    n_qubits = int(data["x_train"].shape[1])
     return {
         "model": "quantum_reservoir_regressor",
         "dataset": dataset,
         "seed": seed,
+        "n_qubits": n_qubits,
+        "circuit_metadata": circuit_metadata(
+            model="quantum_reservoir_regressor",
+            n_qubits=n_qubits,
+            n_layers=n_layers,
+            embedding="reservoir_angle",
+            embedding_layers=1,
+            ansatz=None,
+            template="variational",
+            trainable_parameters=0,
+            extra={"fixed_reservoir_parameters": int(n_layers * n_qubits * 3)},
+        ),
         "train_mse": mean_squared_error(data["y_train"], y_train_pred),
         "test_mse": mean_squared_error(data["y_test"], y_test_pred),
         "train_mae": mean_absolute_error(data["y_train"], y_train_pred),
@@ -481,6 +532,44 @@ def _best_model_by_summary_metric(
         "value": best_value,
         "higher_is_better": higher_is_better,
     }
+
+
+def _circuit_metadata_from_result(result: Any) -> dict[str, Any] | None:
+    """
+    Extract JSON-friendly circuit metadata from a workflow result when present.
+    """
+    if isinstance(result, dict):
+        metadata = result.get("circuit_metadata")
+    else:
+        metadata = getattr(result, "circuit_metadata", None)
+
+    if not isinstance(metadata, dict):
+        return None
+    return dict(metadata)
+
+
+def _add_circuit_metadata(run_record: dict[str, Any], result: Any) -> None:
+    metadata = _circuit_metadata_from_result(result)
+    if metadata is None:
+        return
+    run_record["circuit_metadata"] = metadata
+    if "trainable_parameters" in metadata:
+        run_record["trainable_parameters"] = int(metadata["trainable_parameters"])
+    if "estimated_depth" in metadata:
+        run_record["estimated_depth"] = int(metadata["estimated_depth"])
+
+
+def _add_circuit_summary(model_summary: dict[str, Any], model_runs: list[dict[str, Any]]) -> None:
+    trainable_parameters = [
+        float(run["trainable_parameters"]) for run in model_runs if "trainable_parameters" in run
+    ]
+    estimated_depths = [
+        float(run["estimated_depth"]) for run in model_runs if "estimated_depth" in run
+    ]
+    if trainable_parameters:
+        model_summary["trainable_parameters"] = _summary_stats(trainable_parameters)
+    if estimated_depths:
+        model_summary["estimated_depth"] = _summary_stats(estimated_depths)
 
 
 def _canonical_model_name(
@@ -723,6 +812,7 @@ def compare_classification_models(
                 "runtime_seconds": runtime_seconds,
                 "timing": _timing_from_result(result, runtime_seconds),
             }
+            _add_circuit_metadata(run_record, result)
 
             if isinstance(result, dict):
                 if "tuning" in result:
@@ -771,6 +861,10 @@ def compare_classification_models(
         if alignment_values:
             model_summary["final_alignment"] = _summary_stats(alignment_values)
 
+        _add_circuit_summary(
+            model_summary,
+            [run for run in runs if run["model"] == model_name],
+        )
         summary[model_name] = model_summary
 
     benchmark = {
@@ -919,6 +1013,7 @@ def compare_regression_models(
                 "runtime_seconds": runtime_seconds,
                 "timing": _timing_from_result(result, runtime_seconds),
             }
+            _add_circuit_metadata(run_record, result)
 
             if "tuning" in result:
                 run_record["tuning"] = result["tuning"]
@@ -951,6 +1046,10 @@ def compare_regression_models(
         if final_losses:
             model_summary["final_loss"] = _summary_stats(final_losses)
 
+        _add_circuit_summary(
+            model_summary,
+            [run for run in runs if run["model"] == model_name],
+        )
         summary[model_name] = model_summary
 
     benchmark = {

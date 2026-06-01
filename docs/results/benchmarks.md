@@ -4,10 +4,10 @@ Executed outputs from benchmark notebooks in `notebooks/benchmarks/`. These comp
 
 ## Environment
 
-- Generated: 2026-05-25 13:31:10 UTC
-- Git commit: `b47696a`
+- Generated: 2026-06-01 03:59:55 UTC
+- Git commit: `15a5c1f`
 - Python: `3.12.1`
-- Package version: `0.2.6`
+- Package version: `0.2.9`
 - Matplotlib backend: `Agg`
 
 ## Summary
@@ -29,17 +29,17 @@ Result block 1:
 
 ```text
 Classification summary
-+--------------------------+---------------+----------+-----------+----------+------------+------+
-| model                    | test_accuracy | ci95_low | ci95_high | gap      | runtime_s  | runs |
-+--------------------------+---------------+----------+-----------+----------+------------+------+
-| qcnn                     | 0.75          | 0.75     | 0.75      | 0.125    | 5.62908    | 1    |
-| quantum_kernel           | 0.75          | 0.75     | 0.75      | 0.166667 | 0.803903   | 1    |
-| logistic_regression      | 0.75          | 0.75     | 0.75      | 0.166667 | 0.00547163 | 1    |
-| svm_classifier           | 0.75          | 0.75     | 0.75      | 0.166667 | 0.00400665 | 1    |
-| random_forest_classifier | 0.75          | 0.75     | 0.75      | 0.25     | 0.0407517  | 1    |
-| vqc                      | 0.625         | 0.625    | 0.625     | 0        | 0.947511   | 1    |
-| quantum_reservoir        | 0.5           | 0.5      | 0.5       | 0.125    | 0.109722   | 1    |
-+--------------------------+---------------+----------+-----------+----------+------------+------+
++--------------------------+---------------+----------+-----------+----------+------------+--------+-------+------+
+| model                    | test_accuracy | ci95_low | ci95_high | gap      | runtime_s  | params | depth | runs |
++--------------------------+---------------+----------+-----------+----------+------------+--------+-------+------+
+| qcnn                     | 0.75          | 0.75     | 0.75      | 0.125    | 6.53325    | 38     | 24    | 1    |
+| quantum_kernel           | 0.75          | 0.75     | 0.75      | 0.166667 | 0.892866   | 0      | 3     | 1    |
+| logistic_regression      | 0.75          | 0.75     | 0.75      | 0.166667 | 0.00552011 |        |       | 1    |
+| svm_classifier           | 0.75          | 0.75     | 0.75      | 0.166667 | 0.0045726  |        |       | 1    |
+| random_forest_classifier | 0.75          | 0.75     | 0.75      | 0.25     | 0.0452248  |        |       | 1    |
+| vqc                      | 0.625         | 0.625    | 0.625     | 0        | 0.869101   | 4      | 5     | 1    |
+| quantum_reservoir        | 0.5           | 0.5      | 0.5       | 0.125    | 0.107451   | 0      | 2     | 1    |
++--------------------------+---------------+----------+-----------+----------+------------+--------+-------+------+
 
 Paired deltas vs logistic_regression
 +--------------------------+------------+------+--------+------+-------+
@@ -68,27 +68,27 @@ Result block 2:
 
 ```text
 Classification dataset sweep
-+---------+-------------------+---------------+----------+-----------+------------+------------+------+
-| dataset | model             | test_accuracy | ci95_low | ci95_high | gap        | runtime_s  | runs |
-+---------+-------------------+---------------+----------+-----------+------------+------------+------+
-| moons   | quantum_kernel    | 0.75          | 0.75     | 0.75      | 0.166667   | 0.824642   | 1    |
-| moons   | svm_classifier    | 0.75          | 0.75     | 0.75      | 0.166667   | 0.00476372 | 1    |
-| moons   | vqc               | 0.625         | 0.625    | 0.625     | 0          | 0.729732   | 1    |
-| moons   | quantum_reservoir | 0.5           | 0.5      | 0.5       | 0.125      | 0.203644   | 1    |
-| circles | quantum_kernel    | 0.875         | 0.875    | 0.875     | 0.125      | 0.799363   | 1    |
-| circles | svm_classifier    | 0.875         | 0.875    | 0.875     | 0.125      | 0.00514769 | 1    |
-| circles | vqc               | 0.5           | 0.5      | 0.5       | -0.208333  | 0.728109   | 1    |
-| circles | quantum_reservoir | 0.5           | 0.5      | 0.5       | 0.291667   | 0.103178   | 1    |
-| wine    | quantum_kernel    | 1             | 1        | 1         | -0.0416667 | 0.758476   | 1    |
-| wine    | svm_classifier    | 1             | 1        | 1         | -0.0416667 | 0.00508774 | 1    |
-| wine    | quantum_reservoir | 0.625         | 0.625    | 0.625     | 0.0833333  | 0.103246   | 1    |
-| wine    | vqc               | 0.375         | 0.375    | 0.375     | 0.125      | 0.801444   | 1    |
-+---------+-------------------+---------------+----------+-----------+------------+------------+------+
++---------+-------------------+---------------+----------+-----------+------------+------------+--------+-------+------+
+| dataset | model             | test_accuracy | ci95_low | ci95_high | gap        | runtime_s  | params | depth | runs |
++---------+-------------------+---------------+----------+-----------+------------+------------+--------+-------+------+
+| moons   | quantum_kernel    | 0.75          | 0.75     | 0.75      | 0.166667   | 0.931716   | 0      | 3     | 1    |
+| moons   | svm_classifier    | 0.75          | 0.75     | 0.75      | 0.166667   | 0.00765863 |        |       | 1    |
+| moons   | vqc               | 0.625         | 0.625    | 0.625     | 0          | 0.679553   | 4      | 5     | 1    |
+| moons   | quantum_reservoir | 0.5           | 0.5      | 0.5       | 0.125      | 0.138952   | 0      | 2     | 1    |
+| circles | quantum_kernel    | 0.875         | 0.875    | 0.875     | 0.125      | 0.830495   | 0      | 3     | 1    |
+| circles | svm_classifier    | 0.875         | 0.875    | 0.875     | 0.125      | 0.00504418 |        |       | 1    |
+| circles | vqc               | 0.5           | 0.5      | 0.5       | -0.208333  | 0.759714   | 4      | 5     | 1    |
+| circles | quantum_reservoir | 0.5           | 0.5      | 0.5       | 0.291667   | 0.170294   | 0      | 2     | 1    |
+| wine    | quantum_kernel    | 1             | 1        | 1         | -0.0416667 | 0.923827   | 0      | 3     | 1    |
+| wine    | svm_classifier    | 1             | 1        | 1         | -0.0416667 | 0.0130524  |        |       | 1    |
+| wine    | quantum_reservoir | 0.625         | 0.625    | 0.625     | 0.0833333  | 0.134928   | 0      | 2     | 1    |
+| wine    | vqc               | 0.375         | 0.375    | 0.375     | 0.125      | 0.982362   | 4      | 5     | 1    |
++---------+-------------------+---------------+----------+-----------+------------+------------+--------+-------+------+
 ```
 
-![figure 01](docs/pages/assets/notebook-results/benchmarks/01-classification-model-benchmark/figure-01.png)
-![figure 02](docs/pages/assets/notebook-results/benchmarks/01-classification-model-benchmark/figure-02.png)
-![figure 03](docs/pages/assets/notebook-results/benchmarks/01-classification-model-benchmark/figure-03.png)
+![figure 01](../pages/assets/notebook-results/benchmarks/01-classification-model-benchmark/figure-01.png)
+![figure 02](../pages/assets/notebook-results/benchmarks/01-classification-model-benchmark/figure-02.png)
+![figure 03](../pages/assets/notebook-results/benchmarks/01-classification-model-benchmark/figure-03.png)
 
 ## Regression Model Benchmark
 
@@ -98,30 +98,30 @@ Result block 1:
 
 ```text
 Regression summary by MSE
-+------------------------------------+-----------+-----------+-----------+------------+------------+------+
-| model                              | test_mse  | ci95_low  | ci95_high | gap        | runtime_s  | runs |
-+------------------------------------+-----------+-----------+-----------+------------+------------+------+
-| svr_regression                     | 0.0801907 | 0.0801907 | 0.0801907 | -0.0136897 | 0.00404257 | 1    |
-| vqr                                | 0.122342  | 0.122342  | 0.122342  | -0.773642  | 0.938322   | 1    |
-| kernel_ridge_regression            | 0.197459  | 0.197459  | 0.197459  | 0.0338305  | 0.00510325 | 1    |
-| quantum_gaussian_process_regressor | 0.373078  | 0.373078  | 0.373078  | 0.11375    | 0.844018   | 1    |
-| quantum_kernel_regressor           | 0.419824  | 0.419824  | 0.419824  | 0.0973739  | 0.747413   | 1    |
-| ridge_regression                   | 0.622718  | 0.622718  | 0.622718  | 0.121189   | 0.00339757 | 1    |
-| quantum_reservoir_regressor        | 0.986287  | 0.986287  | 0.986287  | 0.0713367  | 0.0967781  | 1    |
-+------------------------------------+-----------+-----------+-----------+------------+------------+------+
++------------------------------------+-----------+-----------+-----------+------------+------------+--------+-------+------+
+| model                              | test_mse  | ci95_low  | ci95_high | gap        | runtime_s  | params | depth | runs |
++------------------------------------+-----------+-----------+-----------+------------+------------+--------+-------+------+
+| svr_regression                     | 0.0801907 | 0.0801907 | 0.0801907 | -0.0136897 | 0.00275484 |        |       | 1    |
+| vqr                                | 0.122342  | 0.122342  | 0.122342  | -0.773642  | 0.881965   | 4      | 5     | 1    |
+| kernel_ridge_regression            | 0.197459  | 0.197459  | 0.197459  | 0.0338305  | 0.00322244 |        |       | 1    |
+| quantum_gaussian_process_regressor | 0.373078  | 0.373078  | 0.373078  | 0.11375    | 1.07821    | 0      | 3     | 1    |
+| quantum_kernel_regressor           | 0.419824  | 0.419824  | 0.419824  | 0.0973739  | 1.1084     | 0      | 3     | 1    |
+| ridge_regression                   | 0.622718  | 0.622718  | 0.622718  | 0.121189   | 0.00295959 |        |       | 1    |
+| quantum_reservoir_regressor        | 0.986287  | 0.986287  | 0.986287  | 0.0713367  | 0.110311   | 0      | 2     | 1    |
++------------------------------------+-----------+-----------+-----------+------------+------------+--------+-------+------+
 
 Regression summary by MAE
-+------------------------------------+----------+----------+-----------+------------+------------+------+
-| model                              | test_mae | ci95_low | ci95_high | gap        | runtime_s  | runs |
-+------------------------------------+----------+----------+-----------+------------+------------+------+
-| svr_regression                     | 0.230482 | 0.230482 | 0.230482  | -0.0136897 | 0.00404257 | 1    |
-| vqr                                | 0.300124 | 0.300124 | 0.300124  | -0.773642  | 0.938322   | 1    |
-| kernel_ridge_regression            | 0.408842 | 0.408842 | 0.408842  | 0.0338305  | 0.00510325 | 1    |
-| quantum_gaussian_process_regressor | 0.562695 | 0.562695 | 0.562695  | 0.11375    | 0.844018   | 1    |
-| quantum_kernel_regressor           | 0.60704  | 0.60704  | 0.60704   | 0.0973739  | 0.747413   | 1    |
-| ridge_regression                   | 0.705256 | 0.705256 | 0.705256  | 0.121189   | 0.00339757 | 1    |
-| quantum_reservoir_regressor        | 0.837164 | 0.837164 | 0.837164  | 0.0713367  | 0.0967781  | 1    |
-+------------------------------------+----------+----------+-----------+------------+------------+------+
++------------------------------------+----------+----------+-----------+------------+------------+--------+-------+------+
+| model                              | test_mae | ci95_low | ci95_high | gap        | runtime_s  | params | depth | runs |
++------------------------------------+----------+----------+-----------+------------+------------+--------+-------+------+
+| svr_regression                     | 0.230482 | 0.230482 | 0.230482  | -0.0136897 | 0.00275484 |        |       | 1    |
+| vqr                                | 0.300124 | 0.300124 | 0.300124  | -0.773642  | 0.881965   | 4      | 5     | 1    |
+| kernel_ridge_regression            | 0.408842 | 0.408842 | 0.408842  | 0.0338305  | 0.00322244 |        |       | 1    |
+| quantum_gaussian_process_regressor | 0.562695 | 0.562695 | 0.562695  | 0.11375    | 1.07821    | 0      | 3     | 1    |
+| quantum_kernel_regressor           | 0.60704  | 0.60704  | 0.60704   | 0.0973739  | 1.1084     | 0      | 3     | 1    |
+| ridge_regression                   | 0.705256 | 0.705256 | 0.705256  | 0.121189   | 0.00295959 |        |       | 1    |
+| quantum_reservoir_regressor        | 0.837164 | 0.837164 | 0.837164  | 0.0713367  | 0.110311   | 0      | 2     | 1    |
++------------------------------------+----------+----------+-----------+------------+------------+--------+-------+------+
 
 Paired MSE deltas vs svr_regression
 +------------------------------------+------------+------+--------+------+-------+
@@ -150,27 +150,27 @@ Result block 2:
 
 ```text
 Regression dataset sweep
-+----------+-----------------------------+------------+------------+------------+------------+------------+------+
-| dataset  | model                       | test_mse   | ci95_low   | ci95_high  | gap        | runtime_s  | runs |
-+----------+-----------------------------+------------+------------+------------+------------+------------+------+
-| linear   | ridge_regression            | 0.00322048 | 0.00322048 | 0.00322048 | 0.00141887 | 0.00332862 | 1    |
-| linear   | quantum_kernel_regressor    | 0.168163   | 0.168163   | 0.168163   | -0.0173032 | 0.756803   | 1    |
-| linear   | vqr                         | 1.12147    | 1.12147    | 1.12147    | 0.0589046  | 0.988572   | 1    |
-| linear   | quantum_reservoir_regressor | 1.29671    | 1.29671    | 1.29671    | 0.325749   | 0.0928601  | 1    |
-| sine     | vqr                         | 0.122342   | 0.122342   | 0.122342   | -0.773642  | 1.04267    | 1    |
-| sine     | quantum_kernel_regressor    | 0.419824   | 0.419824   | 0.419824   | 0.0973739  | 0.749325   | 1    |
-| sine     | ridge_regression            | 0.622718   | 0.622718   | 0.622718   | 0.121189   | 0.00372735 | 1    |
-| sine     | quantum_reservoir_regressor | 0.986287   | 0.986287   | 0.986287   | 0.0713367  | 0.0926907  | 1    |
-| diabetes | quantum_kernel_regressor    | 0.667531   | 0.667531   | 0.667531   | 0.0185848  | 0.770753   | 1    |
-| diabetes | ridge_regression            | 0.677572   | 0.677572   | 0.677572   | -0.145698  | 0.00457196 | 1    |
-| diabetes | vqr                         | 0.816185   | 0.816185   | 0.816185   | -0.726353  | 0.831666   | 1    |
-| diabetes | quantum_reservoir_regressor | 0.886238   | 0.886238   | 0.886238   | 0.0638437  | 0.0975521  | 1    |
-+----------+-----------------------------+------------+------------+------------+------------+------------+------+
++----------+-----------------------------+------------+------------+------------+------------+------------+--------+-------+------+
+| dataset  | model                       | test_mse   | ci95_low   | ci95_high  | gap        | runtime_s  | params | depth | runs |
++----------+-----------------------------+------------+------------+------------+------------+------------+--------+-------+------+
+| linear   | ridge_regression            | 0.00322048 | 0.00322048 | 0.00322048 | 0.00141887 | 0.00445475 |        |       | 1    |
+| linear   | quantum_kernel_regressor    | 0.168163   | 0.168163   | 0.168163   | -0.0173032 | 0.778108   | 0      | 3     | 1    |
+| linear   | vqr                         | 1.12147    | 1.12147    | 1.12147    | 0.0589046  | 1.21235    | 4      | 5     | 1    |
+| linear   | quantum_reservoir_regressor | 1.29671    | 1.29671    | 1.29671    | 0.325749   | 0.107004   | 0      | 2     | 1    |
+| sine     | vqr                         | 0.122342   | 0.122342   | 0.122342   | -0.773642  | 0.897557   | 4      | 5     | 1    |
+| sine     | quantum_kernel_regressor    | 0.419824   | 0.419824   | 0.419824   | 0.0973739  | 1.02513    | 0      | 3     | 1    |
+| sine     | ridge_regression            | 0.622718   | 0.622718   | 0.622718   | 0.121189   | 0.00439305 |        |       | 1    |
+| sine     | quantum_reservoir_regressor | 0.986287   | 0.986287   | 0.986287   | 0.0713367  | 0.0975136  | 0      | 2     | 1    |
+| diabetes | quantum_kernel_regressor    | 0.667531   | 0.667531   | 0.667531   | 0.0185848  | 0.790349   | 0      | 3     | 1    |
+| diabetes | ridge_regression            | 0.677572   | 0.677572   | 0.677572   | -0.145698  | 0.00666374 |        |       | 1    |
+| diabetes | vqr                         | 0.816185   | 0.816185   | 0.816185   | -0.726353  | 0.985049   | 4      | 5     | 1    |
+| diabetes | quantum_reservoir_regressor | 0.886238   | 0.886238   | 0.886238   | 0.0638437  | 0.196492   | 0      | 2     | 1    |
++----------+-----------------------------+------------+------------+------------+------------+------------+--------+-------+------+
 ```
 
-![figure 01](docs/pages/assets/notebook-results/benchmarks/02-regression-model-benchmark/figure-01.png)
-![figure 02](docs/pages/assets/notebook-results/benchmarks/02-regression-model-benchmark/figure-02.png)
-![figure 03](docs/pages/assets/notebook-results/benchmarks/02-regression-model-benchmark/figure-03.png)
+![figure 01](../pages/assets/notebook-results/benchmarks/02-regression-model-benchmark/figure-01.png)
+![figure 02](../pages/assets/notebook-results/benchmarks/02-regression-model-benchmark/figure-02.png)
+![figure 03](../pages/assets/notebook-results/benchmarks/02-regression-model-benchmark/figure-03.png)
 
 ## Quantum Kernel Family Benchmark
 
@@ -225,8 +225,8 @@ Trainable quantum kernel diagnostics: circles
 +---------+------+---------------+-----------------+-----------+
 ```
 
-![figure 01](docs/pages/assets/notebook-results/benchmarks/03-quantum-kernel-family-benchmark/figure-01.png)
-![figure 02](docs/pages/assets/notebook-results/benchmarks/03-quantum-kernel-family-benchmark/figure-02.png)
+![figure 01](../pages/assets/notebook-results/benchmarks/03-quantum-kernel-family-benchmark/figure-01.png)
+![figure 02](../pages/assets/notebook-results/benchmarks/03-quantum-kernel-family-benchmark/figure-02.png)
 
 ## Variational Model Capacity Benchmark
 
@@ -259,8 +259,8 @@ Regression capacity summary
 +------------------+-----------------------------+----------+----------+------------+------+
 ```
 
-![figure 01](docs/pages/assets/notebook-results/benchmarks/04-variational-model-capacity-benchmark/figure-01.png)
-![figure 02](docs/pages/assets/notebook-results/benchmarks/04-variational-model-capacity-benchmark/figure-02.png)
+![figure 01](../pages/assets/notebook-results/benchmarks/04-variational-model-capacity-benchmark/figure-01.png)
+![figure 02](../pages/assets/notebook-results/benchmarks/04-variational-model-capacity-benchmark/figure-02.png)
 
 ## Finite-Shot Benchmark
 
@@ -325,8 +325,8 @@ Regression finite-shot summary
 +----------+------------------------------------+----------+----------+-----------+--------------------+------------+-----------------------+
 ```
 
-![figure 01](docs/pages/assets/notebook-results/benchmarks/05-finite-shot-benchmark/figure-01.png)
-![figure 02](docs/pages/assets/notebook-results/benchmarks/05-finite-shot-benchmark/figure-02.png)
+![figure 01](../pages/assets/notebook-results/benchmarks/05-finite-shot-benchmark/figure-01.png)
+![figure 02](../pages/assets/notebook-results/benchmarks/05-finite-shot-benchmark/figure-02.png)
 
 ## Real-Data Small-Sample Benchmark
 
@@ -366,8 +366,8 @@ Real-data regression summary
 +----------+-----------------------------+----------+----------+----------+-----------+------------+
 ```
 
-![figure 01](docs/pages/assets/notebook-results/benchmarks/06-real-data-small-sample-benchmark/figure-01.png)
-![figure 02](docs/pages/assets/notebook-results/benchmarks/06-real-data-small-sample-benchmark/figure-02.png)
+![figure 01](../pages/assets/notebook-results/benchmarks/06-real-data-small-sample-benchmark/figure-01.png)
+![figure 02](../pages/assets/notebook-results/benchmarks/06-real-data-small-sample-benchmark/figure-02.png)
 
 ## Reproduce
 

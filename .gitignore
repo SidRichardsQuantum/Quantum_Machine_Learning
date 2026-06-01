@@ -74,8 +74,8 @@ pytestdebug.log
 # Experiment outputs
 # ========================
 
-results/
-images/
+/results/
+/images/
 
 # ========================
 # Logs / profiling

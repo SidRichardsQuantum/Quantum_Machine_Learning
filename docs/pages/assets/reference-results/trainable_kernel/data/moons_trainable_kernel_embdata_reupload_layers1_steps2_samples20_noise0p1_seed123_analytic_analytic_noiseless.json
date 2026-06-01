@@ -3,6 +3,18 @@
     0.1755326944329655,
     0.17553269443296546
   ],
+  "circuit_metadata": {
+    "ansatz": null,
+    "depth_is_estimate": true,
+    "embedding": "data_reupload",
+    "embedding_layers": 1,
+    "estimated_depth": 7,
+    "model": "trainable_quantum_kernel_classifier",
+    "n_layers": 1,
+    "n_qubits": 2,
+    "template": "trainable_kernel",
+    "trainable_parameters": 6
+  },
   "dataset": "moons",
   "early_stopping_min_delta": 0.0,
   "early_stopping_patience": null,
@@ -362,6 +374,7 @@
   "n_qubits": 2,
   "n_samples": 20,
   "noise": 0.1,
+  "noise_model": null,
   "optimizer": "adam",
   "optimizer_kwargs": {},
   "reg_strength": 0.0001,

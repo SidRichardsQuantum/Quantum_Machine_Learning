@@ -4,10 +4,10 @@ Executed outputs from the tutorial notebooks in `notebooks/tutorials/`. These pa
 
 ## Environment
 
-- Generated: 2026-05-25 13:31:10 UTC
-- Git commit: `b47696a`
+- Generated: 2026-06-01 03:59:54 UTC
+- Git commit: `15a5c1f`
 - Python: `3.12.1`
-- Package version: `0.2.6`
+- Package version: `0.2.9`
 - Matplotlib backend: `Agg`
 
 ## Summary
@@ -26,6 +26,7 @@ Executed outputs from the tutorial notebooks in `notebooks/tutorials/`. These pa
 | [notebooks/tutorials/10-quantum-convolutional-neural-network.ipynb](#quantum-convolutional-neural-network) | 4 | 3 |
 | [notebooks/tutorials/11-quantum-autoencoder.ipynb](#quantum-autoencoder) | 3 | 1 |
 | [notebooks/tutorials/12-advanced-quantum-kernel-and-reservoir-models.ipynb](#advanced-quantum-kernel-and-reservoir-models) | 6 | 1 |
+| [notebooks/tutorials/13-model-selection-and-cross-validation.ipynb](#model-selection-and-cross-validation) | 4 | 1 |
 
 ## Classical vs Quantum Classifiers
 
@@ -58,12 +59,12 @@ Result block 4:
  'Classical SVM': {'train_accuracy': 0.96, 'test_accuracy': 1.0}}
 ```
 
-![figure 01](docs/pages/assets/notebook-results/tutorial/01-classical-vs-quantum-classifier/figure-01.png)
-![figure 02](docs/pages/assets/notebook-results/tutorial/01-classical-vs-quantum-classifier/figure-02.png)
-![figure 03](docs/pages/assets/notebook-results/tutorial/01-classical-vs-quantum-classifier/figure-03.png)
-![figure 04](docs/pages/assets/notebook-results/tutorial/01-classical-vs-quantum-classifier/figure-04.png)
-![figure 05](docs/pages/assets/notebook-results/tutorial/01-classical-vs-quantum-classifier/figure-05.png)
-![figure 06](docs/pages/assets/notebook-results/tutorial/01-classical-vs-quantum-classifier/figure-06.png)
+![figure 01](../pages/assets/notebook-results/tutorial/01-classical-vs-quantum-classifier/figure-01.png)
+![figure 02](../pages/assets/notebook-results/tutorial/01-classical-vs-quantum-classifier/figure-02.png)
+![figure 03](../pages/assets/notebook-results/tutorial/01-classical-vs-quantum-classifier/figure-03.png)
+![figure 04](../pages/assets/notebook-results/tutorial/01-classical-vs-quantum-classifier/figure-04.png)
+![figure 05](../pages/assets/notebook-results/tutorial/01-classical-vs-quantum-classifier/figure-05.png)
+![figure 06](../pages/assets/notebook-results/tutorial/01-classical-vs-quantum-classifier/figure-06.png)
 
 ## Classical vs quantum regression
 
@@ -102,11 +103,11 @@ Lowest test MSE: Ridge (0.000043)
 Lowest test MAE: Ridge (0.005245)
 ```
 
-![figure 01](docs/pages/assets/notebook-results/tutorial/02-classical-vs-quantum-regressor/figure-01.png)
-![figure 02](docs/pages/assets/notebook-results/tutorial/02-classical-vs-quantum-regressor/figure-02.png)
-![figure 03](docs/pages/assets/notebook-results/tutorial/02-classical-vs-quantum-regressor/figure-03.png)
-![figure 04](docs/pages/assets/notebook-results/tutorial/02-classical-vs-quantum-regressor/figure-04.png)
-![figure 05](docs/pages/assets/notebook-results/tutorial/02-classical-vs-quantum-regressor/figure-05.png)
+![figure 01](../pages/assets/notebook-results/tutorial/02-classical-vs-quantum-regressor/figure-01.png)
+![figure 02](../pages/assets/notebook-results/tutorial/02-classical-vs-quantum-regressor/figure-02.png)
+![figure 03](../pages/assets/notebook-results/tutorial/02-classical-vs-quantum-regressor/figure-03.png)
+![figure 04](../pages/assets/notebook-results/tutorial/02-classical-vs-quantum-regressor/figure-04.png)
+![figure 05](../pages/assets/notebook-results/tutorial/02-classical-vs-quantum-regressor/figure-05.png)
 
 ## Quantum Variational Classifier
 
@@ -168,9 +169,9 @@ Result block 3:
  'y_train_pred']
 ```
 
-![figure 01](docs/pages/assets/notebook-results/tutorial/03-variational-quantum-classifier/figure-01.png)
-![figure 02](docs/pages/assets/notebook-results/tutorial/03-variational-quantum-classifier/figure-02.png)
-![figure 03](docs/pages/assets/notebook-results/tutorial/03-variational-quantum-classifier/figure-03.png)
+![figure 01](../pages/assets/notebook-results/tutorial/03-variational-quantum-classifier/figure-01.png)
+![figure 02](../pages/assets/notebook-results/tutorial/03-variational-quantum-classifier/figure-02.png)
+![figure 03](../pages/assets/notebook-results/tutorial/03-variational-quantum-classifier/figure-03.png)
 
 ## Variational Quantum Regressor
 
@@ -232,9 +233,9 @@ Result block 3:
  'y_train_pred']
 ```
 
-![figure 01](docs/pages/assets/notebook-results/tutorial/04-variational-quantum-regressor/figure-01.png)
-![figure 02](docs/pages/assets/notebook-results/tutorial/04-variational-quantum-regressor/figure-02.png)
-![figure 03](docs/pages/assets/notebook-results/tutorial/04-variational-quantum-regressor/figure-03.png)
+![figure 01](../pages/assets/notebook-results/tutorial/04-variational-quantum-regressor/figure-01.png)
+![figure 02](../pages/assets/notebook-results/tutorial/04-variational-quantum-regressor/figure-02.png)
+![figure 03](../pages/assets/notebook-results/tutorial/04-variational-quantum-regressor/figure-03.png)
 
 ## Quantum Kernel Classifier
 
@@ -280,9 +281,9 @@ Result block 4:
  'y_train_pred']
 ```
 
-![figure 01](docs/pages/assets/notebook-results/tutorial/05-quantum-kernel-classifier/figure-01.png)
-![figure 02](docs/pages/assets/notebook-results/tutorial/05-quantum-kernel-classifier/figure-02.png)
-![figure 03](docs/pages/assets/notebook-results/tutorial/05-quantum-kernel-classifier/figure-03.png)
+![figure 01](../pages/assets/notebook-results/tutorial/05-quantum-kernel-classifier/figure-01.png)
+![figure 02](../pages/assets/notebook-results/tutorial/05-quantum-kernel-classifier/figure-02.png)
+![figure 03](../pages/assets/notebook-results/tutorial/05-quantum-kernel-classifier/figure-03.png)
 
 ## Reusable Quantum Kernel Estimators
 
@@ -371,7 +372,7 @@ Classical baselines are included as sanity checks; no quantum advantage is claim
 Passed: True
 ```
 
-![figure 01](docs/pages/assets/notebook-results/tutorial/06-quantum-kernel-estimators/figure-01.png)
+![figure 01](../pages/assets/notebook-results/tutorial/06-quantum-kernel-estimators/figure-01.png)
 
 ## Dataset-Agnostic Variational Quantum Estimators
 
@@ -463,7 +464,7 @@ The validation threshold is intentionally modest because this notebook is an API
 Passed: True
 ```
 
-![figure 01](docs/pages/assets/notebook-results/tutorial/07-variational-quantum-estimators/figure-01.png)
+![figure 01](../pages/assets/notebook-results/tutorial/07-variational-quantum-estimators/figure-01.png)
 
 ## Sequence Windows for Quantum Forecasting
 
@@ -543,7 +544,7 @@ The ridge baseline is included as a sanity check; no quantum advantage is claime
 Passed: True
 ```
 
-![figure 01](docs/pages/assets/notebook-results/tutorial/08-sequence-window-quantum-forecasting/figure-01.png)
+![figure 01](../pages/assets/notebook-results/tutorial/08-sequence-window-quantum-forecasting/figure-01.png)
 
 ## Quantum Metric Learning
 
@@ -626,11 +627,11 @@ blobs
   test accuracy: 0.9
 ```
 
-![figure 01](docs/pages/assets/notebook-results/tutorial/09-quantum-metric-learning/figure-01.png)
-![figure 02](docs/pages/assets/notebook-results/tutorial/09-quantum-metric-learning/figure-02.png)
-![figure 03](docs/pages/assets/notebook-results/tutorial/09-quantum-metric-learning/figure-03.png)
-![figure 04](docs/pages/assets/notebook-results/tutorial/09-quantum-metric-learning/figure-04.png)
-![figure 05](docs/pages/assets/notebook-results/tutorial/09-quantum-metric-learning/figure-05.png)
+![figure 01](../pages/assets/notebook-results/tutorial/09-quantum-metric-learning/figure-01.png)
+![figure 02](../pages/assets/notebook-results/tutorial/09-quantum-metric-learning/figure-02.png)
+![figure 03](../pages/assets/notebook-results/tutorial/09-quantum-metric-learning/figure-03.png)
+![figure 04](../pages/assets/notebook-results/tutorial/09-quantum-metric-learning/figure-04.png)
+![figure 05](../pages/assets/notebook-results/tutorial/09-quantum-metric-learning/figure-05.png)
 
 ## Quantum Convolutional Neural Network
 
@@ -675,9 +676,9 @@ Finite-shot test accuracy: 1.0
 Finite-shot final loss: 2.022702148492722
 ```
 
-![figure 01](docs/pages/assets/notebook-results/tutorial/10-quantum-convolutional-neural-network/figure-01.png)
-![figure 02](docs/pages/assets/notebook-results/tutorial/10-quantum-convolutional-neural-network/figure-02.png)
-![figure 03](docs/pages/assets/notebook-results/tutorial/10-quantum-convolutional-neural-network/figure-03.png)
+![figure 01](../pages/assets/notebook-results/tutorial/10-quantum-convolutional-neural-network/figure-01.png)
+![figure 02](../pages/assets/notebook-results/tutorial/10-quantum-convolutional-neural-network/figure-02.png)
+![figure 03](../pages/assets/notebook-results/tutorial/10-quantum-convolutional-neural-network/figure-03.png)
 
 ## Quantum Autoencoder
 
@@ -716,7 +717,7 @@ hybrid
   test reconstruction fidelity: 0.8327539703789596
 ```
 
-![figure 01](docs/pages/assets/notebook-results/tutorial/11-quantum-autoencoder/figure-01.png)
+![figure 01](../pages/assets/notebook-results/tutorial/11-quantum-autoencoder/figure-01.png)
 
 ## Advanced Quantum Kernel and Reservoir Models
 
@@ -822,7 +823,72 @@ Passed
 +--------+-------+
 ```
 
-![figure 01](docs/pages/assets/notebook-results/tutorial/12-advanced-quantum-kernel-and-reservoir-models/figure-01.png)
+![figure 01](../pages/assets/notebook-results/tutorial/12-advanced-quantum-kernel-and-reservoir-models/figure-01.png)
+
+## Model Selection and Cross-Validation
+
+Notebook: `notebooks/tutorials/13-model-selection-and-cross-validation.ipynb`
+
+Result block 1:
+
+```text
+Dataset
++----------+--------+
+| Metric   | Value  |
++----------+--------+
+| dataset  | moons  |
+| samples  | 48     |
+| features | 2      |
+| classes  | [0, 1] |
++----------+--------+
+```
+Result block 2:
+
+```text
+Cross-validation summary
++-----------+---------------+----------+-----------+-------+
+| model     | mean_accuracy | ci95_low | ci95_high | folds |
++-----------+---------------+----------+-----------+-------+
+| logistic  | 0.8125        | 0.659716 | 0.965284  | 3     |
+| reservoir | 0.5           | 0.442253 | 0.557747  | 3     |
++-----------+---------------+----------+-----------+-------+
+
+Selection
++------------+----------+
+| Metric     | Value    |
++------------+----------+
+| best_model | logistic |
+| best_score | 0.8125   |
++------------+----------+
+```
+Result block 3:
+
+```text
+Reservoir folds
++------+-------------+------------+-------------+
+| fold | train_score | test_score | fit_seconds |
++------+-------------+------------+-------------+
+| 1    | 0.625       | 0.6875     | 0.0892158   |
+| 2    | 0.6875      | 0.5625     | 0.0730951   |
+| 3    | 0.625       | 0.625      | 0.0802958   |
++------+-------------+------------+-------------+
+```
+Result block 4:
+
+```text
+Final split
++----------------+----------+
+| Metric         | Value    |
++----------------+----------+
+| model          | logistic |
+| train_size     | 36       |
+| test_size      | 12       |
+| train_accuracy | 0.861111 |
+| test_accuracy  | 0.833333 |
++----------------+----------+
+```
+
+![figure 01](../pages/assets/notebook-results/tutorial/13-model-selection-and-cross-validation/figure-01.png)
 
 ## Reproduce
 

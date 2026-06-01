@@ -1,5 +1,43 @@
 # CHANGELOG.md
 
+## [0.2.9] - 01-06-2026
+
+### Added
+
+- Added `qml.model_selection` helpers for estimator-style workflows:
+  - `cross_validate_estimator(...)`
+  - `train_test_evaluate(...)`
+  - `select_best_model(...)`
+- Added `notebooks/tutorials/13-model-selection-and-cross-validation.ipynb`
+  demonstrating deterministic model comparison with package estimators.
+- Added `qml.circuit_metadata` helpers for trainable-parameter counts and
+  estimated package-template circuit depth.
+- Added `circuit_metadata` fields to circuit-backed workflow results where
+  applicable.
+
+### Changed
+
+- Moved generated result reports from root-level `RESULTS*.md` files into
+  `docs/results/` and updated Pages generation/build tooling accordingly.
+- Updated benchmark aggregation to carry `trainable_parameters` and
+  `estimated_depth` into run records and per-model summaries.
+- Updated benchmark notebooks and generated benchmark result pages to include
+  circuit metadata columns and depth-aware runtime scatter markers.
+- Updated roadmap, API docs, benchmark docs, implementation contracts, and
+  notebook indexes for the new model-selection and circuit-metadata surfaces.
+- Bumped package metadata to `0.2.9`.
+
+### Validation
+
+- Added focused tests for model-selection helpers, circuit metadata helpers,
+  benchmark metadata aggregation, and imports.
+- Executed the new model-selection tutorial and refreshed generated tutorial
+  result assets.
+- Executed the updated classification and regression benchmark notebooks and
+  refreshed generated benchmark result assets.
+
+---
+
 ## [0.2.8] - 25-05-2026
 
 ### Added

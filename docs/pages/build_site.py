@@ -9,6 +9,7 @@ import markdown
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "_site"
+RESULT_DOCS = ROOT / "docs/results"
 SITE_URL = "https://SidRichardsQuantum.github.io/Quantum_Machine_Learning/"
 REPO_URL = "https://github.com/SidRichardsQuantum/Quantum_Machine_Learning"
 PYPI_URL = "https://pypi.org/project/qml-pennylane/"
@@ -30,7 +31,7 @@ DOCS = [
     ("Theory", ROOT / "THEORY.md", "theory.html", "Mathematical background for the workflows."),
     (
         "Results",
-        ROOT / "RESULTS.md",
+        RESULT_DOCS / "api-reference.md",
         "results.html",
         "Deterministic reference outputs from API workflows.",
     ),
@@ -42,19 +43,19 @@ DOCS = [
     ),
     (
         "Tutorial Results",
-        ROOT / "RESULTS_TUTORIALS.md",
+        RESULT_DOCS / "tutorials.md",
         "results-tutorials.html",
         "Tables and plots extracted from executed tutorial notebooks.",
     ),
     (
         "Real Example Results",
-        ROOT / "RESULTS_REAL_EXAMPLES.md",
+        RESULT_DOCS / "real-examples.md",
         "results-real-examples.html",
         "Tables and plots extracted from executed real-example notebooks.",
     ),
     (
         "Benchmark Results",
-        ROOT / "RESULTS_BENCHMARKS.md",
+        RESULT_DOCS / "benchmarks.md",
         "results-benchmarks.html",
         "Tables and plots extracted from executed benchmark notebooks.",
     ),
@@ -211,6 +212,7 @@ def render_markdown(path: Path) -> str:
         output_format="html5",
     )
     rendered = md.convert(path.read_text(encoding="utf-8"))
+    rendered = rendered.replace('src="../pages/assets/', 'src="docs/pages/assets/')
     return rendered.replace('href="http', 'target="_blank" rel="noopener noreferrer" href="http')
 
 

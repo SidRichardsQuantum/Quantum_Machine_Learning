@@ -57,6 +57,8 @@ Modular **PennyLane-based quantum machine learning library** implementing reusab
 - Trainable quantum kernel regression
 - Classical baseline models
 - Deterministic benchmark utilities
+- Cross-validation and model-selection helpers for estimator APIs
+- Circuit metadata helpers for parameter counts and estimated template depth
 
 The repository follows a **package-first design**:
 
@@ -507,10 +509,10 @@ python docs/pages/generate_results.py
 
 The generated outputs are:
 
-- **RESULTS.md** — smoke-scale API reference results
-- **RESULTS_TUTORIALS.md** — tables and plots extracted from tutorial notebooks
-- **RESULTS_REAL_EXAMPLES.md** — tables and plots extracted from real-example notebooks
-- **RESULTS_BENCHMARKS.md** — tables and plots extracted from benchmark notebooks
+- **docs/results/api-reference.md** — smoke-scale API reference results
+- **docs/results/tutorials.md** — tables and plots extracted from tutorial notebooks
+- **docs/results/real-examples.md** — tables and plots extracted from real-example notebooks
+- **docs/results/benchmarks.md** — tables and plots extracted from benchmark notebooks
 
 Pass `--execute-notebooks` to rerun notebooks before extracting notebook outputs. The
 GitHub Pages workflow uses this mode so the published result pages stay aligned with
@@ -530,10 +532,11 @@ Core documentation:
 - **USAGE.md** — API examples
 - **ROADMAP.md** — package, notebook, benchmark, and release roadmap
 - **docs/qml/api_reference.md** — public imports, workflows, estimators, benchmarks, and helpers
-- **RESULTS.md** — generated deterministic reference outputs
-- **RESULTS_TUTORIALS.md** — generated tutorial notebook outputs
-- **RESULTS_REAL_EXAMPLES.md** — generated real-example notebook outputs
-- **RESULTS_BENCHMARKS.md** — generated benchmark notebook outputs
+- **docs/results/README.md** — generated result report index
+- **docs/results/api-reference.md** — generated deterministic reference outputs
+- **docs/results/tutorials.md** — generated tutorial notebook outputs
+- **docs/results/real-examples.md** — generated real-example notebook outputs
+- **docs/results/benchmarks.md** — generated benchmark notebook outputs
 - **docs/qml/benchmark_interpretation.md** — benchmark reading guide for metrics, intervals, paired deltas, runtime, and release wording
 - **docs/qml/model_selection.md** — task-oriented model-selection guide for QML APIs and classical baselines
 - **docs/qml/noise_models.md** — opt-in depolarizing, amplitude-damping, and readout-error simulation guide
@@ -567,6 +570,8 @@ Tutorial notebooks:
 - notebooks/tutorials/09-quantum-metric-learning.ipynb
 - notebooks/tutorials/10-quantum-convolutional-neural-network.ipynb
 - notebooks/tutorials/11-quantum-autoencoder.ipynb
+- notebooks/tutorials/12-advanced-quantum-kernel-and-reservoir-models.ipynb
+- notebooks/tutorials/13-model-selection-and-cross-validation.ipynb
 
 ---
 

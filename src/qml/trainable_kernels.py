@@ -16,6 +16,7 @@ from pennylane import numpy as pnp
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.svm import SVC
 
+from qml.circuit_metadata import circuit_metadata, embedding_parameter_count
 from qml.data import make_classification_dataset
 from qml.data import make_regression_dataset
 from qml.embeddings import embedding_parameter_shape, get_embedding
@@ -590,6 +591,20 @@ def run_trainable_quantum_kernel_classifier(
         "n_qubits": n_qubits,
         "embedding": embedding_name,
         "embedding_layers": embedding_layers,
+        "circuit_metadata": circuit_metadata(
+            model="trainable_quantum_kernel_classifier",
+            n_qubits=n_qubits,
+            n_layers=1,
+            embedding=embedding_name,
+            embedding_layers=embedding_layers,
+            ansatz=None,
+            template="trainable_kernel",
+            trainable_parameters=embedding_parameter_count(
+                embedding_name,
+                n_layers=embedding_layers,
+                n_qubits=n_qubits,
+            ),
+        ),
         "steps": steps,
         "optimizer": optimizer,
         "optimizer_kwargs": optimizer_kwargs or {},
@@ -735,6 +750,7 @@ def run_trainable_quantum_kernel_regressor(
     model.fit(data["x_train"], data["y_train"])
     y_train_pred = model.predict(data["x_train"])
     y_test_pred = model.predict(data["x_test"])
+    n_qubits = int(np.asarray(data["x_train"], dtype=float).shape[1])
     return {
         "model": "trainable_quantum_kernel_regressor",
         "dataset": dataset,
@@ -744,6 +760,21 @@ def run_trainable_quantum_kernel_regressor(
         "test_size": test_size,
         "embedding": model.embedding_name_,
         "embedding_layers": embedding_layers,
+        "n_qubits": n_qubits,
+        "circuit_metadata": circuit_metadata(
+            model="trainable_quantum_kernel_regressor",
+            n_qubits=n_qubits,
+            n_layers=1,
+            embedding=model.embedding_name_,
+            embedding_layers=embedding_layers,
+            ansatz=None,
+            template="trainable_kernel",
+            trainable_parameters=embedding_parameter_count(
+                model.embedding_name_,
+                n_layers=embedding_layers,
+                n_qubits=n_qubits,
+            ),
+        ),
         "steps": steps,
         "shots_train": shots_train,
         "shots_kernel": shots_kernel,

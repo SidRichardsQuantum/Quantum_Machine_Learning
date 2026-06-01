@@ -1,4 +1,16 @@
 {
+  "circuit_metadata": {
+    "ansatz": "hardware_efficient",
+    "depth_is_estimate": true,
+    "embedding": "angle",
+    "embedding_layers": 1,
+    "estimated_depth": 5,
+    "model": "vqr",
+    "n_layers": 1,
+    "n_qubits": 2,
+    "template": "vqr",
+    "trainable_parameters": 4
+  },
   "dataset": "linear",
   "early_stopping_min_delta": 0.0,
   "early_stopping_patience": null,
@@ -18,6 +30,7 @@
   "n_qubits": 2,
   "n_samples": 50,
   "noise": 0.1,
+  "noise_model": null,
   "optimizer": "adam",
   "optimizer_kwargs": {},
   "params": [

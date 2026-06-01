@@ -33,11 +33,17 @@ def test_classification_benchmark_runs():
         assert "generalization_gap" in run
         assert "timing" in run
         assert run["runtime_seconds"] >= 0.0
+        if run["model"] in {"vqc", "qcnn"}:
+            assert "circuit_metadata" in run
+            assert run["trainable_parameters"] > 0
+            assert run["estimated_depth"] > 0
 
     for model_summary in result["summary"].values():
         assert "generalization_gap" in model_summary
         assert "runtime_seconds" in model_summary
         assert "ci95_low" in model_summary["test_accuracy"]
+    assert "trainable_parameters" in result["summary"]["vqc"]
+    assert "estimated_depth" in result["summary"]["qcnn"]
 
 
 def test_regression_benchmark_runs():
@@ -66,11 +72,17 @@ def test_regression_benchmark_runs():
         assert "generalization_gap" in run
         assert "timing" in run
         assert run["runtime_seconds"] >= 0.0
+        if run["model"] == "vqr":
+            assert "circuit_metadata" in run
+            assert run["trainable_parameters"] > 0
+            assert run["estimated_depth"] > 0
 
     for model_summary in result["summary"].values():
         assert "generalization_gap" in model_summary
         assert "runtime_seconds" in model_summary
         assert "ci95_low" in model_summary["test_mse"]
+    assert "trainable_parameters" in result["summary"]["vqr"]
+    assert "estimated_depth" in result["summary"]["vqr"]
 
 
 def test_benchmark_runs_new_classical_models_and_tuning():
@@ -133,6 +145,8 @@ def test_classification_benchmark_runs_quantum_reservoir():
     reservoir_run = next(run for run in result["runs"] if run["model"] == "quantum_reservoir")
     assert reservoir_run["timing"]["fit_seconds"] >= 0.0
     assert reservoir_run["timing"]["predict_seconds"] >= 0.0
+    assert reservoir_run["trainable_parameters"] == 0
+    assert reservoir_run["estimated_depth"] > 0
 
 
 def test_regression_benchmark_runs_new_quantum_regressors():
@@ -163,6 +177,9 @@ def test_regression_benchmark_runs_new_quantum_regressors():
         assert "test_mse" in run
         assert "runtime_seconds" in run
         assert "total_seconds" in run["timing"]
+        if run["model"].startswith("quantum_"):
+            assert "circuit_metadata" in run
+            assert run["estimated_depth"] > 0
 
 
 def test_regression_benchmark_runs_trainable_quantum_kernel_regressor():
@@ -186,3 +203,5 @@ def test_regression_benchmark_runs_trainable_quantum_kernel_regressor():
     assert "final_loss" in run
     assert "train_mse" in run
     assert "test_mse" in run
+    assert "circuit_metadata" in run
+    assert "trainable_parameters" in result["summary"]["trainable_quantum_kernel_regressor"]

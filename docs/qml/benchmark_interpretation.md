@@ -22,6 +22,8 @@ Interpret every benchmark with these fields visible:
 - confidence intervals or multi-seed summaries
 - generalization gaps
 - runtime summaries
+- circuit metadata when available, especially trainable-parameter count and
+  estimated template depth
 - paired deltas against the best included classical baseline
 - shot count or analytic execution mode
 - tuning metadata for classical references
@@ -103,6 +105,11 @@ Runtime should be interpreted with quality:
 - analytic simulators and finite-shot runs should not be compared as if they
   had the same execution cost
 - runtime scaling benchmarks are needed before making claims about larger data
+
+Circuit metadata adds a second complexity signal. Parameter counts and estimated
+depths are package-template summaries, not hardware-compiled resource estimates,
+but they help distinguish a small fixed-feature circuit from a deeper trainable
+workflow when runtimes or metrics are similar.
 
 The smoke-scale notebooks are intentionally small enough for documentation
 generation. They are not tuned for maximum model quality.

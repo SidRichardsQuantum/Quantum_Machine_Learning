@@ -24,6 +24,7 @@ domain real examples.
 | `tutorials/10-quantum-convolutional-neural-network.ipynb` | Train a compact quantum convolutional neural network. |
 | `tutorials/11-quantum-autoencoder.ipynb` | Compress and reconstruct structured quantum states. |
 | `tutorials/12-advanced-quantum-kernel-and-reservoir-models.ipynb` | Use advanced quantum kernel and reservoir estimators on synthetic datasets. |
+| `tutorials/13-model-selection-and-cross-validation.ipynb` | Compare estimator-style models with deterministic cross-validation helpers. |
 
 ## Benchmark notebooks
 
