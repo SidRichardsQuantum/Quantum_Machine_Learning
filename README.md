@@ -514,9 +514,12 @@ The generated outputs are:
 - **docs/results/real-examples.md** — tables and plots extracted from real-example notebooks
 - **docs/results/benchmarks.md** — tables and plots extracted from benchmark notebooks
 
-Pass `--execute-notebooks` to rerun notebooks before extracting notebook outputs. The
-GitHub Pages workflow uses this mode so the published result pages stay aligned with
-the notebooks. These are reproducible reference outputs, not quantum-advantage claims.
+Pass `--execute-notebooks` to rerun all notebooks before extracting notebook outputs, or
+pass `--execute-notebook <path>` one or more times to rerun only selected notebooks.
+GitHub Pages publishes the committed reports and assets; the separate
+`Refresh results` workflow refreshes those generated artifacts when notebook, QML
+source, result-generation, or dependency changes require it. These are reproducible
+reference outputs, not quantum-advantage claims.
 
 ---
 

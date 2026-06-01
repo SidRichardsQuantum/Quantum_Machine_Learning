@@ -8,9 +8,13 @@ on:
       - README.md
       - USAGE.md
       - THEORY.md
+      - ROADMAP.md
       - docs/results/**
       - CHANGELOG.md
-      - docs/**
+      - docs/qml/**
+      - docs/pages/assets/**
+      - docs/pages/build_site.py
+      - docs/pages/styles.css
       - .gitattributes
       - .github/workflows/pages.yml
   workflow_dispatch:

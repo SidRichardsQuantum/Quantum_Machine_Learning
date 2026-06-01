@@ -1,5 +1,39 @@
 # CHANGELOG.md
 
+## [Unreleased]
+
+### Added
+
+- Added a dedicated `Refresh results` GitHub Actions workflow for generated
+  documentation artifacts. It executes notebooks only when notebook, QML source,
+  result-generation, dependency, or workflow changes require refreshed outputs.
+- Added `--execute-notebook` support to `docs/pages/generate_results.py` so
+  notebook-only refreshes can execute just the notebooks changed in a commit
+  before regenerating the notebook result pages.
+
+### Changed
+
+- Reduced the GitHub Pages workflow to a static-site build and deploy path using
+  committed Markdown and generated assets, avoiding notebook execution and API
+  result recomputation during normal Pages deployments.
+- Narrowed Pages workflow path filters so source and notebook changes flow
+  through the result-refresh workflow first, while docs/site-only changes deploy
+  directly.
+- Narrowed result-refresh triggers to notebook files, top-level QML source
+  modules, result-generation tooling, dependency files, and the refresh workflow
+  itself.
+- Updated Pages tooling documentation to describe the split between fast static
+  deployment and explicit generated-result refreshes.
+
+### Validation
+
+- Verified the updated workflow YAML parses successfully.
+- Verified `docs/pages/generate_results.py` and `docs/pages/build_site.py`
+  compile successfully.
+- Verified the static Pages build succeeds locally.
+
+---
+
 ## [0.2.9] - 01-06-2026
 
 ### Added

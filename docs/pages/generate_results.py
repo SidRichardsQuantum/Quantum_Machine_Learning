@@ -543,11 +543,20 @@ def execute_notebooks(paths: list[Path]) -> None:
     subprocess.run(cmd, cwd=ROOT, env=env, check=True)
 
 
-def collect_notebook_group(group: str, *, execute: bool) -> list[dict[str, Any]]:
+def collect_notebook_group(
+    group: str,
+    *,
+    execute: bool,
+    execute_paths: set[Path] | None = None,
+) -> list[dict[str, Any]]:
     config = NOTEBOOK_RESULTS[group]
     paths = sorted(config["directory"].glob("*.ipynb"))
     if execute:
-        execute_notebooks(paths)
+        if execute_paths is None:
+            selected_paths = paths
+        else:
+            selected_paths = [path for path in paths if path.resolve() in execute_paths]
+        execute_notebooks(selected_paths)
     return [collect_notebook_result(path, group) for path in paths]
 
 
@@ -651,8 +660,9 @@ Notebook-derived result pages are generated separately from executed notebook ou
 - [Real example notebook results](results-real-examples.html)
 - [Benchmark notebook results](results-benchmarks.html)
 
-The configurations are intentionally small so the GitHub Pages workflow can refresh the
-page quickly. They are reproducible smoke-scale examples, not quantum-advantage claims.
+The configurations are intentionally small enough for the result-refresh workflow to
+regenerate in CI. They are reproducible smoke-scale examples, not quantum-advantage
+claims.
 
 ## Environment
 
@@ -677,18 +687,23 @@ Regenerate this file and notebook-result pages from the repository root:
 python docs/pages/generate_results.py
 ```
 
-The GitHub Pages workflow also regenerates this file before building the web pages.
+The Refresh results workflow regenerates this file before the Pages workflow publishes
+the committed result artifacts.
 Generated images are written under `docs/pages/assets/reference-results/` and embedded above.
 """
 
 
-def write_notebook_result_pages(*, execute: bool) -> None:
+def write_notebook_result_pages(
+    *,
+    execute: bool,
+    execute_paths: set[Path] | None = None,
+) -> None:
     if NOTEBOOK_ASSETS.exists():
         shutil.rmtree(NOTEBOOK_ASSETS)
     NOTEBOOK_ASSETS.mkdir(parents=True, exist_ok=True)
 
     for group, config in NOTEBOOK_RESULTS.items():
-        results = collect_notebook_group(group, execute=execute)
+        results = collect_notebook_group(group, execute=execute, execute_paths=execute_paths)
         config["output"].write_text(render_notebook_results(group, results), encoding="utf-8")
 
 
@@ -711,11 +726,25 @@ def main() -> None:
         help="Execute notebooks before extracting notebook result pages.",
     )
     parser.add_argument(
+        "--execute-notebook",
+        action="append",
+        default=[],
+        type=Path,
+        help=(
+            "Execute one notebook before extracting notebook result pages. "
+            "Can be passed more than once. Implies --execute-notebooks."
+        ),
+    )
+    parser.add_argument(
         "--skip-api-results",
         action="store_true",
         help="Only generate notebook result pages.",
     )
     args = parser.parse_args()
+    execute_paths = {
+        (ROOT / path).resolve() if not path.is_absolute() else path.resolve()
+        for path in args.execute_notebook
+    }
 
     if not args.skip_api_results:
         args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -723,7 +752,10 @@ def main() -> None:
         args.output.write_text(render_results(runs), encoding="utf-8")
 
     if not args.skip_notebook_results:
-        write_notebook_result_pages(execute=args.execute_notebooks)
+        write_notebook_result_pages(
+            execute=args.execute_notebooks or bool(execute_paths),
+            execute_paths=execute_paths or None,
+        )
 
 
 if __name__ == "__main__":

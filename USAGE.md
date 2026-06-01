@@ -127,7 +127,11 @@ Reference results are generated from the same public APIs used by the notebooks:
 python docs/pages/generate_results.py
 ```
 
-The generated reports are written under `docs/results/` and included in the GitHub Pages site.
+The generated reports are written under `docs/results/` and included in the
+GitHub Pages site. Pages publishes committed reports and assets; the
+`Refresh results` workflow is responsible for executing notebooks and refreshing
+generated result artifacts when relevant notebook, QML source, result-generation,
+or dependency files change.
 
 Use `docs/qml/benchmark_interpretation.md` when reading benchmark summaries and
 `docs/qml/model_selection.md` when choosing which package API and classical

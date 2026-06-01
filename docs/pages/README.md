@@ -30,10 +30,11 @@ python docs/pages/generate_results.py
 
 This refreshes `docs/results/`, the notebook result pages, and generated assets.
 
-The package API result configurations are intentionally small so GitHub Pages can
-regenerate them in CI. Notebook result pages are generated from executed notebooks
-so the web pages show the same relevant tables and plots a reader sees in the
-notebooks. They are reproducible reference outputs, not quantum-advantage claims.
+The package API result configurations are intentionally small enough for the
+result-refresh workflow to regenerate in CI. Notebook result pages are generated
+from executed notebooks so the web pages show the same relevant tables and plots
+a reader sees in the notebooks. They are reproducible reference outputs, not
+quantum-advantage claims.
 
 To refresh notebook-result pages from already executed notebooks without rerunning
 the notebooks:
@@ -46,6 +47,13 @@ To execute notebooks first:
 
 ```bash
 python docs/pages/generate_results.py --skip-api-results --execute-notebooks
+```
+
+To execute only selected notebooks before regenerating notebook result pages:
+
+```bash
+python docs/pages/generate_results.py --skip-api-results \
+  --execute-notebook notebooks/tutorials/01-classical-vs-quantum-classifier.ipynb
 ```
 
 ## Build Site
@@ -74,6 +82,9 @@ The workflow in `.github/workflows/pages.yml`:
 4. Deploys the Pages artifact.
 
 Notebook execution is handled separately by `.github/workflows/refresh-results.yml`.
-That workflow runs `generate_results.py --execute-notebooks`, restores the notebooks
-so executed cell output is not recommitted, and commits refreshed generated files
-under `docs/results/` and `docs/pages/assets/`.
+That workflow runs only for notebook changes, QML source changes, result-generator
+changes, or dependency changes. Notebook-only commits execute just the changed
+notebooks before regenerating notebook result pages from committed notebook
+outputs. Source, generator, dependency, or manual runs execute the full notebook
+set and refresh all generated result artifacts. The workflow restores notebooks
+before committing so executed cell output is not recommitted.
