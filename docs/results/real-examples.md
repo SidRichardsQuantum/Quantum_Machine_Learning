@@ -4,9 +4,9 @@ Executed outputs from the domain-oriented notebooks in `notebooks/real_examples/
 
 ## Environment
 
-- Generated: 2026-06-01 03:59:55 UTC
-- Git commit: `15a5c1f`
-- Python: `3.12.1`
+- Generated: 2026-06-01 09:11:01 UTC
+- Git commit: `508c84e`
+- Python: `3.12.13`
 - Package version: `0.2.9`
 - Matplotlib backend: `Agg`
 
@@ -14,23 +14,23 @@ Executed outputs from the domain-oriented notebooks in `notebooks/real_examples/
 
 | Notebook | Text result blocks | Plots |
 | --- | ---: | ---: |
-| [notebooks/real_examples/01-rabi-oscillation-parameter-inference.ipynb](#quantum-dynamics-rabi-oscillation-parameter-inference) | 3 | 2 |
-| [notebooks/real_examples/02-ising-correlation-temperature-classifier.ipynb](#statistical-physics-ising-temperature-classification) | 3 | 2 |
-| [notebooks/real_examples/03-lorenz-regime-classifier.ipynb](#nonlinear-dynamics-lorenz-regime-classification) | 3 | 2 |
-| [notebooks/real_examples/04-condensed-matter-tfim-phase-classifier.ipynb](#condensed-matter-tfim-phase-classification) | 3 | 2 |
-| [notebooks/real_examples/05-pendulum-trajectory-surrogate.ipynb](#dynamical-systems-pendulum-trajectory-surrogate) | 3 | 2 |
-| [notebooks/real_examples/06-damped-oscillator-parameter-inference.ipynb](#inverse-problems-damped-oscillator-parameter-inference) | 3 | 2 |
-| [notebooks/real_examples/07-tfim-hamiltonian-parameter-inference.ipynb](#condensed-matter-tfim-hamiltonian-parameter-inference) | 3 | 2 |
-| [notebooks/real_examples/08-quantum-kernel-phase-discovery.ipynb](#condensed-matter-quantum-kernel-phase-discovery) | 3 | 2 |
-| [notebooks/real_examples/09-potential-energy-curve-interpolation.ipynb](#molecular-physics-potential-energy-curve-interpolation) | 3 | 2 |
-| [notebooks/real_examples/10-lorenz-quantum-reservoir-regime-classifier.ipynb](#dynamical-systems-lorenz-quantum-reservoir-regime-classification) | 3 | 2 |
-| [notebooks/real_examples/11-noisy-oscillator-quantum-reservoir-inference.ipynb](#dynamical-systems-noisy-oscillator-quantum-reservoir-inference) | 3 | 2 |
-| [notebooks/real_examples/12-heat-equation-diffusivity-inference.ipynb](#mathematical-physics-heat-equation-diffusivity-inference) | 3 | 2 |
-| [notebooks/real_examples/13-kepler-orbit-regime-classifier.ipynb](#celestial-mechanics-kepler-orbit-regime-classification) | 3 | 2 |
-| [notebooks/real_examples/14-vibrating-membrane-eigenfrequency-surrogate.ipynb](#mathematical-physics-vibrating-membrane-eigenfrequency-surrogate) | 3 | 2 |
-| [notebooks/real_examples/15-arrhenius-reaction-activation-energy-inference.ipynb](#chemical-physics-arrhenius-activation-energy-inference) | 3 | 2 |
-| [notebooks/real_examples/16-wave-equation-boundary-condition-classifier.ipynb](#mathematical-physics-wave-equation-boundary-condition-classification) | 3 | 2 |
-| [notebooks/real_examples/17-optical-diffraction-anomaly-detection.ipynb](#optics-diffraction-pattern-anomaly-classification) | 3 | 2 |
+| [notebooks/real_examples/01-rabi-oscillation-parameter-inference.ipynb](#quantum-dynamics-rabi-oscillation-parameter-inference) | 3 | 0 |
+| [notebooks/real_examples/02-ising-correlation-temperature-classifier.ipynb](#statistical-physics-ising-temperature-classification) | 3 | 0 |
+| [notebooks/real_examples/03-lorenz-regime-classifier.ipynb](#nonlinear-dynamics-lorenz-regime-classification) | 3 | 0 |
+| [notebooks/real_examples/04-condensed-matter-tfim-phase-classifier.ipynb](#condensed-matter-tfim-phase-classification) | 3 | 0 |
+| [notebooks/real_examples/05-pendulum-trajectory-surrogate.ipynb](#dynamical-systems-pendulum-trajectory-surrogate) | 3 | 0 |
+| [notebooks/real_examples/06-damped-oscillator-parameter-inference.ipynb](#inverse-problems-damped-oscillator-parameter-inference) | 3 | 0 |
+| [notebooks/real_examples/07-tfim-hamiltonian-parameter-inference.ipynb](#condensed-matter-tfim-hamiltonian-parameter-inference) | 3 | 0 |
+| [notebooks/real_examples/08-quantum-kernel-phase-discovery.ipynb](#condensed-matter-quantum-kernel-phase-discovery) | 3 | 0 |
+| [notebooks/real_examples/09-potential-energy-curve-interpolation.ipynb](#molecular-physics-potential-energy-curve-interpolation) | 3 | 0 |
+| [notebooks/real_examples/10-lorenz-quantum-reservoir-regime-classifier.ipynb](#dynamical-systems-lorenz-quantum-reservoir-regime-classification) | 3 | 0 |
+| [notebooks/real_examples/11-noisy-oscillator-quantum-reservoir-inference.ipynb](#dynamical-systems-noisy-oscillator-quantum-reservoir-inference) | 3 | 0 |
+| [notebooks/real_examples/12-heat-equation-diffusivity-inference.ipynb](#mathematical-physics-heat-equation-diffusivity-inference) | 3 | 0 |
+| [notebooks/real_examples/13-kepler-orbit-regime-classifier.ipynb](#celestial-mechanics-kepler-orbit-regime-classification) | 3 | 0 |
+| [notebooks/real_examples/14-vibrating-membrane-eigenfrequency-surrogate.ipynb](#mathematical-physics-vibrating-membrane-eigenfrequency-surrogate) | 3 | 0 |
+| [notebooks/real_examples/15-arrhenius-reaction-activation-energy-inference.ipynb](#chemical-physics-arrhenius-activation-energy-inference) | 3 | 0 |
+| [notebooks/real_examples/16-wave-equation-boundary-condition-classifier.ipynb](#mathematical-physics-wave-equation-boundary-condition-classification) | 3 | 0 |
+| [notebooks/real_examples/17-optical-diffraction-anomaly-detection.ipynb](#optics-diffraction-pattern-anomaly-classification) | 3 | 0 |
 
 ## Quantum Dynamics: Rabi Oscillation Parameter Inference
 
@@ -106,8 +106,7 @@ The baseline is included as a sanity check; this validates package usage rather 
 Passed: True
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/01-rabi-oscillation-parameter-inference/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/01-rabi-oscillation-parameter-inference/figure-02.png)
+_No plots were found._
 
 ## Statistical Physics: Ising Temperature Classification
 
@@ -177,8 +176,7 @@ The quantum kernel and logistic baseline are sanity-checked side by side; this v
 Passed: True
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/02-ising-correlation-temperature-classifier/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/02-ising-correlation-temperature-classifier/figure-02.png)
+_No plots were found._
 
 ## Nonlinear Dynamics: Lorenz Regime Classification
 
@@ -247,8 +245,7 @@ The quantum kernel and logistic baseline are both sanity checks; this validates 
 Passed: True
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/03-lorenz-regime-classifier/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/03-lorenz-regime-classifier/figure-02.png)
+_No plots were found._
 
 ## Condensed Matter: TFIM Phase Classification
 
@@ -315,8 +312,7 @@ Both the quantum kernel model and the logistic baseline solve the held-out split
 Passed: True
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/04-condensed-matter-tfim-phase-classifier/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/04-condensed-matter-tfim-phase-classifier/figure-02.png)
+_No plots were found._
 
 ## Dynamical Systems: Pendulum Trajectory Surrogate
 
@@ -392,8 +388,7 @@ The ridge baseline is included as a sanity benchmark; no quantum advantage is cl
 Passed: True
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/05-pendulum-trajectory-surrogate/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/05-pendulum-trajectory-surrogate/figure-02.png)
+_No plots were found._
 
 ## Inverse Problems: Damped Oscillator Parameter Inference
 
@@ -466,8 +461,7 @@ The ridge baseline is stronger on this simple inverse problem, so this validates
 Passed: True
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/06-damped-oscillator-parameter-inference/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/06-damped-oscillator-parameter-inference/figure-02.png)
+_No plots were found._
 
 ## Condensed Matter: TFIM Hamiltonian Parameter Inference
 
@@ -542,8 +536,7 @@ Passed
 +--------+-------+
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/07-tfim-hamiltonian-parameter-inference/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/07-tfim-hamiltonian-parameter-inference/figure-02.png)
+_No plots were found._
 
 ## Condensed Matter: Quantum Kernel Phase Discovery
 
@@ -618,8 +611,7 @@ Passed
 +--------+-------+
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/08-quantum-kernel-phase-discovery/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/08-quantum-kernel-phase-discovery/figure-02.png)
+_No plots were found._
 
 ## Molecular Physics: Potential Energy Curve Interpolation
 
@@ -693,8 +685,7 @@ Passed
 +--------+-------+
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/09-potential-energy-curve-interpolation/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/09-potential-energy-curve-interpolation/figure-02.png)
+_No plots were found._
 
 ## Dynamical Systems: Lorenz Quantum Reservoir Regime Classification
 
@@ -767,8 +758,7 @@ Passed
 +--------+-------+
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/10-lorenz-quantum-reservoir-regime-classifier/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/10-lorenz-quantum-reservoir-regime-classifier/figure-02.png)
+_No plots were found._
 
 ## Dynamical Systems: Noisy Oscillator Quantum Reservoir Inference
 
@@ -841,8 +831,7 @@ Passed
 +--------+-------+
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/11-noisy-oscillator-quantum-reservoir-inference/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/11-noisy-oscillator-quantum-reservoir-inference/figure-02.png)
+_No plots were found._
 
 ## Mathematical Physics: Heat Equation Diffusivity Inference
 
@@ -916,8 +905,7 @@ Passed
 +--------+-------+
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/12-heat-equation-diffusivity-inference/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/12-heat-equation-diffusivity-inference/figure-02.png)
+_No plots were found._
 
 ## Celestial Mechanics: Kepler Orbit Regime Classification
 
@@ -990,8 +978,7 @@ Passed
 +--------+-------+
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/13-kepler-orbit-regime-classifier/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/13-kepler-orbit-regime-classifier/figure-02.png)
+_No plots were found._
 
 ## Mathematical Physics: Vibrating Membrane Eigenfrequency Surrogate
 
@@ -1065,8 +1052,7 @@ Passed
 +--------+-------+
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/14-vibrating-membrane-eigenfrequency-surrogate/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/14-vibrating-membrane-eigenfrequency-surrogate/figure-02.png)
+_No plots were found._
 
 ## Chemical Physics: Arrhenius Activation Energy Inference
 
@@ -1140,8 +1126,7 @@ Passed
 +--------+-------+
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/15-arrhenius-reaction-activation-energy-inference/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/15-arrhenius-reaction-activation-energy-inference/figure-02.png)
+_No plots were found._
 
 ## Mathematical Physics: Wave Equation Boundary Condition Classification
 
@@ -1214,8 +1199,7 @@ Passed
 +--------+-------+
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/16-wave-equation-boundary-condition-classifier/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/16-wave-equation-boundary-condition-classifier/figure-02.png)
+_No plots were found._
 
 ## Optics: Diffraction Pattern Anomaly Classification
 
@@ -1291,8 +1275,7 @@ Passed
 +--------+-------+
 ```
 
-![figure 01](../pages/assets/notebook-results/real_examples/17-optical-diffraction-anomaly-detection/figure-01.png)
-![figure 02](../pages/assets/notebook-results/real_examples/17-optical-diffraction-anomaly-detection/figure-02.png)
+_No plots were found._
 
 ## Reproduce
 

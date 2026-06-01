@@ -7,14 +7,15 @@ Notebook-derived result pages are generated separately from executed notebook ou
 - [Real example notebook results](results-real-examples.html)
 - [Benchmark notebook results](results-benchmarks.html)
 
-The configurations are intentionally small so the GitHub Pages workflow can refresh the
-page quickly. They are reproducible smoke-scale examples, not quantum-advantage claims.
+The configurations are intentionally small enough for the result-refresh workflow to
+regenerate in CI. They are reproducible smoke-scale examples, not quantum-advantage
+claims.
 
 ## Environment
 
-- Generated: 2026-06-01 03:59:41 UTC
-- Git commit: `15a5c1f`
-- Python: `3.12.1`
+- Generated: 2026-06-01 08:51:28 UTC
+- Git commit: `508c84e`
+- Python: `3.12.13`
 - Package version: `0.2.9`
 - PennyLane: `0.45.0`
 - Matplotlib backend: `Agg`
@@ -24,14 +25,14 @@ page quickly. They are reproducible smoke-scale examples, not quantum-advantage 
 
 | Workflow | Primary metric | Value | Runtime |
 | --- | --- | ---: | ---: |
-| Variational quantum classifier | `train_accuracy` | 0.4595 | 27.96 s |
-| Variational quantum regression | `train_mse` | 0.9098 | 3.79 s |
-| Quantum convolutional neural network | `train_accuracy` | 0.8333 | 147.61 s |
-| Quantum autoencoder | `test_compression_fidelity` | 0.7014 | 3.64 s |
-| Quantum kernel classifier | `train_accuracy` | 0.8519 | 2.21 s |
-| Trainable quantum kernel | `train_accuracy` | 0.7333 | 24.86 s |
-| Trainable quantum kernel regressor | `train_mse` | 0.0125 | 10.76 s |
-| Quantum metric learning | `train_accuracy` | 0.5946 | 3.66 s |
+| Variational quantum classifier | `train_accuracy` | 0.4595 | 15.81 s |
+| Variational quantum regression | `train_mse` | 0.9098 | 1.95 s |
+| Quantum convolutional neural network | `train_accuracy` | 0.8333 | 79.08 s |
+| Quantum autoencoder | `test_compression_fidelity` | 0.7014 | 1.79 s |
+| Quantum kernel classifier | `train_accuracy` | 0.8519 | 1.32 s |
+| Trainable quantum kernel | `train_accuracy` | 0.7333 | 14.95 s |
+| Trainable quantum kernel regressor | `train_mse` | 0.0125 | 6.46 s |
+| Quantum metric learning | `train_accuracy` | 0.5946 | 2.22 s |
 
 ## Variational quantum classifier
 
@@ -44,7 +45,7 @@ Configuration:
 | `train_accuracy` | 0.4595 |
 | `test_accuracy` | 0.6154 |
 | `final_loss` | 1.4790 |
-| `runtime_seconds` | 27.96 |
+| `runtime_seconds` | 15.81 |
 
 Images:
 
@@ -63,7 +64,7 @@ Configuration:
 | `train_mse` | 0.9098 |
 | `test_mse` | 0.3316 |
 | `final_loss` | 0.9841 |
-| `runtime_seconds` | 3.79 |
+| `runtime_seconds` | 1.95 |
 
 Images:
 
@@ -82,7 +83,7 @@ Configuration:
 | `train_accuracy` | 0.8333 |
 | `test_accuracy` | 0.9000 |
 | `final_loss` | 0.4556 |
-| `runtime_seconds` | 147.61 |
+| `runtime_seconds` | 79.08 |
 
 Images:
 
@@ -101,7 +102,7 @@ Configuration:
 | `test_compression_fidelity` | 0.7014 |
 | `test_reconstruction_fidelity` | 0.7014 |
 | `final_loss` | 0.3676 |
-| `runtime_seconds` | 3.64 |
+| `runtime_seconds` | 1.79 |
 
 Images:
 
@@ -117,7 +118,7 @@ Configuration:
 | --- | ---: |
 | `train_accuracy` | 0.8519 |
 | `test_accuracy` | 0.8889 |
-| `runtime_seconds` | 2.21 |
+| `runtime_seconds` | 1.32 |
 
 Images:
 
@@ -137,7 +138,7 @@ Configuration:
 | `test_accuracy` | 0.8000 |
 | `final_alignment` | 0.1755 |
 | `final_loss` | -0.1755 |
-| `runtime_seconds` | 24.86 |
+| `runtime_seconds` | 14.95 |
 
 Images:
 
@@ -159,7 +160,7 @@ Configuration:
 | `test_mse` | 0.4359 |
 | `final_alignment` | 0.4287 |
 | `final_loss` | -0.4287 |
-| `runtime_seconds` | 10.76 |
+| `runtime_seconds` | 6.46 |
 
 
 ## Quantum metric learning
@@ -173,7 +174,7 @@ Configuration:
 | `train_accuracy` | 0.5946 |
 | `test_accuracy` | 0.6923 |
 | `final_loss` | 0.1152 |
-| `runtime_seconds` | 3.66 |
+| `runtime_seconds` | 2.22 |
 
 Images:
 
@@ -188,5 +189,6 @@ Regenerate this file and notebook-result pages from the repository root:
 python docs/pages/generate_results.py
 ```
 
-The GitHub Pages workflow also regenerates this file before building the web pages.
+The Refresh results workflow regenerates this file before the Pages workflow publishes
+the committed result artifacts.
 Generated images are written under `docs/pages/assets/reference-results/` and embedded above.
