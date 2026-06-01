@@ -4,17 +4,10 @@ Executed outputs from the tutorial notebooks in `notebooks/tutorials/`. These pa
 
 ## Environment
 
-<<<<<<< HEAD
-- Generated: 2026-06-01 09:06:45 UTC
-- Git commit: `508c84e`
+- Generated: 2026-06-01 10:21:43 UTC
+- Git commit: `9fc0e64`
 - Python: `3.12.13`
-- Package version: `0.2.9`
-=======
-- Generated: 2026-06-01 09:47:12 UTC
-- Git commit: `508c84e`
-- Python: `3.12.1`
 - Package version: `0.2.10`
->>>>>>> 0f4b077 (Release v0.2.10)
 - Matplotlib backend: `Agg`
 
 ## Summary
@@ -136,6 +129,7 @@ Result block 3:
 
 ```text
 ['ansatz_params',
+ 'batch_size',
  'circuit_metadata',
  'dataset',
  'early_stopping_min_delta',
@@ -201,7 +195,8 @@ Result block 2:
 Result block 3:
 
 ```text
-['circuit_metadata',
+['batch_size',
+ 'circuit_metadata',
  'dataset',
  'early_stopping_min_delta',
  'early_stopping_patience',
@@ -863,9 +858,9 @@ Reservoir folds
 +------+-------------+------------+-------------+
 | fold | train_score | test_score | fit_seconds |
 +------+-------------+------------+-------------+
-| 1    | 0.625       | 0.6875     | 0.0699224   |
-| 2    | 0.6875      | 0.5625     | 0.0552632   |
-| 3    | 0.625       | 0.625      | 0.0555553   |
+| 1    | 0.625       | 0.6875     | 0.071818    |
+| 2    | 0.6875      | 0.5625     | 0.0583336   |
+| 3    | 0.625       | 0.625      | 0.0565591   |
 +------+-------------+------------+-------------+
 ```
 Result block 4:
