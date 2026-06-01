@@ -69,7 +69,11 @@ The generated files are written to `_site/`, which is ignored by git.
 The workflow in `.github/workflows/pages.yml`:
 
 1. Checks out the repository.
-2. Installs the package and docs dependencies.
-3. Regenerates `docs/results/`, notebook result pages, and result images.
-4. Builds `_site/`.
-5. Deploys the Pages artifact.
+2. Installs the static site dependencies.
+3. Builds `_site/` from committed Markdown and assets.
+4. Deploys the Pages artifact.
+
+Notebook execution is handled separately by `.github/workflows/refresh-results.yml`.
+That workflow runs `generate_results.py --execute-notebooks`, restores the notebooks
+so executed cell output is not recommitted, and commits refreshed generated files
+under `docs/results/` and `docs/pages/assets/`.

@@ -10,8 +10,6 @@ on:
       - THEORY.md
       - docs/results/**
       - CHANGELOG.md
-      - src/**
-      - notebooks/**
       - docs/**
       - .gitattributes
       - .github/workflows/pages.yml
@@ -39,18 +37,14 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            requirements.txt
 
-      - name: Install documentation tooling
+      - name: Install static site tooling
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[dev]"
           python -m pip install markdown pymdown-extensions
-
-      - name: Generate reference results
-        env:
-          MPLBACKEND: Agg
-          MPLCONFIGDIR: /tmp/matplotlib
-        run: python docs/pages/generate_results.py --execute-notebooks
 
       - name: Build documentation site
         run: python docs/pages/build_site.py
