@@ -9,7 +9,6 @@ import re
 import shutil
 import subprocess
 import sys
-import tomllib
 from datetime import UTC, datetime
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
@@ -17,6 +16,11 @@ from time import perf_counter
 from typing import Any
 
 import nbformat
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10
+    import tomli as tomllib
 
 os.environ.setdefault("MPLBACKEND", "Agg")
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")

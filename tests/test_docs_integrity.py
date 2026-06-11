@@ -86,8 +86,10 @@ def test_workflows_parse_and_release_order_is_tests_publish_pages() -> None:
     pages_text = (ROOT / ".github/workflows/pages.yml").read_text(encoding="utf-8")
 
     assert 'tags:\n      - "v*"' in tests_text
-    assert "--workflow Tests" in publish_text
-    assert "needs: wait-for-tests" in publish_text
+    assert "workflow_run:" in publish_text
+    assert "- Tests" in publish_text
+    assert "github.event.workflow_run.conclusion == 'success'" in publish_text
+    assert "startsWith(github.event.workflow_run.head_branch, 'v')" in publish_text
     assert "workflow_run:" in pages_text
     assert "- Publish" in pages_text
 

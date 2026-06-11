@@ -63,6 +63,7 @@ git push origin vX.Y.Z
 
 - The tag push starts the release workflow chain:
   - `Tests` runs on the tag.
-  - `Publish` waits for the matching successful `Tests` run, then publishes the
-    checked package artifacts to PyPI.
+  - `Publish` starts after the matching successful `Tests` run, then publishes
+    the checked package artifacts to PyPI for `v*` tags. On `main` pushes, it
+    still builds and checks the package without uploading to PyPI.
   - `Pages` deploys after `Publish` completes successfully.
