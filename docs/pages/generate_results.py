@@ -9,7 +9,7 @@ import re
 import shutil
 import subprocess
 import sys
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from time import perf_counter
@@ -111,7 +111,7 @@ def stable_metadata_enabled() -> bool:
 def generated_timestamp(*, stable_metadata: bool = False) -> str:
     if stable_metadata:
         return "stable"
-    return datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
 
 def generated_commit(*, stable_metadata: bool = False) -> str:
