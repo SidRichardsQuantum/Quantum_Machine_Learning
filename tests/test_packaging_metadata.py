@@ -16,7 +16,7 @@ def _project_metadata() -> dict:
 def test_package_uses_src_layout_and_console_script() -> None:
     metadata = _project_metadata()
 
-    assert metadata["project"]["version"] == "0.2.12"
+    assert metadata["project"]["version"] == "0.2.13"
     assert metadata["tool"]["setuptools"]["packages"]["find"]["where"] == ["src"]
     assert metadata["project"]["scripts"]["qml-pennylane"] == "qml.cli:main"
     assert metadata["project"]["license"] == "MIT"
@@ -39,3 +39,18 @@ def test_project_version_has_matching_top_changelog_entry() -> None:
 
     assert release_headings
     assert release_headings[0] == metadata["project"]["version"]
+
+
+def test_generated_result_pages_match_project_version() -> None:
+    metadata = _project_metadata()
+    version = metadata["project"]["version"]
+    result_pages = [
+        Path("docs/results/api-reference.md"),
+        Path("docs/results/benchmarks.md"),
+        Path("docs/results/real-examples.md"),
+        Path("docs/results/tutorials.md"),
+    ]
+
+    for page in result_pages:
+        text = page.read_text(encoding="utf-8")
+        assert f"- Package version: `{version}`" in text

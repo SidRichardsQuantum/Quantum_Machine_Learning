@@ -1,22 +1,23 @@
 # Results
 
 These reference results are generated from the public package APIs used by the notebooks.
-Notebook-derived result pages are generated separately from executed notebook outputs:
+Notebook-derived result pages are generated separately from committed notebook outputs:
 
 - [Tutorial notebook results](results-tutorials.html)
 - [Real example notebook results](results-real-examples.html)
 - [Benchmark notebook results](results-benchmarks.html)
 
-The configurations are intentionally small enough to regenerate in CI. The
-result-refresh workflow verifies that committed artifacts are current. They are
-reproducible smoke-scale examples, not quantum-advantage claims.
+The configurations are intentionally small, deterministic smoke-scale examples.
+Notebook-derived result pages are extracted from outputs already committed in
+the notebooks. They are reproducible reference outputs, not quantum-advantage
+claims.
 
 ## Environment
 
-- Generated: 2026-06-11 05:33:35 UTC
-- Git commit: `2e5db6a`
-- Python: `3.12.13`
-- Package version: `0.2.11`
+- Generated: 2026-06-11 13:08:14 UTC
+- Git commit: `57ada3f`
+- Python: `3.12.1`
+- Package version: `0.2.13`
 - PennyLane: `0.45.0`
 - Matplotlib backend: `Agg`
 - Default execution: analytic `default.qubit` unless a shot count is listed
@@ -25,14 +26,14 @@ reproducible smoke-scale examples, not quantum-advantage claims.
 
 | Workflow | Primary metric | Value | Runtime |
 | --- | --- | ---: | ---: |
-| Variational quantum classifier | `train_accuracy` | 0.4595 | 16.17 s |
-| Variational quantum regression | `train_mse` | 0.9098 | 1.98 s |
-| Quantum convolutional neural network | `train_accuracy` | 0.8333 | 80.96 s |
-| Quantum autoencoder | `test_compression_fidelity` | 0.7014 | 1.81 s |
-| Quantum kernel classifier | `train_accuracy` | 0.8519 | 1.38 s |
-| Trainable quantum kernel | `train_accuracy` | 0.7333 | 15.05 s |
-| Trainable quantum kernel regressor | `train_mse` | 0.0125 | 7.03 s |
-| Quantum metric learning | `train_accuracy` | 0.5946 | 2.32 s |
+| Variational quantum classifier | `train_accuracy` | 0.4595 | 27.59 s |
+| Variational quantum regression | `train_mse` | 0.9098 | 4.06 s |
+| Quantum convolutional neural network | `train_accuracy` | 0.8333 | 146.61 s |
+| Quantum autoencoder | `test_compression_fidelity` | 0.7014 | 3.55 s |
+| Quantum kernel classifier | `train_accuracy` | 0.8519 | 1.91 s |
+| Trainable quantum kernel | `train_accuracy` | 0.7333 | 25.19 s |
+| Trainable quantum kernel regressor | `train_mse` | 0.0125 | 10.89 s |
+| Quantum metric learning | `train_accuracy` | 0.5946 | 3.51 s |
 
 ## Variational quantum classifier
 
@@ -45,7 +46,7 @@ Configuration:
 | `train_accuracy` | 0.4595 |
 | `test_accuracy` | 0.6154 |
 | `final_loss` | 1.4790 |
-| `runtime_seconds` | 16.17 |
+| `runtime_seconds` | 27.59 |
 
 Images:
 
@@ -64,7 +65,7 @@ Configuration:
 | `train_mse` | 0.9098 |
 | `test_mse` | 0.3316 |
 | `final_loss` | 0.9841 |
-| `runtime_seconds` | 1.98 |
+| `runtime_seconds` | 4.06 |
 
 Images:
 
@@ -83,7 +84,7 @@ Configuration:
 | `train_accuracy` | 0.8333 |
 | `test_accuracy` | 0.9000 |
 | `final_loss` | 0.4556 |
-| `runtime_seconds` | 80.96 |
+| `runtime_seconds` | 146.61 |
 
 Images:
 
@@ -102,7 +103,7 @@ Configuration:
 | `test_compression_fidelity` | 0.7014 |
 | `test_reconstruction_fidelity` | 0.7014 |
 | `final_loss` | 0.3676 |
-| `runtime_seconds` | 1.81 |
+| `runtime_seconds` | 3.55 |
 
 Images:
 
@@ -118,7 +119,7 @@ Configuration:
 | --- | ---: |
 | `train_accuracy` | 0.8519 |
 | `test_accuracy` | 0.8889 |
-| `runtime_seconds` | 1.38 |
+| `runtime_seconds` | 1.91 |
 
 Images:
 
@@ -138,7 +139,7 @@ Configuration:
 | `test_accuracy` | 0.8000 |
 | `final_alignment` | 0.1755 |
 | `final_loss` | -0.1755 |
-| `runtime_seconds` | 15.05 |
+| `runtime_seconds` | 25.19 |
 
 Images:
 
@@ -160,7 +161,7 @@ Configuration:
 | `test_mse` | 0.4359 |
 | `final_alignment` | 0.4287 |
 | `final_loss` | -0.4287 |
-| `runtime_seconds` | 7.03 |
+| `runtime_seconds` | 10.89 |
 
 
 ## Quantum metric learning
@@ -174,7 +175,7 @@ Configuration:
 | `train_accuracy` | 0.5946 |
 | `test_accuracy` | 0.6923 |
 | `final_loss` | 0.1152 |
-| `runtime_seconds` | 2.32 |
+| `runtime_seconds` | 3.51 |
 
 Images:
 
@@ -189,6 +190,8 @@ Regenerate this file and notebook-result pages from the repository root:
 python docs/pages/generate_results.py
 ```
 
-The Refresh results workflow verifies this file and the generated assets before
-the Pages workflow publishes the committed result artifacts.
+Notebook result pages are extracted from outputs already committed in the
+notebooks. Execute notebooks locally first when notebook outputs need to change,
+commit those notebook outputs, then regenerate and commit the derived result
+pages and assets.
 Generated images are written under `docs/pages/assets/reference-results/` and embedded above.

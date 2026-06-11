@@ -13,11 +13,14 @@ Regenerate these reports from the repository root:
 python docs/pages/generate_results.py
 ```
 
-Pass `--execute-notebooks` to rerun all notebooks before extracting notebook
-outputs, or pass `--execute-notebook <path>` one or more times to rerun only
-selected notebooks. GitHub Pages publishes the committed reports and assets; the
-`Refresh results` workflow executes notebooks and verifies that generated
-artifacts are current when relevant notebook, QML source, result-generation, or
-dependency files change. If the check fails, regenerate the reports locally and
-commit the updated `docs/results/` and `docs/pages/assets/` outputs. These
-reports are reproducible reference outputs, not quantum-advantage claims.
+Notebook-derived result pages are extracted from outputs already committed in
+the notebooks. When notebook outputs need to change, execute notebooks locally,
+commit the updated `.ipynb` files, then regenerate and commit the derived
+`docs/results/` and `docs/pages/assets/` outputs. GitHub Pages publishes only
+committed reports and assets. These reports are reproducible reference outputs,
+not quantum-advantage claims.
+
+Generated reports embed package version, git commit, Python version, and runtime
+metadata. After a package version bump, rerun the result generator and commit the
+updated reports so the release metadata in `docs/results/` matches
+`pyproject.toml`.

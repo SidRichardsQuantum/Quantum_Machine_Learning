@@ -12,7 +12,7 @@ style of the root portfolio site at:
 - `build_site.py` builds `_site/` from the repository Markdown files.
 - `generate_results.py` runs deterministic smoke-scale QML workflows and writes
   `docs/results/api-reference.md`.
-  It can also execute notebooks and extract their printed tables and plots into
+  It also extracts committed notebook text tables and plots into
   `docs/results/tutorials.md`, `docs/results/real-examples.md`, and
   `docs/results/benchmarks.md`.
 - `styles.css` defines the custom portfolio-style visual system for the generated site.
@@ -28,33 +28,25 @@ From the repository root:
 python docs/pages/generate_results.py
 ```
 
-This refreshes `docs/results/`, the notebook result pages, and generated assets.
+This refreshes `docs/results/`, the notebook result pages, and generated assets
+from the current package APIs and from outputs already stored in notebooks.
 
 The package API result configurations are intentionally small enough to
-regenerate in CI. Notebook result pages are generated from executed notebooks so
-the web pages show the same relevant tables and plots a reader sees in the
-notebooks. They are reproducible reference outputs, not quantum-advantage
+regenerate locally. Notebook result pages are generated from committed notebook
+outputs so the web pages show the same relevant tables and plots a reader sees
+in the notebooks. They are reproducible reference outputs, not quantum-advantage
 claims.
 
-To refresh notebook-result pages from already executed notebooks without rerunning
-the notebooks:
+To refresh notebook-result pages from committed notebook outputs without
+rerunning the API reference results:
 
 ```bash
 python docs/pages/generate_results.py --skip-api-results
 ```
 
-To execute notebooks first:
-
-```bash
-python docs/pages/generate_results.py --skip-api-results --execute-notebooks
-```
-
-To execute only selected notebooks before regenerating notebook result pages:
-
-```bash
-python docs/pages/generate_results.py --skip-api-results \
-  --execute-notebook notebooks/tutorials/01-classical-vs-quantum-classifier.ipynb
-```
+When notebook outputs need to change, execute the notebooks locally with
+Jupyter or `jupyter nbconvert --execute --inplace`, commit the updated
+`.ipynb` files, then regenerate and commit the derived result pages and assets.
 
 ## Build Site
 
@@ -81,15 +73,7 @@ The workflow in `.github/workflows/pages.yml`:
 3. Builds `_site/` from committed Markdown and assets.
 4. Deploys the Pages artifact.
 
-Notebook execution checks are handled separately by
-`.github/workflows/refresh-results.yml`. That workflow runs for pull requests
-and `main` pushes that touch notebooks, QML source, the result generator,
-dependencies, or the workflow itself. Notebook-only changes execute just the
-changed notebooks before regenerating notebook result pages from committed
-notebook outputs. Source, generator, dependency, or manual runs execute the full
-notebook set and regenerate all result artifacts.
-
-The workflow restores executed notebooks, then verifies that `docs/results/` and
-`docs/pages/assets/` are unchanged. It does not commit or push to `main`. If the
-check fails, regenerate results locally, commit the updated generated artifacts,
-and push that commit for review.
+There is no separate result-refresh workflow. GitHub Pages publishes committed
+Markdown and asset files only. Notebook outputs are expected to persist in the
+committed `.ipynb` files and are the source of truth for notebook-derived result
+pages.

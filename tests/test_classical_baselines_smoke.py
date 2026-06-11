@@ -37,6 +37,19 @@ def test_run_logistic_classifier_smoke():
     assert 0.0 <= result["test_accuracy"] <= 1.0
 
 
+def test_run_svm_classifier_exposes_calibrated_probabilities():
+    result = run_svm_classifier(
+        n_samples=24,
+        noise=0.1,
+        test_size=0.25,
+        seed=0,
+    )
+
+    assert result["train_probabilities"].shape[0] == result["y_train"].shape[0]
+    assert result["test_probabilities"].shape[0] == result["y_test"].shape[0]
+    assert result["calibration"] == "sigmoid"
+
+
 def test_run_svm_classifier_smoke():
     result = run_svm_classifier(
         n_samples=24,
@@ -51,6 +64,7 @@ def test_run_svm_classifier_smoke():
     assert math.isfinite(result["test_accuracy"])
     assert 0.0 <= result["train_accuracy"] <= 1.0
     assert 0.0 <= result["test_accuracy"] <= 1.0
+    assert result["calibration"] == "sigmoid"
 
 
 def test_run_additional_classical_classifiers_smoke():

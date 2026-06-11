@@ -1,5 +1,36 @@
 # CHANGELOG.md
 
+## [0.2.13] - 11-06-2026
+
+### Added
+
+- Added a generated-result package-version consistency test so release result
+  pages must match `pyproject.toml`.
+- Added `docs/qml/release_checklist.md` and linked it from the documentation
+  index and generated Pages navigation.
+
+### Changed
+
+- Removed the separate `Refresh results` GitHub Actions verifier workflow.
+- Changed notebook-result generation to read only outputs already committed in
+  notebooks; notebook execution now happens locally before committing notebook
+  output changes.
+- Switched the SVM classical baseline probability output from deprecated
+  `SVC(probability=True)` to sigmoid calibration with
+  `CalibratedClassifierCV`.
+- Refreshed generated API, tutorial, real-example, and benchmark result pages
+  from committed notebook outputs.
+- Regenerated the runtime-scaling benchmark plot asset used by the benchmark
+  result page.
+- Bumped package metadata to `0.2.13`.
+
+### Validation
+
+- Verified the focused packaging metadata and classical-baseline smoke tests.
+- Verified Ruff checks pass for the touched source, test, and Pages build files.
+
+---
+
 ## [0.2.12] - 11-06-2026
 
 ### Added

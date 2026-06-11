@@ -518,14 +518,12 @@ The generated outputs are:
 - **docs/results/real-examples.md** — tables and plots extracted from real-example notebooks
 - **docs/results/benchmarks.md** — tables and plots extracted from benchmark notebooks
 
-Pass `--execute-notebooks` to rerun all notebooks before extracting notebook outputs, or
-pass `--execute-notebook <path>` one or more times to rerun only selected notebooks.
-GitHub Pages publishes the committed reports and assets; the separate
-`Refresh results` workflow verifies that those generated artifacts are current
-when notebook, QML source, result-generation, or dependency changes require it.
-If the check fails, regenerate the artifacts locally and commit the updated
-`docs/results/` and `docs/pages/assets/` outputs. These are reproducible
-reference outputs, not quantum-advantage claims.
+Notebook-derived result pages are extracted from outputs already committed in
+the notebooks. When notebook outputs need to change, execute notebooks locally,
+commit the updated `.ipynb` files, then regenerate and commit the derived
+`docs/results/` and `docs/pages/assets/` outputs. GitHub Pages publishes only
+committed reports and assets. These are reproducible reference outputs, not
+quantum-advantage claims.
 
 ---
 
@@ -550,6 +548,7 @@ Core documentation:
 - **docs/qml/benchmark_interpretation.md** — benchmark reading guide for metrics, intervals, paired deltas, runtime, and release wording
 - **docs/qml/model_selection.md** — task-oriented model-selection guide for QML APIs and classical baselines
 - **docs/qml/estimator_consistency.md** — checklist for the estimator API consistency audit
+- **docs/qml/release_checklist.md** — release versioning, generated-result refresh, validation, tagging, and publishing checklist
 - **docs/qml/noise_models.md** — opt-in depolarizing, amplitude-damping, and readout-error simulation guide
 
 Algorithm notes:
@@ -570,6 +569,7 @@ Algorithm notes:
 - docs/qml/classical_baselines.md
 - docs/qml/benchmarks.md
 - docs/qml/implementation_contracts.md
+- docs/qml/release_checklist.md
 
 Tutorial notebooks:
 

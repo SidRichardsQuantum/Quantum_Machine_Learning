@@ -136,34 +136,21 @@ plt.close(fig)
 Use clear axis labels and legends. Avoid oversized figures, dense annotations,
 and plots that duplicate table content without adding interpretation.
 
-## Result Refresh Workflow
+## Result Page Generation
 
-Use these commands from the repository root:
+Notebook outputs are committed and are the source of truth for notebook-derived
+result pages. Regenerate result pages from the repository root after committing
+or preparing updated notebook outputs:
 
 ```bash
 python docs/pages/generate_results.py --skip-api-results
 ```
 
-Regenerate notebook result pages from existing executed notebook outputs.
-
-```bash
-python docs/pages/generate_results.py --skip-api-results --execute-notebooks
-```
-
-Execute all notebooks, then regenerate notebook result pages.
-
-```bash
-python docs/pages/generate_results.py --skip-api-results \
-  --execute-notebook notebooks/benchmarks/08-runtime-scaling-benchmark.ipynb
-```
-
-Execute one notebook, then regenerate notebook result pages.
-
-The GitHub `Refresh results` workflow executes only changed notebooks for
-notebook-only pull requests and pushes. Source, dependency, result-generation,
-or manual runs can trigger broader refreshes. The workflow verifies that
-generated result artifacts are already committed; it does not push refreshed
-artifacts to `main`.
+When notebook outputs need to change, execute the notebooks locally with
+Jupyter or `jupyter nbconvert --execute --inplace`, commit the updated
+`.ipynb` files, then regenerate and commit the derived `docs/results/` and
+`docs/pages/assets/` outputs. There is no separate CI result-refresh workflow;
+GitHub Pages publishes committed Markdown and asset files only.
 
 ## Review Checklist
 
@@ -175,5 +162,6 @@ Before adding or updating a notebook, verify:
 - result tables use shared reporting helpers
 - plots are captured in `docs/results/`
 - validation includes `passed`
-- generated result pages and assets are refreshed when notebook outputs change
+- notebook outputs are committed when they change
+- generated result pages and assets are regenerated from committed notebook outputs
 - `python docs/pages/build_site.py` succeeds

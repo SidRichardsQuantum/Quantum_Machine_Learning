@@ -87,7 +87,13 @@ DOCS = [
         "Notebook Authoring",
         ROOT / "docs/qml/notebook_authoring.md",
         "notebook-authoring.html",
-        "Notebook structure, validation blocks, plots, and result-refresh expectations.",
+        "Notebook structure, validation blocks, plots, and committed-output expectations.",
+    ),
+    (
+        "Release Checklist",
+        ROOT / "docs/qml/release_checklist.md",
+        "release-checklist.html",
+        "Release versioning, generated-result refresh, validation, tagging, and publishing steps.",
     ),
     (
         "Noise Models",

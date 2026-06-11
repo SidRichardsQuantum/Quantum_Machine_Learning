@@ -22,6 +22,7 @@ from sklearn.kernel_ridge import KernelRidge
 from sklearn.linear_model import ElasticNet, Lasso, LogisticRegression, Ridge
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.neural_network import MLPClassifier, MLPRegressor
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.svm import SVC, SVR
 
 from qml._baseline_utils import (
@@ -163,16 +164,29 @@ def run_svm_classifier(
     y_train = data["y_train"]
     y_test = data["y_test"]
 
+    svc = SVC(kernel=kernel, C=c, gamma=gamma, random_state=seed)
+    if param_grid is None:
+        tuned_grid = {
+            "estimator__C": [0.1, 1.0, 10.0],
+            "estimator__gamma": ["scale", "auto"],
+            "estimator__kernel": [kernel],
+        }
+    else:
+        tuned_grid = {
+            key if key.startswith("estimator__") else f"estimator__{key}": value
+            for key, value in param_grid.items()
+        }
+
     clf, tuning, fit_seconds = _fit_estimator(
-        SVC(kernel=kernel, C=c, gamma=gamma, probability=True, random_state=seed),
+        CalibratedClassifierCV(svc, method="sigmoid", cv=cv, ensemble=False),
         x_train,
         y_train,
         tune=tune,
-        param_grid=param_grid
-        or {"C": [0.1, 1.0, 10.0], "gamma": ["scale", "auto"], "kernel": [kernel]},
+        param_grid=tuned_grid,
         cv=cv,
         scoring="accuracy",
     )
+    fitted_svc = getattr(clf, "estimator", svc)
     result = _classifier_result(
         model_name="svm_classifier",
         dataset=dataset,
@@ -186,9 +200,10 @@ def run_svm_classifier(
         y_train=y_train,
         y_test=y_test,
         extra={
-            "kernel": getattr(clf, "kernel", kernel),
-            "c": getattr(clf, "C", c),
-            "gamma": getattr(clf, "gamma", gamma),
+            "kernel": getattr(fitted_svc, "kernel", kernel),
+            "c": getattr(fitted_svc, "C", c),
+            "gamma": getattr(fitted_svc, "gamma", gamma),
+            "calibration": "sigmoid",
         },
         tuning=tuning,
         fit_seconds=fit_seconds,
