@@ -42,9 +42,9 @@
 ### Changed
 
 - Removed the separate `Refresh results` GitHub Actions verifier workflow.
-- Ordered release workflows so `Publish` starts after successful `Tests` runs
-  and `Pages` deploys after `Publish`; PyPI upload remains limited to `v*` tag
-  releases and manual dispatches.
+- Ordered release workflows so `Pages` deploys after successful `Tests` on
+  `main`, and `v*` tag publishes wait for successful `Tests` and `Pages` runs
+  on the same commit before uploading to PyPI.
 - Changed notebook-result generation to read only outputs already committed in
   notebooks; notebook execution now happens locally before committing notebook
   output changes.

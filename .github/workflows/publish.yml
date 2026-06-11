@@ -1,33 +1,68 @@
 name: Publish
 
 on:
-  workflow_run:
-    workflows:
-      - Tests
-    types:
-      - completed
-  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
 
 jobs:
+  wait-for-release-checks:
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+
+    steps:
+      - name: Wait for successful Tests and Pages workflows on this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          wait_for_workflow() {
+            workflow="$1"
+            event="$2"
+
+            for attempt in $(seq 1 60); do
+              run="$(
+              gh run list \
+                --workflow "$workflow" \
+                --commit "$HEAD_SHA" \
+                --event "$event" \
+                --limit 20 \
+                --json databaseId,status,conclusion \
+                --jq 'map(select(.status == "completed")) | .[0] // empty'
+              )"
+
+              if [ -n "$run" ]; then
+                conclusion="$(printf '%s' "$run" | jq -r '.conclusion')"
+                if [ "$conclusion" = "success" ]; then
+                  return 0
+                fi
+                echo "$workflow workflow completed with conclusion: $conclusion"
+                return 1
+              fi
+
+              echo "Waiting for $workflow workflow for $HEAD_SHA, attempt $attempt..."
+              sleep 20
+            done
+
+            echo "Timed out waiting for $workflow workflow for $HEAD_SHA."
+            return 1
+          }
+
+          wait_for_workflow Tests push
+          wait_for_workflow Pages workflow_run
+
   build:
     runs-on: ubuntu-latest
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.event == 'push')
+    needs: wait-for-release-checks
 
     env:
       PYTHONUTF8: "1"
 
     steps:
-      - name: Checkout tested commit
-        if: github.event_name == 'workflow_run'
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-
-      - name: Checkout repository
-        if: github.event_name == 'workflow_dispatch'
+      - name: Checkout tag commit
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -54,9 +89,6 @@ jobs:
   publish-pypi:
     runs-on: ubuntu-latest
     needs: build
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      startsWith(github.event.workflow_run.head_branch, 'v')
 
     permissions:
       id-token: write
