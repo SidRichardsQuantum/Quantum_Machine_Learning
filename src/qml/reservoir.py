@@ -13,6 +13,7 @@ import numpy as np
 import pennylane as qml
 from sklearn.linear_model import LogisticRegression, Ridge
 
+from qml.circuit_metadata import circuit_metadata
 from qml.metrics import accuracy_score, mean_absolute_error, mean_squared_error
 from qml.noise import apply_noise_channels, device_name_for_noise, noise_model_to_dict
 
@@ -24,6 +25,42 @@ def _as_2d(x) -> np.ndarray:
     if x.ndim != 2:
         raise ValueError(f"Expected a 2D array, got shape {x.shape}.")
     return x
+
+
+def _split_nested_params(
+    params: dict[str, Any], prefix: str
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    nested_prefix = f"{prefix}__"
+    local: dict[str, Any] = {}
+    nested: dict[str, Any] = {}
+    for key, value in params.items():
+        if key.startswith(nested_prefix):
+            nested[key[len(nested_prefix) :]] = value
+        else:
+            local[key] = value
+    return local, nested
+
+
+def _reservoir_circuit_metadata(
+    model: str, reservoir: "QuantumReservoirFeatures"
+) -> dict[str, Any]:
+    return circuit_metadata(
+        model=model,
+        n_qubits=reservoir.n_qubits_,
+        n_layers=reservoir.n_layers,
+        embedding="reservoir_angle",
+        embedding_layers=1,
+        ansatz=None,
+        template="variational",
+        trainable_parameters=0,
+        extra={
+            "fixed_random_parameters": int(reservoir.weights_.size),
+            "shots": reservoir.shots,
+            "noise_model": reservoir.noise_model,
+            "input_scale": reservoir.input_scale,
+            "weight_scale": reservoir.weight_scale,
+        },
+    )
 
 
 class QuantumReservoirFeatures:
@@ -150,14 +187,22 @@ class QuantumReservoirRegressor:
         self.ridge_kwargs = ridge_kwargs
 
     def get_params(self, deep: bool = True) -> dict[str, Any]:
-        return {
+        params = {
             "reservoir": self.reservoir,
             "alpha": self.alpha,
             "seed": self.seed,
             **self.ridge_kwargs,
         }
+        if deep and hasattr(self.reservoir, "get_params"):
+            params.update(
+                {f"reservoir__{key}": value for key, value in self.reservoir.get_params().items()}
+            )
+        return params
 
     def set_params(self, **params):
+        params, reservoir_params = _split_nested_params(params, "reservoir")
+        if reservoir_params:
+            self.reservoir.set_params(**reservoir_params)
         for key, value in params.items():
             if key == "reservoir":
                 self.reservoir = value
@@ -173,6 +218,11 @@ class QuantumReservoirRegressor:
         features = self.reservoir.fit_transform(x)
         self.model_ = Ridge(alpha=self.alpha, **self.ridge_kwargs)
         self.model_.fit(features, np.asarray(y, dtype=float))
+        self.n_features_in_ = self.reservoir.n_features_in_
+        self.feature_matrix_train_ = features
+        self.circuit_metadata_ = _reservoir_circuit_metadata(
+            "quantum_reservoir_regressor", self.reservoir
+        )
         return self
 
     def predict(self, x) -> np.ndarray:
@@ -206,15 +256,23 @@ class QuantumReservoirClassifier:
         self.logistic_kwargs = logistic_kwargs
 
     def get_params(self, deep: bool = True) -> dict[str, Any]:
-        return {
+        params = {
             "reservoir": self.reservoir,
             "c": self.c,
             "seed": self.seed,
             "max_iter": self.max_iter,
             **self.logistic_kwargs,
         }
+        if deep and hasattr(self.reservoir, "get_params"):
+            params.update(
+                {f"reservoir__{key}": value for key, value in self.reservoir.get_params().items()}
+            )
+        return params
 
     def set_params(self, **params):
+        params, reservoir_params = _split_nested_params(params, "reservoir")
+        if reservoir_params:
+            self.reservoir.set_params(**reservoir_params)
         for key, value in params.items():
             if key == "reservoir":
                 self.reservoir = value
@@ -233,6 +291,11 @@ class QuantumReservoirClassifier:
         self.model_ = LogisticRegression(C=self.c, max_iter=self.max_iter, **self.logistic_kwargs)
         self.model_.fit(features, np.asarray(y))
         self.classes_ = self.model_.classes_
+        self.n_features_in_ = self.reservoir.n_features_in_
+        self.feature_matrix_train_ = features
+        self.circuit_metadata_ = _reservoir_circuit_metadata(
+            "quantum_reservoir_classifier", self.reservoir
+        )
         return self
 
     def predict(self, x) -> np.ndarray:

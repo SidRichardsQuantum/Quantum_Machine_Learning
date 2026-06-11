@@ -15,6 +15,7 @@ import pennylane as qml
 from pennylane import numpy as pnp
 
 from qml.ansatz import apply_hardware_efficient_ansatz, parameter_shape
+from qml.circuit_metadata import circuit_metadata
 from qml.embeddings import apply_angle_embedding
 from qml.metrics import accuracy_score, mean_absolute_error, mean_squared_error
 from qml.noise import apply_noise_channels, device_name_for_noise, noise_model_to_dict
@@ -147,6 +148,21 @@ class QuantumRegressor:
             for output in range(self.n_outputs_)
         ]
         self.loss_history_ = [model.loss_history for model in self.models_]
+        self.loss_trace_ = self.loss_history_
+        self.trained_params_ = [model.params for model in self.models_]
+        self.circuit_metadata_ = circuit_metadata(
+            model="quantum_regressor",
+            n_qubits=self.n_features_in_,
+            n_layers=self.n_layers,
+            embedding="angle",
+            embedding_layers=1,
+            template="variational",
+            extra={
+                "shots": self.shots,
+                "noise_model": self.noise_model,
+                "n_outputs": self.n_outputs_,
+            },
+        )
         return self
 
     def _predict_single(self, x: np.ndarray, params: np.ndarray) -> np.ndarray:
@@ -294,6 +310,22 @@ class QuantumClassifier:
             binary = (y == cls).astype(float)
             self.models_.append(self._fit_binary(x, binary, self.seed + idx))
         self.loss_history_ = [model.loss_history for model in self.models_]
+        self.loss_trace_ = self.loss_history_
+        self.trained_params_ = [model.params for model in self.models_]
+        self.circuit_metadata_ = circuit_metadata(
+            model="quantum_classifier",
+            n_qubits=self.n_features_in_,
+            n_layers=self.n_layers,
+            embedding="angle",
+            embedding_layers=1,
+            template="variational",
+            extra={
+                "shots": self.shots,
+                "noise_model": self.noise_model,
+                "n_classes": int(len(self.classes_)),
+                "multiclass_strategy": "one_vs_rest" if len(self.classes_) > 2 else "binary",
+            },
+        )
         return self
 
     def _predict_proba_binary(self, x: np.ndarray, params: np.ndarray) -> np.ndarray:

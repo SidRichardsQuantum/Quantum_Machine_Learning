@@ -315,13 +315,32 @@ class TrainableQuantumKernelRegressor:
         self.model_ = KernelRidge(alpha=self.alpha, kernel="precomputed")
         self.model_.fit(self.kernel_matrix_train_, y)
         self.x_train_ = x
+        self.n_features_in_ = x.shape[1]
         self._kernel_fn_ = kernel_fn
+        self.circuit_metadata_ = circuit_metadata(
+            model="trainable_quantum_kernel_regressor",
+            n_qubits=self.n_features_in_,
+            n_layers=1,
+            embedding=self.embedding_name_,
+            embedding_layers=self.embedding_layers,
+            ansatz=None,
+            template="trainable_kernel",
+            trainable_parameters=int(np.asarray(self.trained_params_).size if is_trainable else 0),
+            extra={
+                "shots_train": self.shots_train,
+                "shots_kernel": self.shots_kernel,
+                "noise_model": self.noise_model,
+                "alignment": self.alignment_,
+            },
+        )
         return self
 
     def predict(self, x) -> np.ndarray:
         if not hasattr(self, "model_"):
             raise ValueError("TrainableQuantumKernelRegressor must be fitted before prediction.")
         x = _as_2d(x)
+        if x.shape[1] != self.n_features_in_:
+            raise ValueError(f"Expected {self.n_features_in_} features, got {x.shape[1]}.")
         k_test = _compute_kernel_matrix(x, self.x_train_, self._kernel_fn_)
         return np.asarray(self.model_.predict(k_test), dtype=float)
 

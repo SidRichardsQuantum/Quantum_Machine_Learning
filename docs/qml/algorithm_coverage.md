@@ -32,6 +32,7 @@ for every thin workflow wrapper.
 | Classical baselines | `docs/qml/classical_baselines.md` | `classical-baselines.html` |
 | Benchmark helpers | `docs/qml/benchmarks.md` | `benchmarks.html` |
 | Model selection helpers | `docs/qml/model_selection.md` | `model-selection.html` |
+| Estimator consistency checklist | `docs/qml/estimator_consistency.md` | `estimator-consistency.html` |
 | Implementation contracts | `docs/qml/implementation_contracts.md` | `implementation-contracts.html` |
 
 ## Documentation Policy

@@ -547,12 +547,14 @@ Core documentation:
 - **docs/results/benchmarks.md** — generated benchmark notebook outputs
 - **docs/qml/benchmark_interpretation.md** — benchmark reading guide for metrics, intervals, paired deltas, runtime, and release wording
 - **docs/qml/model_selection.md** — task-oriented model-selection guide for QML APIs and classical baselines
+- **docs/qml/estimator_consistency.md** — checklist for the estimator API consistency audit
 - **docs/qml/noise_models.md** — opt-in depolarizing, amplitude-damping, and readout-error simulation guide
 
 Algorithm notes:
 
 - docs/qml/api_reference.md
 - docs/qml/algorithm_coverage.md
+- docs/qml/estimator_consistency.md
 - docs/qml/variational_quantum_classifier.md
 - docs/qml/variational_regression.md
 - docs/qml/qcnn.md

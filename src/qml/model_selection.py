@@ -186,7 +186,7 @@ def clone_estimator(estimator):
     """
     if not hasattr(estimator, "get_params"):
         raise ValueError("Estimator must expose get_params().")
-    return estimator.__class__(**copy.deepcopy(estimator.get_params(deep=True)))
+    return estimator.__class__(**copy.deepcopy(estimator.get_params(deep=False)))
 
 
 def _splitter(task: str, cv: int, *, shuffle: bool, seed: int):
