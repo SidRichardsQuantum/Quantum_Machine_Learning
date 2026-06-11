@@ -95,6 +95,27 @@ def package_version() -> str:
         return "unknown"
 
 
+def stable_metadata_enabled() -> bool:
+    return os.environ.get("QML_RESULTS_STABLE_METADATA", "").lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
+def generated_timestamp(*, stable_metadata: bool = False) -> str:
+    if stable_metadata:
+        return "stable"
+    return datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
+
+
+def generated_commit(*, stable_metadata: bool = False) -> str:
+    if stable_metadata:
+        return "stable"
+    return short_commit()
+
+
 def final_value(values: list[float] | tuple[float, ...]) -> float:
     return float(values[-1]) if values else float("nan")
 
@@ -107,6 +128,12 @@ def fmt(value: Any, digits: int = 4) -> str:
             return "nan"
         return f"{value:.{digits}f}"
     return str(value)
+
+
+def fmt_runtime(value: float, *, stable_metadata: bool = False) -> str:
+    if stable_metadata:
+        return "not recorded"
+    return f"{fmt(value, digits=2)} s"
 
 
 def slugify(value: str) -> str:
@@ -408,11 +435,13 @@ def format_config(config: dict[str, Any]) -> str:
     return ", ".join(f"`{key}={fmt(value)}`" for key, value in config.items())
 
 
-def metrics_table(run: dict[str, Any]) -> str:
+def metrics_table(run: dict[str, Any], *, stable_metadata: bool = False) -> str:
     lines = ["| Metric | Value |", "| --- | ---: |"]
     for key, value in run["metrics"].items():
         lines.append(f"| `{key}` | {fmt(value)} |")
-    lines.append(f"| `runtime_seconds` | {fmt(run['elapsed'], digits=2)} |")
+    lines.append(
+        f"| `runtime_seconds` | {fmt_runtime(run['elapsed'], stable_metadata=stable_metadata)} |"
+    )
     return "\n".join(lines)
 
 
@@ -528,9 +557,14 @@ def collect_notebook_group(group: str) -> list[dict[str, Any]]:
     return [collect_notebook_result(path, group) for path in paths]
 
 
-def render_notebook_results(group: str, results: list[dict[str, Any]]) -> str:
+def render_notebook_results(
+    group: str,
+    results: list[dict[str, Any]],
+    *,
+    stable_metadata: bool = False,
+) -> str:
     config = NOTEBOOK_RESULTS[group]
-    generated_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
+    generated_at = generated_timestamp(stable_metadata=stable_metadata)
     summary = [
         "| Notebook | Text result blocks | Plots |",
         "| --- | ---: | ---: |",
@@ -568,7 +602,7 @@ Notebook: `{result["path"].as_posix()}`
 ## Environment
 
 - Generated: {generated_at}
-- Git commit: `{short_commit()}`
+- Git commit: `{generated_commit(stable_metadata=stable_metadata)}`
 - Python: `{platform.python_version()}`
 - Package version: `{package_version()}`
 - Matplotlib backend: `{os.environ.get("MPLBACKEND", "Agg")}`
@@ -588,8 +622,8 @@ python docs/pages/generate_results.py --skip-api-results
 """
 
 
-def render_results(runs: list[dict[str, Any]]) -> str:
-    generated_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
+def render_results(runs: list[dict[str, Any]], *, stable_metadata: bool = False) -> str:
+    generated_at = generated_timestamp(stable_metadata=stable_metadata)
     summary_rows = [
         "| Workflow | Primary metric | Value | Runtime |",
         "| --- | --- | ---: | ---: |",
@@ -598,7 +632,7 @@ def render_results(runs: list[dict[str, Any]]) -> str:
         primary_name, primary_value = next(iter(run["metrics"].items()))
         summary_rows.append(
             f"| {run['model']} | `{primary_name}` | {fmt(primary_value)} | "
-            f"{fmt(run['elapsed'], digits=2)} s |"
+            f"{fmt_runtime(run['elapsed'], stable_metadata=stable_metadata)} |"
         )
 
     sections = []
@@ -609,7 +643,7 @@ Configuration:
 
 {format_config(run["config"])}
 
-{metrics_table(run)}
+{metrics_table(run, stable_metadata=stable_metadata)}
 {image_gallery(run)}
 """)
 
@@ -630,7 +664,7 @@ claims.
 ## Environment
 
 - Generated: {generated_at}
-- Git commit: `{short_commit()}`
+- Git commit: `{generated_commit(stable_metadata=stable_metadata)}`
 - Python: `{platform.python_version()}`
 - Package version: `{package_version()}`
 - PennyLane: `{pennylane.__version__}`
@@ -658,14 +692,17 @@ Generated images are written under `docs/pages/assets/reference-results/` and em
 """
 
 
-def write_notebook_result_pages() -> None:
+def write_notebook_result_pages(*, stable_metadata: bool = False) -> None:
     if NOTEBOOK_ASSETS.exists():
         shutil.rmtree(NOTEBOOK_ASSETS)
     NOTEBOOK_ASSETS.mkdir(parents=True, exist_ok=True)
 
     for group, config in NOTEBOOK_RESULTS.items():
         results = collect_notebook_group(group)
-        config["output"].write_text(render_notebook_results(group, results), encoding="utf-8")
+        config["output"].write_text(
+            render_notebook_results(group, results, stable_metadata=stable_metadata),
+            encoding="utf-8",
+        )
 
 
 def main() -> None:
@@ -686,15 +723,28 @@ def main() -> None:
         action="store_true",
         help="Only generate notebook result pages.",
     )
+    parser.add_argument(
+        "--stable-metadata",
+        action="store_true",
+        help=(
+            "Use stable generated metadata and omit runtime values to reduce "
+            "release-doc diff churn. Can also be enabled with "
+            "QML_RESULTS_STABLE_METADATA=1."
+        ),
+    )
     args = parser.parse_args()
+    stable_metadata = args.stable_metadata or stable_metadata_enabled()
 
     if not args.skip_api_results:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         runs = run_reference_results()
-        args.output.write_text(render_results(runs), encoding="utf-8")
+        args.output.write_text(
+            render_results(runs, stable_metadata=stable_metadata),
+            encoding="utf-8",
+        )
 
     if not args.skip_notebook_results:
-        write_notebook_result_pages()
+        write_notebook_result_pages(stable_metadata=stable_metadata)
 
 
 if __name__ == "__main__":

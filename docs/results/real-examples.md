@@ -4,10 +4,10 @@ Executed outputs from the domain-oriented notebooks in `notebooks/real_examples/
 
 ## Environment
 
-- Generated: 2026-06-11 13:08:56 UTC
-- Git commit: `57ada3f`
+- Generated: stable
+- Git commit: `stable`
 - Python: `3.12.1`
-- Package version: `0.2.13`
+- Package version: `0.2.14`
 - Matplotlib backend: `Agg`
 
 ## Summary

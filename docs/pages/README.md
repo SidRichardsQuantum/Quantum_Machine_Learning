@@ -48,6 +48,21 @@ When notebook outputs need to change, execute the notebooks locally with
 Jupyter or `jupyter nbconvert --execute --inplace`, commit the updated
 `.ipynb` files, then regenerate and commit the derived result pages and assets.
 
+Useful group execution commands:
+
+```bash
+python -m jupyter nbconvert --execute --inplace notebooks/tutorials/*.ipynb
+python -m jupyter nbconvert --execute --inplace notebooks/real_examples/*.ipynb
+python -m jupyter nbconvert --execute --inplace notebooks/benchmarks/*.ipynb
+```
+
+To reduce release-doc churn from generated timestamps, commit hashes, and
+runtime values, use stable metadata:
+
+```bash
+python docs/pages/generate_results.py --stable-metadata
+```
+
 ## Build Site
 
 Install the docs build dependencies if needed:

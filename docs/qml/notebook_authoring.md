@@ -152,6 +152,21 @@ Jupyter or `jupyter nbconvert --execute --inplace`, commit the updated
 `docs/pages/assets/` outputs. There is no separate CI result-refresh workflow;
 GitHub Pages publishes committed Markdown and asset files only.
 
+Useful group execution commands:
+
+```bash
+python -m jupyter nbconvert --execute --inplace notebooks/tutorials/*.ipynb
+python -m jupyter nbconvert --execute --inplace notebooks/real_examples/*.ipynb
+python -m jupyter nbconvert --execute --inplace notebooks/benchmarks/*.ipynb
+```
+
+For release docs where timestamp, commit, and runtime churn is not useful, pass
+stable metadata when regenerating result pages:
+
+```bash
+python docs/pages/generate_results.py --stable-metadata
+```
+
 ## Review Checklist
 
 Before adding or updating a notebook, verify:

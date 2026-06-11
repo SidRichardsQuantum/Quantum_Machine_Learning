@@ -24,3 +24,6 @@ Generated reports embed package version, git commit, Python version, and runtime
 metadata. After a package version bump, rerun the result generator and commit the
 updated reports so the release metadata in `docs/results/` matches
 `pyproject.toml`.
+
+Use `python docs/pages/generate_results.py --stable-metadata` when release docs
+should avoid churn from generated timestamps, commit hashes, and runtime values.

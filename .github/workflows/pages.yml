@@ -1,22 +1,11 @@
 name: Pages
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - README.md
-      - USAGE.md
-      - THEORY.md
-      - ROADMAP.md
-      - docs/results/**
-      - CHANGELOG.md
-      - docs/qml/**
-      - docs/pages/assets/**
-      - docs/pages/build_site.py
-      - docs/pages/styles.css
-      - .gitattributes
-      - .github/workflows/pages.yml
+  workflow_run:
+    workflows:
+      - Publish
+    types:
+      - completed
   workflow_dispatch:
 
 permissions:
@@ -31,6 +20,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
 
     steps:
       - name: Check out repository
@@ -64,6 +54,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
 
     environment:
       name: github-pages

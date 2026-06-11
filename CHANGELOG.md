@@ -1,5 +1,35 @@
 # CHANGELOG.md
 
+## [0.2.14] - 11-06-2026
+
+### Added
+
+- Added docs/result integrity tests for generated result links and image assets.
+- Added notebook extraction coverage that verifies result extraction does not
+  modify notebook files.
+- Added workflow-order tests for the `Tests` to `Publish` to `Pages` release
+  chain.
+- Added committed-notebook output checks for notebook JSON validity, saved
+  outputs, and validation outputs that report `passed` when validation output
+  blocks are present.
+
+### Changed
+
+- Added `--stable-metadata` and `QML_RESULTS_STABLE_METADATA=1` support to
+  generated result pages so release docs can avoid timestamp, commit, and
+  runtime churn.
+- Documented notebook group execution commands for tutorials, real examples,
+  and benchmarks.
+- Bumped package metadata to `0.2.14`.
+
+### Validation
+
+- Verified focused docs-integrity, packaging metadata, and classical-baseline
+  tests pass.
+- Verified Ruff checks pass for touched source and test files.
+
+---
+
 ## [0.2.13] - 11-06-2026
 
 ### Added
@@ -12,6 +42,8 @@
 ### Changed
 
 - Removed the separate `Refresh results` GitHub Actions verifier workflow.
+- Ordered release workflows so tag pushes run `Tests`, `Publish` waits for the
+  matching successful test run, and `Pages` deploys after a successful publish.
 - Changed notebook-result generation to read only outputs already committed in
   notebooks; notebook execution now happens locally before committing notebook
   output changes.

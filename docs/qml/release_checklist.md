@@ -16,6 +16,13 @@ Use this checklist before publishing a package release.
 python docs/pages/generate_results.py
 ```
 
+Use stable metadata for release docs when timestamp, commit, and runtime churn
+would obscure meaningful output changes:
+
+```bash
+python docs/pages/generate_results.py --stable-metadata
+```
+
 - Notebook-derived result pages are extracted from outputs already committed in
   notebooks. When notebook outputs need to change, execute notebooks locally,
   commit the updated `.ipynb` files, then regenerate and commit
@@ -54,8 +61,8 @@ git tag -a vX.Y.Z -m "vX.Y.Z"
 git push origin vX.Y.Z
 ```
 
-- Upload the checked package artifacts:
-
-```bash
-python -m twine upload dist/*
-```
+- The tag push starts the release workflow chain:
+  - `Tests` runs on the tag.
+  - `Publish` waits for the matching successful `Tests` run, then publishes the
+    checked package artifacts to PyPI.
+  - `Pages` deploys after `Publish` completes successfully.
