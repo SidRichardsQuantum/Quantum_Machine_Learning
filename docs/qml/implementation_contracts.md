@@ -56,8 +56,36 @@ computed from the trained model rather than from a shortcut.
 - Circuit-backed workflow results should include `circuit_metadata` with
   trainable-parameter counts and an estimated package-template depth. Depth is
   reported for relative interpretation and is not a hardware-compiled depth.
+- Circuit-backed fitted estimators should expose `circuit_metadata_` when the
+  estimator object owns the circuit execution path.
 - Fidelity kernels in analytic mode must be symmetric with diagonal entries
   near one and nonnegative eigenvalues up to numerical tolerance.
+- Kernel estimator wrappers must fit downstream classical models with
+  precomputed quantum kernel matrices and retain that training matrix as
+  `kernel_matrix_train_`.
+- Reservoir estimator wrappers must fit downstream classical models on quantum
+  reservoir features and retain that training feature matrix as
+  `feature_matrix_train_`.
 - Autoencoder reconstruction fidelity must be computed after compression loss,
   not by applying an encoder immediately followed by its inverse.
 - QCNN results must expose the active-wire reduction stages used by pooling.
+
+## Estimator behavior
+
+Estimator-style classes should be usable directly on user-supplied arrays.
+For the v0.2.12 estimator surface:
+
+- fitted array estimators record `n_features_in_`
+- classifiers record `classes_`
+- prediction, transform, probability, decision, scoring, and sample-scoring
+  methods raise clear `ValueError`s before `fit`
+- prediction and transform methods reject arrays with the wrong fitted feature
+  count
+- `get_params` and `set_params` round-trip constructor parameters
+- kernel and reservoir wrappers support useful nested parameters such as
+  `kernel__shots`, `kernel__embedding`, `reservoir__n_layers`, and
+  `reservoir__noise_model`
+- classifier `score(...)` returns accuracy
+- regressor `score(...)` returns negative mean squared error
+- finite-shot and noise-model settings appear in estimator metadata where they
+  affect circuit execution

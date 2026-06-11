@@ -95,7 +95,27 @@ Use these when data already exists outside the package:
 | `selection_summary_rows(...)` | `qml.model_selection` | Normalize model-selection outputs into compact reporting rows. |
 
 The estimator classes expose `fit`, `predict`, `score`, `get_params`, and
-`set_params` where those operations apply.
+`set_params` where those operations apply. Transformers and structure-discovery
+models expose task-appropriate methods such as `transform`,
+`fit_transform`, `decision_function`, and `score_samples`.
+
+The v0.2.12 estimator consistency pass guarantees the following at smoke scale:
+
+- fitted array estimators record `n_features_in_`
+- classifiers record `classes_`
+- unfitted prediction, transform, scoring, and decision methods raise clear
+  `ValueError`s
+- prediction and transform methods validate the fitted feature count
+- classifier `score(...)` returns accuracy
+- regressor `score(...)` returns negative mean squared error
+- circuit-backed fitted estimators expose `circuit_metadata_` where the
+  estimator owns the circuit execution path
+- kernel wrappers retain `kernel_matrix_train_`
+- reservoir wrappers retain `feature_matrix_train_`
+- trainable estimators expose learned parameters and objective traces
+
+For the detailed matrix across estimator-style APIs, see
+`docs/qml/estimator_consistency.md`.
 
 `QuantumClassifier` and `QuantumRegressor` are sklearn-style wrappers around
 the same circuit families described in the VQC and VQR theory pages. They do
@@ -110,6 +130,14 @@ preserves full-batch training.
 Circuit-backed estimators accept an optional `noise_model` dictionary for
 depolarizing, amplitude-damping, and readout-error simulation. Use
 `qml.noise.build_noise_model(...)` to validate explicit channel probabilities.
+
+Composed estimator wrappers expose useful nested parameters through
+`get_params(deep=True)` and `set_params(...)`. Examples include
+`kernel__shots`, `kernel__embedding`, `kernel__noise_model`,
+`reservoir__n_layers`, `reservoir__shots`, and `reservoir__noise_model`.
+The model-selection helpers clone estimators from shallow constructor
+parameters, so configured kernel and reservoir objects are preserved without
+passing nested keys directly to constructors.
 
 For a compact map from public QML implementations to theory notes, tutorials,
 benchmarks, and generated web pages, see `docs/qml/algorithm_coverage.md`.

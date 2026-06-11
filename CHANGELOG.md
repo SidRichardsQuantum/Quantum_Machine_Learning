@@ -1,5 +1,43 @@
 # CHANGELOG.md
 
+## [0.2.12] - 11-06-2026
+
+### Added
+
+- Added estimator consistency coverage for fitted attributes, fitted-state
+  errors, nested kernel/reservoir parameters, deterministic seeded behavior,
+  and feature-count validation.
+- Added algorithm-truth contract tests for quantum kernel matrix use,
+  trainable-kernel alignment traces, variational finite-shot metadata, QCNN
+  active-wire reduction, and autoencoder postselected reconstruction.
+- Added `QuantumKernel.get_params(...)` and `QuantumKernel.set_params(...)` for
+  estimator composition.
+- Added `QuantumOneClassClassifier.score_samples(...)`.
+
+### Changed
+
+- Standardized fitted metadata across estimator-style APIs with
+  `n_features_in_`, `classes_` where applicable, training matrices or feature
+  matrices, learned parameter traces, and `circuit_metadata_` for
+  circuit-backed estimators.
+- Added nested `kernel__...` and `reservoir__...` parameter support for
+  composed estimator wrappers.
+- Updated `qml.model_selection.clone_estimator(...)` to clone from shallow
+  constructor parameters so configured composed objects are preserved without
+  passing nested keys into constructors.
+- Updated estimator consistency, API reference, model-selection, implementation
+  contract, and roadmap documentation for the v0.2.12 generalization release.
+- Bumped package metadata to `0.2.12`.
+
+### Validation
+
+- Verified focused estimator, algorithm-contract, model-selection, kernel,
+  trainable-kernel, QCNN, autoencoder, and validation tests pass.
+- Verified Ruff formatting and lint checks pass for touched source and test
+  files.
+
+---
+
 ## [0.2.11] - 11-06-2026
 
 ### Added

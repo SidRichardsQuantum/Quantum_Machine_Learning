@@ -78,6 +78,12 @@ DOCS = [
         "Task-oriented guidance for choosing QML APIs and classical baselines.",
     ),
     (
+        "Estimator Consistency",
+        ROOT / "docs/qml/estimator_consistency.md",
+        "estimator-consistency.html",
+        "Checklist for the estimator API consistency audit and generalization release.",
+    ),
+    (
         "Notebook Authoring",
         ROOT / "docs/qml/notebook_authoring.md",
         "notebook-authoring.html",

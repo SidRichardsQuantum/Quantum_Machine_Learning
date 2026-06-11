@@ -70,9 +70,32 @@ Estimator classes expose `fit`, `predict`, `score`, `get_params`, and
 functions when you need custom splits, preprocessing, or integration with other
 Python workflows.
 
+Fitted estimators record `n_features_in_`, and classifiers record `classes_`.
+Kernel wrappers retain `kernel_matrix_train_`; reservoir wrappers retain
+`feature_matrix_train_`; circuit-backed fitted estimators expose
+`circuit_metadata_` where the estimator owns the circuit execution path.
+
 For variational estimators, set `batch_size` to use deterministic mini-batch
 optimizer updates. Leave `batch_size=None` for full-batch training, which is the
 default and matches earlier package behavior.
+
+Composed estimators expose nested parameters for lightweight tuning:
+
+```python
+from qml import QuantumKernel, QuantumKernelClassifier
+from qml.reservoir import QuantumReservoirClassifier
+
+kernel_model = QuantumKernelClassifier(QuantumKernel(seed=0))
+kernel_model.set_params(kernel__shots=128, kernel__embedding="angle")
+
+reservoir_model = QuantumReservoirClassifier(seed=0)
+reservoir_model.set_params(reservoir__n_layers=3, reservoir__noise_model=None)
+```
+
+`get_params(deep=True)` includes these nested keys for inspection and manual
+tuning. `qml.model_selection.clone_estimator(...)` clones from shallow
+constructor parameters so configured kernel and reservoir objects are preserved
+without passing nested keys into constructors.
 
 ## Cross-Validation Helpers
 
@@ -148,6 +171,11 @@ For lower-level use, `qml.model_selection.selection_summary_rows(...)` returns
 the same normalized rows as dictionaries.
 
 Pass `task` explicitly when floating labels are actually class labels.
+
+The package scorers intentionally avoid estimator-specific score overrides
+during cross-validation: predictions are generated with `predict(...)`, then
+scored by `score_predictions(...)`. This keeps classifier accuracy and
+regression loss semantics consistent across QML and classical estimators.
 
 ## Choosing Embeddings
 

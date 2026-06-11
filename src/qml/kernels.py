@@ -16,6 +16,7 @@ from sklearn.kernel_ridge import KernelRidge
 from sklearn.svm import OneClassSVM
 from sklearn.svm import SVC
 
+from qml.circuit_metadata import circuit_metadata, embedding_parameter_count
 from qml.embeddings import apply_angle_embedding, get_embedding
 from qml.metrics import accuracy_score, mean_absolute_error, mean_squared_error
 from qml.noise import (
@@ -80,6 +81,29 @@ class QuantumKernel:
 
     def __post_init__(self) -> None:
         self.noise_model = noise_model_to_dict(self.noise_model)
+
+    def get_params(self, deep: bool = True) -> dict[str, Any]:
+        """Return constructor parameters for sklearn-style composition."""
+        return {
+            "embedding": self.embedding,
+            "params": self.params,
+            "shots": self.shots,
+            "seed": self.seed,
+            "noise_model": self.noise_model,
+            "cache": self.cache,
+        }
+
+    def set_params(self, **params):
+        """Set constructor parameters for sklearn-style composition."""
+        valid = self.get_params()
+        for key, value in params.items():
+            if key not in valid:
+                raise ValueError(f"Invalid parameter {key!r} for QuantumKernel.")
+            if key == "noise_model":
+                value = noise_model_to_dict(value)
+            setattr(self, key, value)
+        self.clear_cache()
+        return self
 
     def clear_cache(self) -> None:
         """Clear cached pairwise kernel evaluations."""
@@ -159,6 +183,49 @@ class QuantumKernel:
         return matrix
 
 
+def _split_nested_params(
+    params: dict[str, Any], prefix: str
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    nested_prefix = f"{prefix}__"
+    local: dict[str, Any] = {}
+    nested: dict[str, Any] = {}
+    for key, value in params.items():
+        if key.startswith(nested_prefix):
+            nested[key[len(nested_prefix) :]] = value
+        else:
+            local[key] = value
+    return local, nested
+
+
+def _kernel_circuit_metadata(model: str, kernel: QuantumKernel, n_features: int) -> dict[str, Any]:
+    params = None if kernel.params is None else np.asarray(kernel.params)
+    trainable_parameters = 0 if params is None else int(params.size)
+    try:
+        embedding_layers = int(params.shape[0]) if params is not None and params.ndim > 0 else 1
+        if trainable_parameters == 0:
+            trainable_parameters = embedding_parameter_count(
+                kernel.embedding,
+                n_layers=embedding_layers,
+                n_qubits=n_features,
+            )
+    except ValueError:
+        embedding_layers = 1
+    return circuit_metadata(
+        model=model,
+        n_qubits=n_features,
+        n_layers=1,
+        embedding=kernel.embedding,
+        embedding_layers=embedding_layers,
+        ansatz=None,
+        template="kernel",
+        trainable_parameters=trainable_parameters,
+        extra={
+            "shots": kernel.shots,
+            "noise_model": kernel.noise_model,
+        },
+    )
+
+
 class QuantumKernelClassifier:
     """SVM classifier backed by a precomputed quantum kernel."""
 
@@ -179,15 +246,23 @@ class QuantumKernelClassifier:
 
     def get_params(self, deep: bool = True) -> dict[str, Any]:
         """Return constructor parameters for sklearn-style model selection."""
-        return {
+        params = {
             "kernel": self.kernel,
             "c": self.c,
             "seed": self.seed,
             **self.svc_kwargs,
         }
+        if deep and hasattr(self.kernel, "get_params"):
+            params.update(
+                {f"kernel__{key}": value for key, value in self.kernel.get_params().items()}
+            )
+        return params
 
     def set_params(self, **params):
         """Set constructor parameters for sklearn-style model selection."""
+        params, kernel_params = _split_nested_params(params, "kernel")
+        if kernel_params:
+            self.kernel.set_params(**kernel_params)
         for key, value in params.items():
             if key == "kernel":
                 self.kernel = value
@@ -195,6 +270,8 @@ class QuantumKernelClassifier:
                 self.c = value
             elif key == "seed":
                 self.seed = value
+            elif key in self.svc_kwargs:
+                self.svc_kwargs[key] = value
             else:
                 self.svc_kwargs[key] = value
         return self
@@ -206,13 +283,21 @@ class QuantumKernelClassifier:
         self.model_ = SVC(kernel="precomputed", C=self.c, **self.svc_kwargs)
         self.model_.fit(k_train, y)
         self.x_train_ = x
+        self.n_features_in_ = x.shape[1]
         self.classes_ = self.model_.classes_
+        self.kernel_matrix_train_ = k_train
+        self.circuit_metadata_ = _kernel_circuit_metadata(
+            "quantum_kernel_classifier", self.kernel, self.n_features_in_
+        )
         return self
 
     def predict(self, x) -> np.ndarray:
         if self.model_ is None or self.x_train_ is None:
             raise ValueError("QuantumKernelClassifier must be fitted before prediction.")
-        k_test = self.kernel.evaluate(_as_2d(x), self.x_train_)
+        x = _as_2d(x)
+        if x.shape[1] != self.n_features_in_:
+            raise ValueError(f"Expected {self.n_features_in_} features, got {x.shape[1]}.")
+        k_test = self.kernel.evaluate(x, self.x_train_)
         return self.model_.predict(k_test)
 
     def score(self, x, y) -> float:
@@ -239,15 +324,23 @@ class QuantumKernelRegressor:
 
     def get_params(self, deep: bool = True) -> dict[str, Any]:
         """Return constructor parameters for sklearn-style model selection."""
-        return {
+        params = {
             "kernel": self.kernel,
             "alpha": self.alpha,
             "seed": self.seed,
             **self.kernel_ridge_kwargs,
         }
+        if deep and hasattr(self.kernel, "get_params"):
+            params.update(
+                {f"kernel__{key}": value for key, value in self.kernel.get_params().items()}
+            )
+        return params
 
     def set_params(self, **params):
         """Set constructor parameters for sklearn-style model selection."""
+        params, kernel_params = _split_nested_params(params, "kernel")
+        if kernel_params:
+            self.kernel.set_params(**kernel_params)
         for key, value in params.items():
             if key == "kernel":
                 self.kernel = value
@@ -268,12 +361,20 @@ class QuantumKernelRegressor:
         )
         self.model_.fit(k_train, y)
         self.x_train_ = x
+        self.n_features_in_ = x.shape[1]
+        self.kernel_matrix_train_ = k_train
+        self.circuit_metadata_ = _kernel_circuit_metadata(
+            "quantum_kernel_regressor", self.kernel, self.n_features_in_
+        )
         return self
 
     def predict(self, x) -> np.ndarray:
         if self.model_ is None or self.x_train_ is None:
             raise ValueError("QuantumKernelRegressor must be fitted before prediction.")
-        k_test = self.kernel.evaluate(_as_2d(x), self.x_train_)
+        x = _as_2d(x)
+        if x.shape[1] != self.n_features_in_:
+            raise ValueError(f"Expected {self.n_features_in_} features, got {x.shape[1]}.")
+        k_test = self.kernel.evaluate(x, self.x_train_)
         return np.asarray(self.model_.predict(k_test), dtype=float)
 
     def score(self, x, y) -> float:
@@ -300,11 +401,19 @@ class QuantumKernelPCA:
         self.seed = seed
 
     def get_params(self, deep: bool = True) -> dict[str, Any]:
-        return {"kernel": self.kernel, "n_components": self.n_components, "seed": self.seed}
+        params = {"kernel": self.kernel, "n_components": self.n_components, "seed": self.seed}
+        if deep and hasattr(self.kernel, "get_params"):
+            params.update(
+                {f"kernel__{key}": value for key, value in self.kernel.get_params().items()}
+            )
+        return params
 
     def set_params(self, **params):
+        params, kernel_params = _split_nested_params(params, "kernel")
+        if kernel_params:
+            self.kernel.set_params(**kernel_params)
         for key, value in params.items():
-            if key not in self.get_params():
+            if key not in {"kernel", "n_components", "seed"}:
                 raise ValueError(f"Invalid parameter {key!r} for QuantumKernelPCA.")
             setattr(self, key, value)
         return self
@@ -342,15 +451,23 @@ class QuantumKernelPCA:
             eigvecs = np.pad(eigvecs, ((0, 0), (0, pad)))
 
         self.x_train_ = x
+        self.n_features_in_ = x.shape[1]
         self.eigenvalues_ = eigvals
         self.alphas_ = eigvecs / np.sqrt(np.where(eigvals > 1e-12, eigvals, 1.0))
         self.embedding_ = k_centered @ self.alphas_
+        self.kernel_matrix_train_ = k_train
+        self.circuit_metadata_ = _kernel_circuit_metadata(
+            "quantum_kernel_pca", self.kernel, self.n_features_in_
+        )
         return self
 
     def transform(self, x) -> np.ndarray:
         if not hasattr(self, "x_train_"):
             raise ValueError("QuantumKernelPCA must be fitted before transform.")
-        k_test = self.kernel.evaluate(_as_2d(x), self.x_train_)
+        x = _as_2d(x)
+        if x.shape[1] != self.n_features_in_:
+            raise ValueError(f"Expected {self.n_features_in_} features, got {x.shape[1]}.")
+        k_test = self.kernel.evaluate(x, self.x_train_)
         row_mean = k_test.mean(axis=1)
         k_centered = k_test - row_mean[:, None] - self.train_row_mean_[None, :] + self.train_mean_
         return k_centered @ self.alphas_
@@ -376,9 +493,17 @@ class QuantumOneClassClassifier:
         self.svm_kwargs = svm_kwargs
 
     def get_params(self, deep: bool = True) -> dict[str, Any]:
-        return {"kernel": self.kernel, "nu": self.nu, "seed": self.seed, **self.svm_kwargs}
+        params = {"kernel": self.kernel, "nu": self.nu, "seed": self.seed, **self.svm_kwargs}
+        if deep and hasattr(self.kernel, "get_params"):
+            params.update(
+                {f"kernel__{key}": value for key, value in self.kernel.get_params().items()}
+            )
+        return params
 
     def set_params(self, **params):
+        params, kernel_params = _split_nested_params(params, "kernel")
+        if kernel_params:
+            self.kernel.set_params(**kernel_params)
         for key, value in params.items():
             if key == "kernel":
                 self.kernel = value
@@ -396,19 +521,39 @@ class QuantumOneClassClassifier:
         self.model_ = OneClassSVM(kernel="precomputed", nu=self.nu, **self.svm_kwargs)
         self.model_.fit(k_train)
         self.x_train_ = x
+        self.n_features_in_ = x.shape[1]
+        self.kernel_matrix_train_ = k_train
+        self.circuit_metadata_ = _kernel_circuit_metadata(
+            "quantum_one_class_classifier", self.kernel, self.n_features_in_
+        )
         return self
 
     def predict(self, x) -> np.ndarray:
         if not hasattr(self, "model_"):
             raise ValueError("QuantumOneClassClassifier must be fitted before prediction.")
-        k_test = self.kernel.evaluate(_as_2d(x), self.x_train_)
+        x = _as_2d(x)
+        if x.shape[1] != self.n_features_in_:
+            raise ValueError(f"Expected {self.n_features_in_} features, got {x.shape[1]}.")
+        k_test = self.kernel.evaluate(x, self.x_train_)
         return self.model_.predict(k_test)
 
     def decision_function(self, x) -> np.ndarray:
         if not hasattr(self, "model_"):
             raise ValueError("QuantumOneClassClassifier must be fitted before scoring.")
-        k_test = self.kernel.evaluate(_as_2d(x), self.x_train_)
+        x = _as_2d(x)
+        if x.shape[1] != self.n_features_in_:
+            raise ValueError(f"Expected {self.n_features_in_} features, got {x.shape[1]}.")
+        k_test = self.kernel.evaluate(x, self.x_train_)
         return self.model_.decision_function(k_test)
+
+    def score_samples(self, x) -> np.ndarray:
+        if not hasattr(self, "model_"):
+            raise ValueError("QuantumOneClassClassifier must be fitted before scoring.")
+        x = _as_2d(x)
+        if x.shape[1] != self.n_features_in_:
+            raise ValueError(f"Expected {self.n_features_in_} features, got {x.shape[1]}.")
+        k_test = self.kernel.evaluate(x, self.x_train_)
+        return self.model_.score_samples(k_test)
 
 
 class QuantumGaussianProcessRegressor:
@@ -428,16 +573,24 @@ class QuantumGaussianProcessRegressor:
         self.seed = seed
 
     def get_params(self, deep: bool = True) -> dict[str, Any]:
-        return {
+        params = {
             "kernel": self.kernel,
             "alpha": self.alpha,
             "normalize_y": self.normalize_y,
             "seed": self.seed,
         }
+        if deep and hasattr(self.kernel, "get_params"):
+            params.update(
+                {f"kernel__{key}": value for key, value in self.kernel.get_params().items()}
+            )
+        return params
 
     def set_params(self, **params):
+        params, kernel_params = _split_nested_params(params, "kernel")
+        if kernel_params:
+            self.kernel.set_params(**kernel_params)
         for key, value in params.items():
-            if key not in self.get_params():
+            if key not in {"kernel", "alpha", "normalize_y", "seed"}:
                 raise ValueError(f"Invalid parameter {key!r} for QuantumGaussianProcessRegressor.")
             setattr(self, key, value)
         return self
@@ -467,12 +620,19 @@ class QuantumGaussianProcessRegressor:
         tmp = np.linalg.solve(self.cholesky_, y_centered)
         self.dual_coef_ = np.linalg.solve(self.cholesky_.T, tmp)
         self.x_train_ = x
+        self.n_features_in_ = x.shape[1]
+        self.kernel_matrix_train_ = k_train
+        self.circuit_metadata_ = _kernel_circuit_metadata(
+            "quantum_gaussian_process_regressor", self.kernel, self.n_features_in_
+        )
         return self
 
     def predict(self, x, return_std: bool = False):
         if not hasattr(self, "dual_coef_"):
             raise ValueError("QuantumGaussianProcessRegressor must be fitted before prediction.")
         x = _as_2d(x)
+        if x.shape[1] != self.n_features_in_:
+            raise ValueError(f"Expected {self.n_features_in_} features, got {x.shape[1]}.")
         k_test = self.kernel.evaluate(x, self.x_train_)
         mean = k_test @ self.dual_coef_ + self.y_mean_
         if not return_std:
