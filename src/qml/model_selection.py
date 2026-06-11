@@ -16,9 +16,17 @@ import numpy as np
 from sklearn.model_selection import KFold, StratifiedKFold, train_test_split
 
 from qml._benchmark_utils import summary_stats
-from qml.metrics import accuracy_score, mean_absolute_error, mean_squared_error
+from qml.metrics import (
+    accuracy_score,
+    balanced_accuracy_score,
+    f1_score,
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score,
+    root_mean_squared_error,
+)
 
-_CLASSIFICATION_SCORERS = {"accuracy"}
+_CLASSIFICATION_SCORERS = {"accuracy", "balanced_accuracy", "f1", "f1_binary"}
 _REGRESSION_SCORERS = {
     "mean_squared_error",
     "mse",
@@ -28,6 +36,11 @@ _REGRESSION_SCORERS = {
     "mae",
     "neg_mean_absolute_error",
     "neg_mae",
+    "root_mean_squared_error",
+    "rmse",
+    "neg_root_mean_squared_error",
+    "neg_rmse",
+    "r2",
 }
 
 __all__ = [
@@ -37,6 +50,7 @@ __all__ = [
     "infer_task",
     "score_predictions",
     "scorer_direction",
+    "selection_summary_rows",
     "select_best_model",
     "train_test_evaluate",
 ]
@@ -107,9 +121,17 @@ def default_scoring(task: str) -> str:
 def scorer_direction(scoring: str) -> bool:
     """Return whether larger scores are better for a scorer name."""
     scoring = scoring.strip().lower()
-    if scoring.startswith("neg_") or scoring == "accuracy":
+    larger_is_better = {"accuracy", "balanced_accuracy", "f1", "f1_binary", "r2"}
+    if scoring.startswith("neg_") or scoring in larger_is_better:
         return True
-    if scoring in {"mean_squared_error", "mse", "mean_absolute_error", "mae"}:
+    if scoring in {
+        "mean_squared_error",
+        "mse",
+        "mean_absolute_error",
+        "mae",
+        "root_mean_squared_error",
+        "rmse",
+    }:
         return False
     raise ValueError(f"Unsupported scoring value {scoring!r}.")
 
@@ -118,21 +140,32 @@ def score_predictions(y_true, y_pred, scoring: str) -> float:
     """
     Score predictions with a supported scorer.
 
-    Supported values are ``accuracy``, ``mean_squared_error``/``mse``,
-    ``neg_mean_squared_error``/``neg_mse``, ``mean_absolute_error``/``mae``,
-    and ``neg_mean_absolute_error``/``neg_mae``.
+    Supported classification values are ``accuracy``, ``balanced_accuracy``,
+    and binary ``f1``/``f1_binary``. Supported regression values are
+    ``mean_squared_error``/``mse``, ``root_mean_squared_error``/``rmse``,
+    ``mean_absolute_error``/``mae``, ``r2``, and negative loss variants.
     """
     scoring = scoring.strip().lower()
     if scoring == "accuracy":
         return accuracy_score(y_true, y_pred)
+    if scoring == "balanced_accuracy":
+        return balanced_accuracy_score(y_true, y_pred)
+    if scoring in {"f1", "f1_binary"}:
+        return f1_score(y_true, y_pred)
     if scoring in {"mean_squared_error", "mse"}:
         return mean_squared_error(y_true, y_pred)
     if scoring in {"neg_mean_squared_error", "neg_mse"}:
         return -mean_squared_error(y_true, y_pred)
+    if scoring in {"root_mean_squared_error", "rmse"}:
+        return root_mean_squared_error(y_true, y_pred)
+    if scoring in {"neg_root_mean_squared_error", "neg_rmse"}:
+        return -root_mean_squared_error(y_true, y_pred)
     if scoring in {"mean_absolute_error", "mae"}:
         return mean_absolute_error(y_true, y_pred)
     if scoring in {"neg_mean_absolute_error", "neg_mae"}:
         return -mean_absolute_error(y_true, y_pred)
+    if scoring == "r2":
+        return r2_score(y_true, y_pred)
     raise ValueError(f"Unsupported scoring value {scoring!r}.")
 
 
@@ -305,6 +338,62 @@ def _candidate_items(candidates) -> list[tuple[str, Any]]:
     if not items:
         raise ValueError("At least one candidate estimator is required.")
     return [(str(name), estimator) for name, estimator in items]
+
+
+def selection_summary_rows(result: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """
+    Return compact table rows for model-selection helper outputs.
+
+    The function accepts the dictionaries returned by
+    ``cross_validate_estimator(...)``, ``train_test_evaluate(...)``, or
+    ``select_best_model(...)`` and normalizes their primary score and timing
+    fields for use with ``qml.reporting.format_table``.
+    """
+    if "candidates" in result:
+        rows = []
+        for candidate in result["candidates"]:
+            cv_result = candidate["cv_result"]
+            test_summary = cv_result["summary"]["test_score"]
+            fit_summary = cv_result["summary"]["fit_seconds"]
+            rows.append(
+                {
+                    "name": candidate["name"],
+                    "scoring": result["scoring"],
+                    "mean_test_score": float(test_summary["mean"]),
+                    "ci95_low": float(test_summary["ci95_low"]),
+                    "ci95_high": float(test_summary["ci95_high"]),
+                    "fit_seconds": float(fit_summary["mean"]),
+                    "best": candidate["name"] == result.get("best_name"),
+                }
+            )
+        return rows
+
+    if "folds" in result:
+        return [
+            {
+                "fold": fold["fold"],
+                "train_size": fold["train_size"],
+                "test_size": fold["test_size"],
+                "train_score": fold["train_score"],
+                "test_score": fold["test_score"],
+                "fit_seconds": fold["fit_seconds"],
+                "score_seconds": fold["score_seconds"],
+            }
+            for fold in result["folds"]
+        ]
+
+    return [
+        {
+            "task": result["task"],
+            "scoring": result["scoring"],
+            "train_size": result["train_size"],
+            "test_size": result["test_size"],
+            "train_score": result["train_score"],
+            "test_score": result["test_score"],
+            "fit_seconds": result["fit_seconds"],
+            "score_seconds": result["score_seconds"],
+        }
+    ]
 
 
 def select_best_model(

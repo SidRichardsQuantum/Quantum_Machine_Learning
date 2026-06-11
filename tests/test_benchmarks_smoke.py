@@ -1,4 +1,5 @@
 from qml.benchmarks import (
+    benchmark_runtime_scaling,
     compare_classification_models,
     compare_regression_models,
 )
@@ -205,3 +206,25 @@ def test_regression_benchmark_runs_trainable_quantum_kernel_regressor():
     assert "test_mse" in run
     assert "circuit_metadata" in run
     assert "trainable_parameters" in result["summary"]["trainable_quantum_kernel_regressor"]
+
+
+def test_runtime_scaling_benchmark_runs_classification():
+    result = benchmark_runtime_scaling(
+        task="classification",
+        models=["quantum_reservoir", "logistic_regression"],
+        sample_sizes=[16, 20],
+        shots_values=[None],
+        seeds=[0],
+        dataset="moons",
+        model_kwargs={"quantum_reservoir": {"n_layers": 1}},
+    )
+
+    assert result["benchmark_type"] == "runtime_scaling"
+    assert result["task"] == "classification"
+    assert result["sample_sizes"] == [16, 20]
+    assert len(result["configurations"]) == 2
+    assert {row["model"] for row in result["scaling_summary"]} == {
+        "quantum_reservoir",
+        "logistic_regression",
+    }
+    assert all(row["primary_metric"] == "test_accuracy" for row in result["scaling_summary"])

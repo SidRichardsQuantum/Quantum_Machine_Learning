@@ -78,6 +78,12 @@ DOCS = [
         "Task-oriented guidance for choosing QML APIs and classical baselines.",
     ),
     (
+        "Notebook Authoring",
+        ROOT / "docs/qml/notebook_authoring.md",
+        "notebook-authoring.html",
+        "Notebook structure, validation blocks, plots, and result-refresh expectations.",
+    ),
+    (
         "Noise Models",
         ROOT / "docs/qml/noise_models.md",
         "noise-models.html",

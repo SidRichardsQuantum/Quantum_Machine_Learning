@@ -15,6 +15,7 @@ from qml.cli_commands import (
     _run_regression_benchmark_command,
     _run_regression_command,
     _run_ridge_command,
+    _run_runtime_scaling_benchmark_command,
     _run_svm_command,
     _run_trainable_kernel_command,
     _run_vqc_command,
@@ -75,7 +76,10 @@ def main(argv: list[str] | None = None, *, prog: str | None = None) -> int:
         if args.benchmark_type == "finite-shots":
             return _run_finite_shot_benchmark_command(args)
 
-        print("Please specify 'classification', 'regression', or 'finite-shots'")
+        if args.benchmark_type == "runtime-scaling":
+            return _run_runtime_scaling_benchmark_command(args)
+
+        print("Please specify 'classification', 'regression', 'finite-shots', or 'runtime-scaling'")
         return 1
 
     parser.print_help()

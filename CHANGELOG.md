@@ -1,5 +1,42 @@
 # CHANGELOG.md
 
+## [0.2.11] - 11-06-2026
+
+### Added
+
+- Added `qml.benchmarks.benchmark_runtime_scaling(...)` for sample-size and
+  shot-count runtime scaling diagnostics across classification and regression
+  benchmark helpers.
+- Added the `qml-pennylane benchmark runtime-scaling` CLI preset for runtime
+  scaling sweeps.
+- Added `notebooks/benchmarks/08-runtime-scaling-benchmark.ipynb` and refreshed
+  generated benchmark result artifacts for the new runtime-scaling workflow.
+- Added model-selection scorers for `balanced_accuracy`, binary `f1`, `r2`,
+  RMSE, and negative RMSE variants.
+- Added `qml.model_selection.selection_summary_rows(...)` plus
+  `qml.reporting.model_selection_table(...)` and
+  `qml.reporting.print_model_selection(...)` for scorer-aware model-selection
+  reporting.
+- Added `docs/qml/notebook_authoring.md` with notebook structure, validation,
+  plotting, and generated-result refresh conventions.
+
+### Changed
+
+- Updated API, benchmark, model-selection, algorithm-coverage, and notebook
+  index documentation for runtime scaling, expanded scoring, and notebook
+  authoring guidance.
+- Refreshed generated API, tutorial, real-example, and benchmark result pages
+  and notebook image assets.
+
+### Validation
+
+- Verified the full pytest suite passes.
+- Verified Ruff checks pass for `src/qml` and `tests`.
+- Verified the static Pages build succeeds locally.
+- Executed the runtime-scaling benchmark notebook through the result generator.
+
+---
+
 ## [0.2.10] - 01-06-2026
 
 ### Added

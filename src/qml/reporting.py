@@ -141,3 +141,53 @@ def print_table(
 def print_section(title: str, rows: Mapping[str, Any] | Iterable[Row]) -> None:
     """Compatibility wrapper for notebook result sections."""
     print_table(rows, title=title)
+
+
+def model_selection_table(
+    result: Mapping[str, Any],
+    *,
+    title: str | None = None,
+    float_digits: int = 6,
+) -> str:
+    """Return a compact table for ``qml.model_selection`` result dictionaries."""
+    from qml.model_selection import selection_summary_rows
+
+    rows = selection_summary_rows(result)
+    if "candidates" in result:
+        columns = [
+            "name",
+            "scoring",
+            "mean_test_score",
+            "ci95_low",
+            "ci95_high",
+            "fit_seconds",
+            "best",
+        ]
+    elif "folds" in result:
+        columns = [
+            "fold",
+            "train_size",
+            "test_size",
+            "train_score",
+            "test_score",
+            "fit_seconds",
+            "score_seconds",
+        ]
+    else:
+        columns = [
+            "task",
+            "scoring",
+            "train_size",
+            "test_size",
+            "train_score",
+            "test_score",
+            "fit_seconds",
+            "score_seconds",
+        ]
+    return format_table(rows, title=title, columns=columns, float_digits=float_digits)
+
+
+def print_model_selection(result: Mapping[str, Any], *, title: str | None = None) -> None:
+    """Print a compact table for ``qml.model_selection`` result dictionaries."""
+    print(model_selection_table(result, title=title))
+    print()

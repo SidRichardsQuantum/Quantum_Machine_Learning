@@ -8,6 +8,7 @@ from qml.model_selection import (
     cross_validate_estimator,
     infer_task,
     score_predictions,
+    selection_summary_rows,
     select_best_model,
     train_test_evaluate,
 )
@@ -17,8 +18,12 @@ def test_infer_task_and_score_predictions() -> None:
     assert infer_task(np.asarray([0, 1, 1])) == "classification"
     assert infer_task(np.asarray([0.1, 0.2, 0.3])) == "regression"
     assert score_predictions([0, 1], [0, 1], "accuracy") == 1.0
+    assert score_predictions([0, 0, 1, 1], [0, 1, 1, 1], "balanced_accuracy") == 0.75
+    assert score_predictions([0, 1, 1], [0, 1, 0], "f1") == pytest.approx(2 / 3)
     assert score_predictions([1.0, 2.0], [1.0, 3.0], "mean_squared_error") == 0.5
     assert score_predictions([1.0, 2.0], [1.0, 3.0], "neg_mean_squared_error") == -0.5
+    assert score_predictions([1.0, 2.0], [1.0, 3.0], "rmse") == pytest.approx(0.70710678)
+    assert score_predictions([1.0, 2.0], [1.0, 2.0], "r2") == 1.0
 
 
 def test_cross_validate_estimator_classification_summary() -> None:
@@ -49,6 +54,36 @@ def test_cross_validate_estimator_classification_summary() -> None:
     assert len(result["folds"]) == 3
     assert result["summary"]["test_score"]["n"] == 3
     assert 0.0 <= result["summary"]["test_score"]["mean"] <= 1.0
+    rows = selection_summary_rows(result)
+    assert rows[0]["fold"] == 1
+    assert "test_score" in rows[0]
+
+
+def test_cross_validate_estimator_balanced_accuracy() -> None:
+    x = np.asarray(
+        [
+            [-1.0],
+            [-0.8],
+            [-0.7],
+            [1.0],
+            [0.8],
+            [0.7],
+        ]
+    )
+    y = np.asarray([0, 0, 0, 1, 1, 1])
+
+    result = cross_validate_estimator(
+        LogisticRegression(),
+        x,
+        y,
+        cv=3,
+        task="classification",
+        scoring="balanced_accuracy",
+        seed=0,
+    )
+
+    assert result["scoring"] == "balanced_accuracy"
+    assert result["higher_is_better"] is True
 
 
 def test_train_test_evaluate_regression_returns_negative_mse() -> None:
@@ -63,6 +98,17 @@ def test_train_test_evaluate_regression_returns_negative_mse() -> None:
     assert result["test_size"] == 3
     assert result["test_score"] <= 0.0
     assert hasattr(result["estimator"], "predict")
+
+
+def test_train_test_evaluate_regression_supports_r2() -> None:
+    x = np.arange(12, dtype=float).reshape(-1, 1)
+    y = 2.0 * x.ravel() + 1.0
+
+    result = train_test_evaluate(Ridge(alpha=0.1), x, y, task="regression", scoring="r2", seed=0)
+
+    assert result["scoring"] == "r2"
+    assert result["higher_is_better"] is True
+    assert result["test_score"] <= 1.0
 
 
 def test_select_best_model_refits_best_candidate() -> None:
@@ -94,6 +140,9 @@ def test_select_best_model_refits_best_candidate() -> None:
     assert result["best_estimator"] is not None
     assert result["best_estimator"].predict(x).shape == y.shape
     assert {candidate["name"] for candidate in result["candidates"]} == {"dummy", "logistic"}
+    rows = selection_summary_rows(result)
+    assert {row["name"] for row in rows} == {"dummy", "logistic"}
+    assert any(row["best"] for row in rows)
 
 
 def test_cross_validate_rejects_task_incompatible_scoring() -> None:

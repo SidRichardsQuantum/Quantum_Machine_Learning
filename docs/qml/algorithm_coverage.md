@@ -9,8 +9,8 @@ for every thin workflow wrapper.
 
 | Implementation | Theory / method note | Web page | Tutorial coverage | Benchmark / result coverage |
 | --- | --- | --- | --- | --- |
-| `run_vqc(...)`, `QuantumClassifier` | `docs/qml/variational_quantum_classifier.md` | `variational-quantum-classifier.html` | `notebooks/tutorials/03-variational-quantum-classifier.ipynb`, `notebooks/tutorials/07-variational-quantum-estimators.ipynb` | classification, capacity, finite-shot, noise-model benchmarks |
-| `run_vqr(...)`, `QuantumRegressor` | `docs/qml/variational_regression.md` | `variational-regression.html` | `notebooks/tutorials/04-variational-quantum-regressor.ipynb`, `notebooks/tutorials/07-variational-quantum-estimators.ipynb` | regression, capacity, finite-shot, noise-model benchmarks |
+| `run_vqc(...)`, `QuantumClassifier` | `docs/qml/variational_quantum_classifier.md` | `variational-quantum-classifier.html` | `notebooks/tutorials/03-variational-quantum-classifier.ipynb`, `notebooks/tutorials/07-variational-quantum-estimators.ipynb` | classification, capacity, finite-shot, noise-model, runtime-scaling benchmarks |
+| `run_vqr(...)`, `QuantumRegressor` | `docs/qml/variational_regression.md` | `variational-regression.html` | `notebooks/tutorials/04-variational-quantum-regressor.ipynb`, `notebooks/tutorials/07-variational-quantum-estimators.ipynb` | regression, capacity, finite-shot, noise-model, runtime-scaling benchmarks |
 | `run_qcnn(...)` | `docs/qml/qcnn.md` | `qcnn.html` | `notebooks/tutorials/10-quantum-convolutional-neural-network.ipynb` | classification, capacity, finite-shot benchmarks |
 | `run_quantum_autoencoder(...)` | `docs/qml/autoencoder.md` | `autoencoder.html` | `notebooks/tutorials/11-quantum-autoencoder.ipynb` | API reference results |
 | `run_quantum_kernel_classifier(...)`, `QuantumKernelClassifier` | `docs/qml/quantum_kernels.md` | `quantum-kernels.html` | `notebooks/tutorials/05-quantum-kernel-classifier.ipynb`, `notebooks/tutorials/06-quantum-kernel-estimators.ipynb` | classification, kernel-family, finite-shot, noise-model benchmarks |
@@ -20,7 +20,7 @@ for every thin workflow wrapper.
 | `QuantumKernelPCA` | `docs/qml/advanced_kernels.md` | `advanced-kernels.html` | `notebooks/tutorials/12-advanced-quantum-kernel-and-reservoir-models.ipynb` | real-example notebooks |
 | `QuantumOneClassClassifier` | `docs/qml/advanced_kernels.md` | `advanced-kernels.html` | `notebooks/tutorials/12-advanced-quantum-kernel-and-reservoir-models.ipynb` | real-example notebooks |
 | `QuantumGaussianProcessRegressor` | `docs/qml/advanced_kernels.md` | `advanced-kernels.html` | `notebooks/tutorials/12-advanced-quantum-kernel-and-reservoir-models.ipynb` | regression and real-example notebooks |
-| `QuantumReservoirFeatures`, `QuantumReservoirClassifier`, `QuantumReservoirRegressor` | `docs/qml/quantum_reservoirs.md` | `quantum-reservoirs.html` | `notebooks/tutorials/12-advanced-quantum-kernel-and-reservoir-models.ipynb` | classification, regression, finite-shot, and real-example notebooks |
+| `QuantumReservoirFeatures`, `QuantumReservoirClassifier`, `QuantumReservoirRegressor` | `docs/qml/quantum_reservoirs.md` | `quantum-reservoirs.html` | `notebooks/tutorials/12-advanced-quantum-kernel-and-reservoir-models.ipynb` | classification, regression, finite-shot, runtime-scaling, and real-example notebooks |
 | `run_quantum_metric_learner(...)` | `docs/qml/metric_learning.md` | `metric-learning.html` | `notebooks/tutorials/09-quantum-metric-learning.ipynb` | classification benchmarks |
 
 ## Supporting Pages

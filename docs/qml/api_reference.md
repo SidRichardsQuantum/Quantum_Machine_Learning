@@ -23,6 +23,7 @@ from qml import (
     QuantumRegressor,
     TrainableQuantumKernelRegressor,
     ansatz_parameter_count,
+    benchmark_runtime_scaling,
     build_noise_model,
     cross_validate_estimator,
     embedding_parameter_count,
@@ -31,7 +32,9 @@ from qml import (
     kernel_target_alignment,
     list_supported_optimizers,
     make_sequence_windows,
+    model_selection_table,
     print_section,
+    print_model_selection,
     print_table,
     qcnn_parameter_count,
     run_qcnn,
@@ -89,6 +92,7 @@ Use these when data already exists outside the package:
 | `cross_validate_estimator(...)` | `qml.model_selection` | Cross-validate estimator-style models with deterministic sklearn splitters. |
 | `train_test_evaluate(...)` | `qml.model_selection` | Fit and score one deterministic train/test split. |
 | `select_best_model(...)` | `qml.model_selection` | Cross-validate candidate estimators and optionally refit the best one. |
+| `selection_summary_rows(...)` | `qml.model_selection` | Normalize model-selection outputs into compact reporting rows. |
 
 The estimator classes expose `fit`, `predict`, `score`, `get_params`, and
 `set_params` where those operations apply.
@@ -145,6 +149,7 @@ depth, embedding/ansatz labels, and a `depth_is_estimate` flag.
 | --- | --- | --- |
 | `compare_classification_models(...)` | `qml.benchmarks` | Compare quantum and classical classifiers across seed lists. |
 | `compare_regression_models(...)` | `qml.benchmarks` | Compare quantum and classical regressors across seed lists. |
+| `benchmark_runtime_scaling(...)` | `qml.benchmarks` | Sweep sample sizes and shot counts for runtime-scaling diagnostics. |
 
 Benchmark results include run records, aggregate metric summaries, runtime
 summaries, train/test gap summaries, confidence intervals, paired deltas against
@@ -184,8 +189,10 @@ duplicating table-formatting code:
 | Function | Module | Purpose |
 | --- | --- | --- |
 | `format_table(...)` | `qml.reporting` | Return a plain-text table. |
+| `model_selection_table(...)` | `qml.reporting` | Return a scorer-aware table for model-selection outputs. |
 | `print_table(...)` | `qml.reporting` | Print a plain-text table. |
 | `print_section(...)` | `qml.reporting` | Print a titled block with one or more tables. |
+| `print_model_selection(...)` | `qml.reporting` | Print a model-selection summary table. |
 
 ## Versioning
 

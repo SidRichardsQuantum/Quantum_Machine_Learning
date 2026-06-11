@@ -540,6 +540,80 @@ def _build_parser(prog: str | None = None) -> argparse.ArgumentParser:
     _add_common_benchmark_args(finite_shot_benchmark_parser)
     _add_batch_size_arg(finite_shot_benchmark_parser)
 
+    runtime_scaling_parser = benchmark_subparsers.add_parser(
+        "runtime-scaling",
+        help="Benchmark runtime scaling over sample sizes and shot counts.",
+    )
+    runtime_scaling_parser.add_argument(
+        "--task",
+        type=str,
+        default="classification",
+        choices=["classification", "regression"],
+        help="Task family to benchmark.",
+    )
+    runtime_scaling_parser.add_argument(
+        "--models",
+        nargs="+",
+        default=None,
+        help="Model names to include.",
+    )
+    runtime_scaling_parser.add_argument(
+        "--dataset",
+        type=str,
+        default=None,
+        help="Dataset name. Defaults to moons for classification and sine for regression.",
+    )
+    runtime_scaling_parser.add_argument(
+        "--sample-sizes",
+        type=int,
+        nargs="+",
+        default=[40, 80],
+        help="Sample counts to sweep.",
+    )
+    runtime_scaling_parser.add_argument(
+        "--seeds",
+        type=int,
+        nargs="+",
+        default=[123],
+        help="Random seeds.",
+    )
+    runtime_scaling_parser.add_argument(
+        "--shots",
+        type=_shot_value,
+        nargs="+",
+        default=[None],
+        help="Shot counts to compare. Use 'analytic' or 'none' for analytic execution.",
+    )
+    runtime_scaling_parser.add_argument(
+        "--noise",
+        type=float,
+        default=0.1,
+        help="Dataset noise level.",
+    )
+    runtime_scaling_parser.add_argument(
+        "--test-size",
+        type=float,
+        default=0.25,
+        help="Fraction reserved for test data.",
+    )
+    runtime_scaling_parser.add_argument(
+        "--save",
+        action="store_true",
+        help="Save benchmark results.",
+    )
+    runtime_scaling_parser.add_argument(
+        "--tune-classical",
+        action="store_true",
+        help="Tune classical baselines with small GridSearchCV defaults.",
+    )
+    runtime_scaling_parser.add_argument(
+        "--cv",
+        type=int,
+        default=3,
+        help="Cross-validation folds for tuned classical baselines.",
+    )
+    _add_noise_model_args(runtime_scaling_parser)
+
     parser.add_argument("--optimizer", type=str, default="adam")
     parser.add_argument("--early-stopping-patience", type=int, default=None)
     parser.add_argument("--early-stopping-min-delta", type=float, default=0.0)

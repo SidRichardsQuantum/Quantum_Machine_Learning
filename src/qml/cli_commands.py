@@ -212,6 +212,55 @@ def _run_finite_shot_benchmark_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_runtime_scaling_benchmark_command(args: argparse.Namespace) -> int:
+    from qml.benchmarks import benchmark_runtime_scaling
+
+    noise_model = _noise_model_from_args(args)
+    classification_quantum_kwargs = {
+        "vqc": {"noise_model": noise_model},
+        "qcnn": {"noise_model": noise_model},
+        "quantum_kernel": {"noise_model": noise_model},
+        "trainable_quantum_kernel": {"noise_model": noise_model},
+        "quantum_reservoir": {"noise_model": noise_model},
+    }
+    regression_quantum_kwargs = {
+        "vqr": {"noise_model": noise_model},
+        "quantum_kernel_regressor": {"noise_model": noise_model},
+        "quantum_gaussian_process_regressor": {"noise_model": noise_model},
+        "trainable_quantum_kernel_regressor": {"noise_model": noise_model},
+        "quantum_reservoir_regressor": {"noise_model": noise_model},
+    }
+    result = benchmark_runtime_scaling(
+        task=args.task,
+        models=args.models,
+        sample_sizes=args.sample_sizes,
+        shots_values=args.shots,
+        seeds=args.seeds,
+        dataset=args.dataset,
+        noise=args.noise,
+        test_size=args.test_size,
+        model_kwargs=(
+            classification_quantum_kwargs
+            if args.task == "classification"
+            else regression_quantum_kwargs
+        ),
+        tune_classical=args.tune_classical,
+        cv=args.cv,
+        save=args.save,
+    )
+
+    print("Benchmark type: runtime-scaling")
+    print("Task:", result["task"])
+    print("Models:", ", ".join(result["models"]))
+    for row in result["scaling_summary"]:
+        print(
+            f"{row['model']} samples={row['sample_size']} shots={row['shots']} "
+            f"{row['primary_metric']}={row['primary_metric_mean']:.6f} "
+            f"runtime={row['runtime_seconds_mean']:.3f}s"
+        )
+    return 0
+
+
 def _run_vqc_command(args: argparse.Namespace) -> int:
     """
     Run the VQC workflow from parsed CLI arguments.

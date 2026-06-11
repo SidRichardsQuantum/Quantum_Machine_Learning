@@ -16,7 +16,7 @@ def _project_metadata() -> dict:
 def test_package_uses_src_layout_and_console_script() -> None:
     metadata = _project_metadata()
 
-    assert metadata["project"]["version"] == "0.2.10"
+    assert metadata["project"]["version"] == "0.2.11"
     assert metadata["tool"]["setuptools"]["packages"]["find"]["where"] == ["src"]
     assert metadata["project"]["scripts"]["qml-pennylane"] == "qml.cli:main"
     assert metadata["project"]["license"] == "MIT"

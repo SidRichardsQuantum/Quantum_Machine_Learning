@@ -112,6 +112,41 @@ requested. Defaults are intentionally simple:
 | Classification | `accuracy` | `StratifiedKFold` |
 | Regression | `neg_mean_squared_error` | `KFold` |
 
+Supported classification scorers are:
+
+```text
+accuracy
+balanced_accuracy
+f1
+f1_binary
+```
+
+Supported regression scorers are:
+
+```text
+neg_mean_squared_error
+mean_squared_error
+neg_root_mean_squared_error
+root_mean_squared_error
+neg_mean_absolute_error
+mean_absolute_error
+r2
+```
+
+Use the negative loss variants when you want larger scores to be better across
+candidate models.
+
+Model-selection outputs can be rendered with the shared reporting helpers:
+
+```python
+from qml.reporting import model_selection_table
+
+print(model_selection_table(selection, title="Cross-validation summary"))
+```
+
+For lower-level use, `qml.model_selection.selection_summary_rows(...)` returns
+the same normalized rows as dictionaries.
+
 Pass `task` explicitly when floating labels are actually class labels.
 
 ## Choosing Embeddings

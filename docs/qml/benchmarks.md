@@ -170,6 +170,52 @@ intervals, paired classical deltas, and runtime before drawing conclusions.
 
 ---
 
+## Runtime Scaling Benchmarks
+
+Use `benchmark_runtime_scaling(...)` to sweep sample counts and shot counts while
+keeping the normal classification or regression benchmark result structure:
+
+```python
+from qml.benchmarks import benchmark_runtime_scaling
+
+result = benchmark_runtime_scaling(
+    task="classification",
+    models=["quantum_reservoir", "logistic_regression"],
+    sample_sizes=[50, 100, 150],
+    shots_values=[None, 128],
+    seeds=[0, 1, 2],
+    dataset="moons",
+    model_kwargs={"quantum_reservoir": {"n_layers": 1}},
+)
+```
+
+The returned dictionary includes:
+
+- `configurations`: the nested benchmark output for each sample/shot setting
+- `scaling_summary`: one flat row per model and setting, with primary metric
+  mean, confidence interval, runtime mean, confidence interval, and circuit
+  metadata summaries when available
+
+For classification, the primary metric is `test_accuracy`. For regression, the
+primary metric is `test_mse`.
+
+The matching CLI preset is:
+
+```bash
+qml-pennylane benchmark runtime-scaling \
+  --task classification \
+  --models quantum_reservoir logistic_regression \
+  --sample-sizes 50 100 150 \
+  --shots analytic 128 \
+  --seeds 0 1 2
+```
+
+Runtime sweeps are still smoke-scale unless you increase seeds, sample sizes,
+and model-specific training settings. Treat the output as scaling diagnostics,
+not a full performance claim.
+
+---
+
 ## Paired Classical Comparison
 
 `paired_vs_best_classical` compares each selected model against the best
@@ -280,6 +326,17 @@ noiseless execution against depolarizing, amplitude-damping, readout-error, and
 combined low-noise settings for representative classification and regression
 QML workflows. Use it as a template for controlled hardware-error sensitivity
 studies by increasing seeds, sample counts, and channel probabilities.
+
+The runtime-scaling preset sweeps sample counts and optional finite-shot
+settings:
+
+```bash
+qml-pennylane benchmark runtime-scaling \
+  --task regression \
+  --models quantum_reservoir_regressor ridge_regression \
+  --sample-sizes 50 100 150 \
+  --shots analytic
+```
 
 The real-data options are projected to two features so they remain compatible
 with the compact quantum examples and visualizers. They are useful sanity

@@ -4,6 +4,10 @@ These notebooks are thin clients around the reusable APIs in `src/qml/`. They ar
 intended to be runnable from the repository root, `notebooks/`, or their own
 subdirectories.
 
+Authoring conventions for structure, validation blocks, result tables, plots,
+and generated-result refreshes are documented in
+[`docs/qml/notebook_authoring.md`](../docs/qml/notebook_authoring.md).
+
 ## Tutorial notebooks
 
 These are tutorial-style walkthroughs of the package algorithms and reusable
@@ -43,6 +47,7 @@ seeds, training steps, and classical tuning for stronger benchmark runs.
 | `benchmarks/05-finite-shot-benchmark.ipynb` | Compare analytic and finite-shot execution for supported QML workflows. |
 | `benchmarks/06-real-data-small-sample-benchmark.ipynb` | Benchmark small-feature real datasets exposed by the package against classical baselines. |
 | `benchmarks/07-noise-model-benchmark.ipynb` | Compare noiseless, depolarizing, amplitude-damping, readout-error, and combined-noise execution for representative QML workflows. |
+| `benchmarks/08-runtime-scaling-benchmark.ipynb` | Sweep sample counts and shot settings to summarize runtime and metric scaling. |
 
 ## Real example notebooks
 

@@ -428,6 +428,10 @@ _MODEL_NAME_ALIASES: dict[str, str] = {
 }
 
 
+def _shot_label(shots: int | None) -> str:
+    return "analytic" if shots is None else str(shots)
+
+
 def _apply_classical_tuning(
     model_name: str,
     model_kwargs: dict[str, dict[str, Any]],
@@ -624,6 +628,69 @@ def _normalize_model_kwargs(
         normalized[canonical].update(kwargs)
 
     return normalized
+
+
+def _scaling_model_kwargs(
+    selected_models: list[str],
+    base_kwargs: dict[str, dict[str, Any]] | None,
+    available_models: dict[str, Callable[..., dict[str, Any]]],
+    shots: int | None,
+) -> dict[str, dict[str, Any]]:
+    kwargs = _normalize_model_kwargs(base_kwargs, available_models)
+    for model_name in selected_models:
+        model_config = dict(kwargs.get(model_name, {}))
+        if model_name in _CLASSICAL_CLASSIFICATION_MODELS | _CLASSICAL_REGRESSION_MODELS:
+            kwargs[model_name] = model_config
+            continue
+        if model_name in {
+            "trainable_quantum_kernel",
+            "trainable_quantum_kernel_regressor",
+        }:
+            model_config.setdefault("shots_train", shots)
+            model_config.setdefault("shots_kernel", shots)
+        elif model_name != "quantum_metric_learning":
+            model_config.setdefault("shots", shots)
+        kwargs[model_name] = model_config
+    return kwargs
+
+
+def _runtime_scaling_record(
+    *,
+    task: str,
+    sample_size: int,
+    shots: int | None,
+    benchmark: dict[str, Any],
+) -> list[dict[str, Any]]:
+    primary_metric = "test_accuracy" if task == "classification" else "test_mse"
+    higher_is_better = task == "classification"
+    records = []
+    for model_name, model_summary in benchmark["summary"].items():
+        metric_summary = model_summary[primary_metric]
+        runtime_summary = model_summary["runtime_seconds"]
+        record = {
+            "task": task,
+            "sample_size": sample_size,
+            "shots": _shot_label(shots),
+            "shots_value": shots,
+            "model": model_name,
+            "primary_metric": primary_metric,
+            "higher_is_better": higher_is_better,
+            "primary_metric_mean": float(metric_summary["mean"]),
+            "primary_metric_ci95_low": float(metric_summary["ci95_low"]),
+            "primary_metric_ci95_high": float(metric_summary["ci95_high"]),
+            "runtime_seconds_mean": float(runtime_summary["mean"]),
+            "runtime_seconds_ci95_low": float(runtime_summary["ci95_low"]),
+            "runtime_seconds_ci95_high": float(runtime_summary["ci95_high"]),
+            "n_runs": int(model_summary["n_runs"]),
+        }
+        if "trainable_parameters" in model_summary:
+            record["trainable_parameters_mean"] = float(
+                model_summary["trainable_parameters"]["mean"]
+            )
+        if "estimated_depth" in model_summary:
+            record["estimated_depth_mean"] = float(model_summary["estimated_depth"]["mean"])
+        records.append(record)
+    return records
 
 
 def _prepare_runner_kwargs(
@@ -898,6 +965,133 @@ def compare_classification_models(
         save_json(benchmark, results_path("benchmarks", filename))
 
     return benchmark
+
+
+def benchmark_runtime_scaling(
+    *,
+    task: str = "classification",
+    models: list[str] | None = None,
+    sample_sizes: list[int] | None = None,
+    shots_values: list[int | None] | None = None,
+    seeds: list[int] | None = None,
+    dataset: str | None = None,
+    noise: float = 0.1,
+    test_size: float = 0.25,
+    model_kwargs: dict[str, dict[str, Any]] | None = None,
+    tune_classical: bool = False,
+    cv: int = 3,
+    save: bool = False,
+    filename: str = "runtime_scaling_benchmark.json",
+) -> dict[str, Any]:
+    """
+    Sweep sample counts and shot counts to summarize runtime scaling.
+
+    The helper delegates each configuration to ``compare_classification_models``
+    or ``compare_regression_models`` and returns both the nested benchmark
+    outputs and a flat ``scaling_summary`` table for notebooks and CLIs.
+    """
+    task_name = task.strip().lower()
+    if task_name in {"classifier", "classify"}:
+        task_name = "classification"
+    if task_name in {"regressor", "regress"}:
+        task_name = "regression"
+    if task_name not in {"classification", "regression"}:
+        raise ValueError("task must be 'classification' or 'regression'.")
+
+    sample_sizes = [40, 80] if sample_sizes is None else list(sample_sizes)
+    if not sample_sizes or any(sample_size < 2 for sample_size in sample_sizes):
+        raise ValueError("sample_sizes must contain positive values greater than one.")
+
+    shots_values = [None] if shots_values is None else list(shots_values)
+    seeds = [123] if seeds is None else list(seeds)
+    dataset = dataset or ("moons" if task_name == "classification" else "sine")
+
+    available_models = (
+        _CLASSIFICATION_MODELS if task_name == "classification" else _REGRESSION_MODELS
+    )
+    selected_models = _validate_models(
+        requested_models=models,
+        available_models=available_models,
+        benchmark_name="runtime scaling benchmark",
+    )
+
+    configurations = []
+    scaling_summary = []
+    for sample_size in sample_sizes:
+        for shots in shots_values:
+            config_kwargs = _scaling_model_kwargs(
+                selected_models=selected_models,
+                base_kwargs=model_kwargs,
+                available_models=available_models,
+                shots=shots,
+            )
+            if task_name == "classification":
+                benchmark = compare_classification_models(
+                    models=selected_models,
+                    seeds=seeds,
+                    n_samples=sample_size,
+                    noise=noise,
+                    test_size=test_size,
+                    model_kwargs=config_kwargs,
+                    save=False,
+                    dataset=dataset,
+                    tune_classical=tune_classical,
+                    cv=cv,
+                )
+            else:
+                benchmark = compare_regression_models(
+                    models=selected_models,
+                    seeds=seeds,
+                    n_samples=sample_size,
+                    noise=noise,
+                    test_size=test_size,
+                    model_kwargs=config_kwargs,
+                    save=False,
+                    dataset=dataset,
+                    tune_classical=tune_classical,
+                    cv=cv,
+                )
+
+            configurations.append(
+                {
+                    "task": task_name,
+                    "sample_size": sample_size,
+                    "shots": _shot_label(shots),
+                    "shots_value": shots,
+                    "benchmark": benchmark,
+                }
+            )
+            scaling_summary.extend(
+                _runtime_scaling_record(
+                    task=task_name,
+                    sample_size=sample_size,
+                    shots=shots,
+                    benchmark=benchmark,
+                )
+            )
+
+    result = {
+        "benchmark_type": "runtime_scaling",
+        "task": task_name,
+        "models": selected_models,
+        "sample_sizes": sample_sizes,
+        "shots": [_shot_label(shots) for shots in shots_values],
+        "shots_values": shots_values,
+        "seeds": seeds,
+        "dataset": dataset,
+        "noise": noise,
+        "test_size": test_size,
+        "tune_classical": tune_classical,
+        "cv": cv,
+        "configurations": configurations,
+        "scaling_summary": scaling_summary,
+        "metadata": _benchmark_metadata(),
+    }
+
+    if save:
+        save_json(result, results_path("benchmarks", filename))
+
+    return result
 
 
 def compare_regression_models(
