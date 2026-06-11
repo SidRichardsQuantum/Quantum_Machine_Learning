@@ -7,9 +7,9 @@ Notebook-derived result pages are generated separately from executed notebook ou
 - [Real example notebook results](results-real-examples.html)
 - [Benchmark notebook results](results-benchmarks.html)
 
-The configurations are intentionally small enough for the result-refresh workflow to
-regenerate in CI. They are reproducible smoke-scale examples, not quantum-advantage
-claims.
+The configurations are intentionally small enough to regenerate in CI. The
+result-refresh workflow verifies that committed artifacts are current. They are
+reproducible smoke-scale examples, not quantum-advantage claims.
 
 ## Environment
 
@@ -189,6 +189,6 @@ Regenerate this file and notebook-result pages from the repository root:
 python docs/pages/generate_results.py
 ```
 
-The Refresh results workflow regenerates this file before the Pages workflow publishes
-the committed result artifacts.
+The Refresh results workflow verifies this file and the generated assets before
+the Pages workflow publishes the committed result artifacts.
 Generated images are written under `docs/pages/assets/reference-results/` and embedded above.

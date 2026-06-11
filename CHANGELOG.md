@@ -25,6 +25,9 @@
 - Updated `qml.model_selection.clone_estimator(...)` to clone from shallow
   constructor parameters so configured composed objects are preserved without
   passing nested keys into constructors.
+- Changed the `Refresh results` workflow from a direct-to-`main` artifact
+  committer into a pull-request and push verifier for committed generated
+  result artifacts.
 - Updated estimator consistency, API reference, model-selection, implementation
   contract, and roadmap documentation for the v0.2.12 generalization release.
 - Bumped package metadata to `0.2.12`.

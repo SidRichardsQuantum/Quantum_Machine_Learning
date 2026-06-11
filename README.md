@@ -521,8 +521,10 @@ The generated outputs are:
 Pass `--execute-notebooks` to rerun all notebooks before extracting notebook outputs, or
 pass `--execute-notebook <path>` one or more times to rerun only selected notebooks.
 GitHub Pages publishes the committed reports and assets; the separate
-`Refresh results` workflow refreshes those generated artifacts when notebook, QML
-source, result-generation, or dependency changes require it. These are reproducible
+`Refresh results` workflow verifies that those generated artifacts are current
+when notebook, QML source, result-generation, or dependency changes require it.
+If the check fails, regenerate the artifacts locally and commit the updated
+`docs/results/` and `docs/pages/assets/` outputs. These are reproducible
 reference outputs, not quantum-advantage claims.
 
 ---

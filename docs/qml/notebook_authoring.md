@@ -160,8 +160,10 @@ python docs/pages/generate_results.py --skip-api-results \
 Execute one notebook, then regenerate notebook result pages.
 
 The GitHub `Refresh results` workflow executes only changed notebooks for
-notebook-only commits. Source, dependency, result-generation, or manual runs can
-trigger broader refreshes.
+notebook-only pull requests and pushes. Source, dependency, result-generation,
+or manual runs can trigger broader refreshes. The workflow verifies that
+generated result artifacts are already committed; it does not push refreshed
+artifacts to `main`.
 
 ## Review Checklist
 

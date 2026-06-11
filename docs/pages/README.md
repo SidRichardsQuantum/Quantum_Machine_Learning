@@ -30,11 +30,11 @@ python docs/pages/generate_results.py
 
 This refreshes `docs/results/`, the notebook result pages, and generated assets.
 
-The package API result configurations are intentionally small enough for the
-result-refresh workflow to regenerate in CI. Notebook result pages are generated
-from executed notebooks so the web pages show the same relevant tables and plots
-a reader sees in the notebooks. They are reproducible reference outputs, not
-quantum-advantage claims.
+The package API result configurations are intentionally small enough to
+regenerate in CI. Notebook result pages are generated from executed notebooks so
+the web pages show the same relevant tables and plots a reader sees in the
+notebooks. They are reproducible reference outputs, not quantum-advantage
+claims.
 
 To refresh notebook-result pages from already executed notebooks without rerunning
 the notebooks:
@@ -81,10 +81,15 @@ The workflow in `.github/workflows/pages.yml`:
 3. Builds `_site/` from committed Markdown and assets.
 4. Deploys the Pages artifact.
 
-Notebook execution is handled separately by `.github/workflows/refresh-results.yml`.
-That workflow runs only for notebook changes, QML source changes, result-generator
-changes, or dependency changes. Notebook-only commits execute just the changed
-notebooks before regenerating notebook result pages from committed notebook
-outputs. Source, generator, dependency, or manual runs execute the full notebook
-set and refresh all generated result artifacts. The workflow restores notebooks
-before committing so executed cell output is not recommitted.
+Notebook execution checks are handled separately by
+`.github/workflows/refresh-results.yml`. That workflow runs for pull requests
+and `main` pushes that touch notebooks, QML source, the result generator,
+dependencies, or the workflow itself. Notebook-only changes execute just the
+changed notebooks before regenerating notebook result pages from committed
+notebook outputs. Source, generator, dependency, or manual runs execute the full
+notebook set and regenerate all result artifacts.
+
+The workflow restores executed notebooks, then verifies that `docs/results/` and
+`docs/pages/assets/` are unchanged. It does not commit or push to `main`. If the
+check fails, regenerate results locally, commit the updated generated artifacts,
+and push that commit for review.
